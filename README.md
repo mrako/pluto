@@ -1,3 +1,3 @@
 # Pluto
 
-This is a main repository for the project 'Pluto'
+This is the main repository for the project 'Pluto'
