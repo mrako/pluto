@@ -45,3 +45,7 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 amplify/team-provider-info.json
+.idea
+venv
+tmp
+
