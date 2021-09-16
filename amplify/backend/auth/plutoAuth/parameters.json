@@ -1,4 +1,6 @@
 {
+    "identityPoolName": "plutoAuth_identitypool_7d0ef527",
+    "allowUnauthenticatedIdentities": false,
     "resourceNameTruncated": "pluto769f9977",
     "userPoolName": "plutoUserPool",
     "autoVerifiedAttributes": [
@@ -40,7 +42,7 @@
     "userpoolClientSetAttributes": true,
     "sharedId": "769f9977",
     "resourceName": "plutoAuth",
-    "authSelections": "userPoolOnly",
+    "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
             "AuthRole",

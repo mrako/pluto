@@ -1,6 +1,30 @@
 import React, { ReactElement } from 'react';
+import Amplify, { API } from 'aws-amplify';
+import awsconfig from './aws-exports';
 import logo from './logo.svg';
 import './App.css';
+
+Amplify.configure(awsconfig);
+const apiName = 'projects';
+const path = '/projects';
+const myInit = {
+  headers: {},
+  response: true,
+  queryStringParameters: {
+    name: 'param',
+  },
+};
+
+function getProjects() {
+  API
+    .get(apiName, path, myInit)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error.response);
+    });
+}
 
 function App(): ReactElement {
   return (
@@ -18,6 +42,10 @@ function App(): ReactElement {
         >
           Learn React
         </a>
+        <br />
+        <div>
+          Reply from the projects endpoint: { getProjects() }
+        </div>
       </header>
     </div>
   );
