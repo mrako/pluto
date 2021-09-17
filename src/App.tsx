@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import Amplify, { API } from 'aws-amplify';
+import Amplify, { API, Auth } from 'aws-amplify';
+import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import awsconfig from './aws-exports';
 import logo from './logo.svg';
 import './App.css';
@@ -30,6 +31,7 @@ function App(): ReactElement {
   return (
     <div className="App">
       <header className="App-header">
+        <p> <AmplifySignOut /></p>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
@@ -51,4 +53,4 @@ function App(): ReactElement {
   );
 }
 
-export default App;
+export default withAuthenticator(App);
