@@ -6,7 +6,11 @@
       "privacy": {
         "private": true,
         "auth": [
-          "/GET"
+          "/POST",
+          "/GET",
+          "/PUT",
+          "/PATCH",
+          "/DELETE"
         ]
       },
       "policyResourceName": "/projects"
@@ -22,8 +26,8 @@
   "privacy": {
     "auth": 1,
     "unauth": 0,
-    "authRoleName": "amplify-pluto-dev-123147-authRole",
-    "unAuthRoleName": "amplify-pluto-dev-123147-unauthRole"
+    "authRoleName": "amplify-pluto-romuaa-154706-authRole",
+    "unAuthRoleName": "amplify-pluto-romuaa-154706-unauthRole"
   },
   "dependsOn": [
     {

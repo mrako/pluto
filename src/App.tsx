@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect } from 'react';
-import Amplify, { Auth } from 'aws-amplify';
+import Amplify, { API, Auth } from 'aws-amplify';
 import { Provider } from 'react-redux';
 import { AmplifyAuthenticator, AmplifySignOut, AmplifySignUp } from '@aws-amplify/ui-react';
 import configureStore from './store/configureStore';
@@ -9,6 +9,27 @@ import './App.css';
 
 Amplify.configure(config);
 const store = configureStore();
+
+const apiName = 'projects';
+const path = '/projects';
+const myInit = {
+  headers: {},
+  response: true,
+  queryStringParameters: {
+    name: 'param',
+  },
+};
+
+function getProjects() {
+  API
+    .get(apiName, path, myInit)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
 function App(): ReactElement {
   useEffect(() => {
@@ -49,6 +70,10 @@ function App(): ReactElement {
             >
               Learn React
             </a>
+            <br />
+            <div>
+              Calling the getProjects Lambda function.. Check the console.log { getProjects() }
+            </div>
             <AmplifySignOut />
           </header>
         </div>
