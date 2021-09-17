@@ -1,76 +1,36 @@
 {
-  "function": {
-    "plutoAuthPostConfirmation": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "projects": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "plutoAuthPostConfirmation",
-          "attributes": [
-            "Name"
-          ]
-        }
-      ]
-    }
-  },
+  "function": {},
   "auth": {
-    "plutoAuth": {
+    "pluto": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "plutoAuthPostConfirmation",
-          "triggerProvider": "Cognito",
-          "attributes": [
-            "Arn",
-            "Name"
-          ]
-        }
-      ],
+      "dependsOn": [],
       "customAuth": false,
       "frontendAuthConfig": {
-        "loginMechanisms": [
-          "EMAIL",
-          "PREFERRED_USERNAME"
-        ],
+        "loginMechanisms": [],
         "signupAttributes": [
           "EMAIL"
         ],
         "passwordProtectionSettings": {
           "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": []
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE",
+            "REQUIRES_NUMBERS",
+            "REQUIRES_SYMBOLS",
+            "REQUIRES_UPPERCASE"
+          ]
         },
         "mfaConfiguration": "OPTIONAL",
         "mfaTypes": [
           "TOTP"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
         ]
       }
     }
   },
-  "api": {
-    "projects": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "projects",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
-    }
-  },
+  "api": {},
   "hosting": {
     "amplifyhosting": {
       "service": "amplifyhosting",

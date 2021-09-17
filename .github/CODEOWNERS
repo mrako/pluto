@@ -1,0 +1,8 @@
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence
+* @mlevon @romuaa @CptPicard @adamchabin @AdrianMiksa
+
+/public/ @mlevon @romuaa
+/src/ @mlevon @romuaa
+/amplify/ @romuaa @CptPicard @adamchabin @AdrianMiksa
+./github/ @mlevon @adamchabin @romuaa
