@@ -50,6 +50,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 0,
     'react/state-in-constructor': 'off',
     'no-else-return': 0,
+    'no-shadow': 0,
     indent: [
       'error',
       2,
