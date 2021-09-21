@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
 jobs:
-  build:
+  deploy:
     strategy:
       matrix:
         node_version: [12.x]
@@ -13,23 +13,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
-      - name: Configure AWS config file
-        run: |
-          mkdir -p ~/.aws
-          echo "[default]" > ~/.aws/config
-          echo "region=$DEV_AWS_REGION" >> ~/.aws/config
-        env:
-          DEV_AWS_REGION: eu-west-1
-      - name: Configure AWS credentials file
-        run: |
-          echo "[default]" > ~/.aws/credentials
-          echo "aws_access_key_id=$DEV_AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-          echo "aws_secret_access_key=$DEV_AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
-          echo "aws_session_token=$DEV_AWS_SESSION_TOKEN" >> ~/.aws/credentials
-        env:
-          DEV_AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          DEV_AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-          DEV_AWS_SESSION_TOKEN: ${{ secrets.DEV_AWS_SESSION_TOKEN }}
+      - name: Configure AWS
+        uses: Fooji/create-aws-profile-action@v1
+        with:
+          profile: default
+          region: eu-west-1
+          key: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          secret: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
       - name: Use Node.js ${{ matrix.node_version }}
         uses: actions/setup-node@v2
         with:
