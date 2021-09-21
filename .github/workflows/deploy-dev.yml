@@ -31,9 +31,9 @@ jobs:
           DEV_AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
           DEV_AWS_SESSION_TOKEN: ${{ secrets.DEV_AWS_SESSION_TOKEN }}
       - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          version: ${{ matrix.node_version }}
+          node-version: ${{ matrix.node_version }}
       - name: Install Amplify CLI & Deploy Project
         run: |
           npm install -g @aws-amplify/cli --unsafe-perm=true
