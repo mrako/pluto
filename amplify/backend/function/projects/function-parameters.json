@@ -1,0 +1,13 @@
+{
+  "lambdaLayers": [],
+  "permissions": {
+    "function": {
+      "plutoAuthPostConfirmation": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  }
+}

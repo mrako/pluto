@@ -1,5 +1,6 @@
 import { AmplifySignOut } from '@aws-amplify/ui-react';
 import React, { ReactElement } from 'react';
+import { API } from 'aws-amplify';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import * as authActions from '../../store/actions/authActions';
@@ -15,6 +16,26 @@ export default function LoggedInView(): ReactElement {
       history.push('/login');
     }
   };
+  const apiName = 'projects';
+  const path = '/projects';
+  const myInit = {
+    headers: {},
+    response: true,
+    queryStringParameters: {
+      name: 'param',
+    },
+  };
+
+  function getProjects() {
+    API
+      .get(apiName, path, myInit)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <div className="App">
       <header className="App-header">
@@ -30,6 +51,7 @@ export default function LoggedInView(): ReactElement {
         >
           Learn React
         </a>
+        <button onClick={getProjects}>Test API here</button>
         <AmplifySignOut
           handleAuthStateChange={handleSignOut}
         />
