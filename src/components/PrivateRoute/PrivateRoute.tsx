@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { Route, RouteProps, useHistory } from 'react-router-dom';
 
-function PrivateRoute({ children, ...rest }: RouteProps): ReactElement {
+export default function PrivateRoute({ children, ...rest }: RouteProps): ReactElement {
   const [auth, setAuth] = useState(false);
   const history = useHistory();
 
@@ -14,7 +14,6 @@ function PrivateRoute({ children, ...rest }: RouteProps): ReactElement {
     const redirectToLogin = () => {
       history.push('/login');
     };
-
     Auth.currentSession().then((response) => {
       if (response.isValid()) {
         setAuth(true);
@@ -36,5 +35,3 @@ function PrivateRoute({ children, ...rest }: RouteProps): ReactElement {
     </Route>
   );
 }
-
-export default PrivateRoute;

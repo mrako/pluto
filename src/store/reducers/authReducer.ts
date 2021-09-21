@@ -10,7 +10,6 @@ const initState: IAuthState = {
   user: null,
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function auth(state:IAuthState = initState, action:AnyAction):IAuthState {
   switch (action.type) {
     case ActionType.SIGNIN: {

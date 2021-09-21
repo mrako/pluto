@@ -1,7 +1,7 @@
 import { AmplifyAuthenticator, AmplifySignUp } from '@aws-amplify/ui-react';
 import React, { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import * as authActions from '../../store/actions/authActions';
 import './Login.css';
 
