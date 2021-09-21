@@ -1,0 +1,8 @@
+:root {
+  --amplify-primary-color: #3CB2B0;
+  --amplify-primary-tint: #96D5D2;
+  --amplify-primary-shade: #96D5D2;
+  --amplify-secondary-tint: #3CB2B0;
+  --amplify-red: var(--amplify-white);
+  --amplify-font-family: "Lato", sans-serif, "Helvetica", "Arial"
+}

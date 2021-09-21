@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import * as authActions from '../../store/actions/authActions';
+import './Login.css';
 
 export default function Login(): ReactElement {
   const history = useHistory();
