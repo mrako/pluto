@@ -41,3 +41,13 @@ the pluto repository directory.
 ```python3 -m venv venv```
 
 More importantly the virtual environment directory name _must be_ venv
+
+# Conventions
+
+## Branches
+Branches should be named as `<feature/task/bugfix>/<issue number>-description-here`
+For example `feature/20-add-authentication`
+
+## Pull requests
+If a pull request should close/fix/resolve an issue the description should have a line f.ex closes #2 
+This will close issue number 2 when the PR is merged. More info on https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue 
