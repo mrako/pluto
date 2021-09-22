@@ -28,7 +28,9 @@ jobs:
         run: |
           npm install -g @aws-amplify/cli --unsafe-perm=true
           npm ci
-      - name: Deploy Project
+      - name: Pull Project
         run: |
           bash pull.sh
+      - name: Push Project
+        run: |
           bash push.sh
