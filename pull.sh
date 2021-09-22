@@ -33,3 +33,5 @@ amplify pull \
 --frontend $FRONTEND \
 --providers $PROVIDERS \
 --yes
+
+amplify env checkout dev
