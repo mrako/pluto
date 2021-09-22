@@ -24,9 +24,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node_version }}
-      - name: Install Amplify CLI & Deploy Project
+      - name: Install Amplify CLI
         run: |
           npm install -g @aws-amplify/cli --unsafe-perm=true
           npm ci
+      - name: Deploy Project
+        run: |
           bash pull.sh
           bash push.sh
