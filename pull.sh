@@ -34,5 +34,3 @@ amplify pull \
 --providers $PROVIDERS \
 --yes \
 --no-override
-
-amplify env checkout dev
