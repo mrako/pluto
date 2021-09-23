@@ -1,7 +1,7 @@
 name: Development workflow
 on:
   push:
-    branches: [main, fix_pull_and_push]
+    branches: [main]
 jobs:
   deploy:
     strategy:
