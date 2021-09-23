@@ -10,8 +10,6 @@ CODEGEN="{\
 \"generateDocs\":true\
 }"
 
-pip3 install --user pipenv
-
 amplify push \
 --codegen $CODEGEN \
 --yes
