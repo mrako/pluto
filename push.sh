@@ -16,3 +16,4 @@ amplify push \
 
 amplify env checkout dev
 amplify publish
+cat /home/runner/.npm/_logs/*
