@@ -13,3 +13,6 @@ CODEGEN="{\
 amplify push \
 --codegen $CODEGEN \
 --yes
+
+amplify env checkout dev
+amplify publish
