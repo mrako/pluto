@@ -10,7 +10,7 @@ Test Teardown                       Close all browsers
 ${URL}                              https://pluto-dev.rnd.eficode.io/
 ${LOGIN_TEXT}                       Sign in to your account
 
-*** Keywords ***
+*** Test Cases ***
 
 Verify that user can login
     Open Browser                    ${URL}
