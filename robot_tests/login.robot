@@ -1,9 +1,6 @@
 *** Settings ****
 Documentation                       A smoke test suite to check if the user can login to Pluto.
 Library                             SeleniumLibrary
-...
-...
-...
 Test Teardown                       Close all browsers
 
 *** Variables ***
