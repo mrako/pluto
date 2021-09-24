@@ -1,7 +1,7 @@
 name: Development workflow
 on:
   push:
-    branches: [main]
+    branches: [main, task/5-run-acceptance-tests]
 jobs:
   deploy:
     strategy:
