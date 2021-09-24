@@ -1,7 +1,7 @@
 name: Development workflow
 on:
   push:
-    branches: [main, task/5-run-acceptance-tests]
+    branches: [main]
 jobs:
   deploy:
     strategy:
@@ -35,11 +35,3 @@ jobs:
       - name: Push Project
         run: |
           bash push.sh
-  smoketests:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Run Robot tests
-        uses: joonvena/robotframework-docker-action@v1.0
