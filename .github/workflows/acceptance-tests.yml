@@ -12,6 +12,6 @@ jobs:
         uses: joonvena/robotframework-docker-action@v1.0
       - name: upload reports
         uses: actions/upload-artifact@v2
-          with:
-            name: reports
-            path: reports
+        with:
+          name: reports
+          path: reports
