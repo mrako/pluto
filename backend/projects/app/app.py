@@ -1,12 +1,13 @@
 import sys
 import logging as log
 import awsgi
-from flask_cors import CORS
-from flask import Flask, jsonify, request
-
-import models
-from project_dao import insert_project, get_all_projects
-from project_service import add_project_to_github
+from api import app, db
+from flask_sqlalchemy import SQLAlchemy
+from project_dao import get_all_projects
+from ariadne import load_schema_from_path, make_executable_schema, \
+    graphql_sync, snake_case_fallback_resolvers, ObjectType
+from ariadne.constants import PLAYGROUND_HTML
+from flask import request, jsonify
 
 root = log.getLogger()
 root.setLevel(log.DEBUG)
@@ -18,8 +19,12 @@ handler.setFormatter(formatter)
 root.addHandler(handler)
 
 BASE_ROUTE = '/projects'
-app = Flask(__name__)
-CORS(app)
+query = ObjectType("Query")
+query.set_field("projects", get_all_projects())
+type_defs = load_schema_from_path("schema.graphql")
+schema = make_executable_schema(
+    type_defs, query, snake_case_fallback_resolvers
+)
 
 
 def handler(event, context):
@@ -38,20 +43,21 @@ def handler(event, context):
     # }
 
 
-@app.route(BASE_ROUTE, methods=['GET'])
-def list_projects():
-    return jsonify(get_all_projects())
+@app.route(BASE_ROUTE, methods=["GET"])
+def graphql_playground():
+    return PLAYGROUND_HTML, 200
 
 
-@app.route(BASE_ROUTE, methods=['POST'])
-def create_project():
-    payload = request.get_json()
-    log.debug(f"Payload: {payload}")
-    insert_project(payload)
-    add_project_to_github(payload)
-    return jsonify(message="Project created")
+@app.route(BASE_ROUTE, methods=["POST"])
+def graphql_server():
+    data = request.get_json()
 
+    success, result = graphql_sync(
+        schema,
+        data,
+        context_value=request,
+        debug=app.debug
+    )
 
-if __name__ == "__main__":
-    # execute only if run as a script
-    log.info("FooBar")
+    status_code = 200 if success else 400
+    return jsonify(result), status_code

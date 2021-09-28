@@ -1,10 +1,11 @@
-import os
-from uuid import uuid4
 import logging as log
+from models import Project
 
 
 def get_all_projects():
-    return {'name': 'test-project'}
+    return [Project(id=1,
+                    name="test-project",
+                    description="foobar")]
 
 
 def insert_project(project):

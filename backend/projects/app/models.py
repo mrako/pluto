@@ -1,9 +1,9 @@
-project = {
-    'type': 'object',
-    'properties': {
-        'name': {'type': 'string'},
-        'organisation': {'type': 'string'},
-        'admin': {'type': 'string'}
-    },
-    'required': ['name', 'organisation', 'admin']
-}
+from app import db
+from db_types import GUID
+
+
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+
