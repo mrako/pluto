@@ -12,4 +12,7 @@ ${LOGIN_TEXT}                       Sign in to your account
 
 Verify that user can login
     Open Browser                    ${URL}
-    Wait until page contains        ${LOGIN_TEXT}
+    Run keyword and continue on failure         Wait until page contains        ${LOGIN_TEXT}
+    Wait until element is visible               username
+    Input text                      username        This is a test
+    Capture page screenshot
