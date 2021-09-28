@@ -7,12 +7,11 @@ Test Teardown                       Close all browsers
 
 ${URL}                              https://pluto-dev.rnd.eficode.io/
 ${LOGIN_TEXT}                       Sign in to your account
+${USERNAMEFIELDJS}                  dom:document.querySelector("#root > amplify-authenticator").shadowRoot.querySelector("div > slot > amplify-sign-in").shadowRoot.querySelector("#username")
 
 *** Test Cases ***
 
 Verify that user can login
     Open Browser                    ${URL}
-    Run keyword and continue on failure         Wait until page contains        ${LOGIN_TEXT}
-    Wait until element is visible               username
-    Input text                      username        This is a test
-    Capture page screenshot
+    Wait until element is visible               ${USERNAMEFIELDJS}
+    Input text                      Wait until page contains        ${USERNAMEFIELDJS}
