@@ -3,16 +3,31 @@ on:
   push:
     branches: [main, task/5-run-acceptance-tests]
 jobs:
-  smoketests:
+  acceptance_tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run Robot tests
         uses: joonvena/robotframework-docker-action@v1.0
-        continue-on-error: true
       - name: upload reports
         uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: reports
           path: reports
+
+  generate_report:
+    if: always()
+    needs: [ acceptance_tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download reports
+        uses: actions/download-artifact@v1
+        with:
+          name: reports
+      - name: Send report to commit
+        uses: joonvena/robotframework-reporter-action@v1.0
+        with:
+          gh_access_token: ${{ secrets.GITHUB_TOKEN }}
