@@ -1,1 +1,4 @@
 wheel
+aws-wsgi
+flask
+flask-cors
