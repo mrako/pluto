@@ -2,12 +2,14 @@ import logging as log
 from models import Project
 
 
-def get_all_projects(obj, info):
-    projects = [Project(id=1,
+def find_all_projects():
+    return [Project(id=1,
                     name="test-project",
-                    description="foobar")]
-    return {"success": True,
-            "projects": projects}
+                    description="foobar"),
+            Project(id=2,
+                    name="test-project-2",
+                    description="foobarfoo")
+            ]
 
 
 def insert_project(project):
