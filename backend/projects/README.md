@@ -6,6 +6,12 @@ Start the database and the lambda container
 
 ```docker-compose -f docker-compose.lambda.yml up --build```
 
-Make a request to the function
+## Sending GraphQL queries
 
-```curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'```
+### Get all projects
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/list_projects.json" \
+"http://localhost:9000/2015-03-31/functions/function/invocations"
+```

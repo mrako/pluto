@@ -5,5 +5,5 @@
   "headers": {
     "content-type": "application/json"
   },
-  "body": "query fetchAllProjects {projects {success errors projects { name description }}}"
+  "body": "{\"query\": \"query { projects { success errors projects { name description }}}\"}"
 }

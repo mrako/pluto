@@ -14,13 +14,13 @@ root.setLevel(log.DEBUG)
 
 handler = log.StreamHandler(sys.stdout)
 handler.setLevel(log.DEBUG)
-formatter = log.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = log.Formatter('%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) - %(message)s')
 handler.setFormatter(formatter)
 root.addHandler(handler)
 
 BASE_ROUTE = '/projects'
 query = ObjectType("Query")
-query.set_field("projects", get_all_projects())
+query.set_field("projects", get_all_projects)
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(
     type_defs, query, snake_case_fallback_resolvers
@@ -43,14 +43,12 @@ def handler(event, context):
     # }
 
 
-@app.route(BASE_ROUTE, methods=["GET"])
-def graphql_playground():
-    return PLAYGROUND_HTML, 200
-
-
 @app.route(BASE_ROUTE, methods=["POST"])
 def graphql_server():
+    log.info(f"Body: {request.data}")
     data = request.get_json()
+
+    log.info(f"Data: {data}")
 
     success, result = graphql_sync(
         schema,
