@@ -14,7 +14,9 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         env:
+          TEST_VARIABLE_ROBOT: ${{ secrets.TEST_SECRET }}
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+        run: echo "$TEST_VARIABLE_ROBOT"
         with:
           name: reports
           path: reports
