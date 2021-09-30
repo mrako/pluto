@@ -10,7 +10,6 @@ from project_service import get_all_projects
 
 root = log.getLogger()
 root.setLevel(log.DEBUG)
-
 handler = log.StreamHandler(sys.stdout)
 handler.setLevel(log.DEBUG)
 formatter = log.Formatter('%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) - %(message)s')

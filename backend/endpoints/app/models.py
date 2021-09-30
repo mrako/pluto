@@ -1,9 +1,12 @@
-from app import db
-from db_types import GUID
+from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String
+
+Base = declarative_base()
 
 
-class Project(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    description = db.Column(db.String)
+class Project(Base):
+    __tablename__ = "project"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    description = Column(String)
 

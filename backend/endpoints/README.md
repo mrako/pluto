@@ -15,3 +15,11 @@ curl -X POST \
 -d "@./test_events/list_projects.json" \
 "http://localhost:9000/2015-03-31/functions/function/invocations"
 ```
+
+### Invoke db migrations (alembic upgrade head)
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/migrate_db.json" \
+"http://localhost:9001/2015-03-31/functions/function/invocations"
+```
