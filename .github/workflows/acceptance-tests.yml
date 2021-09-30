@@ -11,11 +11,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Run Robot tests
         uses: joonvena/robotframework-docker-action@v1.0
+        env:
+          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
       - name: upload reports
         uses: actions/upload-artifact@v2
         if: always()
-        env:
-          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
         with:
           name: reports
           path: reports
