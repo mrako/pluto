@@ -14,7 +14,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         env:
-          super_secret: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
         with:
           name: reports
           path: reports

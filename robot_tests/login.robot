@@ -25,4 +25,5 @@ Verify that user can login
     Click element                   ${SIGNIN_BUTTON}
     Wait until element is visible               ${SIGNOUT_BUTTON}
     Click element                   ${SIGNOUT_BUTTON}
+    Sleep                           1 second
     Wait until element is visible               ${USERNAMEFIELDJS}
