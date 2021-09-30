@@ -1,6 +1,7 @@
 *** Settings ****
 Documentation                       A smoke test suite to check if the user can login to Pluto.
 Library                             SeleniumLibrary     timeout=10 seconds
+Library                             OperatingSystem
 Test Teardown                       Close all browsers
 
 *** Variables ***
@@ -20,10 +21,11 @@ Verify that user can login
     Wait until element is visible               ${USERNAMEFIELDJS}
     Input text                      ${USERNAMEFIELDJS}      ${TESTACCOUNT}
     Wait until element is visible               ${PWFIELDJS}
-    Input password                  ${PWFIELDJS}     ${TEST_ACCOUNT_PASSWORD}
+    Input password                  ${PWFIELDJS}     %{TEST_ACCOUNT_PASSWORD}
     Wait until element is visible               ${SIGNIN_BUTTON}
     Click element                   ${SIGNIN_BUTTON}
     Wait until element is visible               ${SIGNOUT_BUTTON}
     Click element                   ${SIGNOUT_BUTTON}
     Sleep                           1 second
     Wait until element is visible               ${USERNAMEFIELDJS}
+
