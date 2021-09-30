@@ -17,3 +17,6 @@ services:
       DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'app.py'
+
+  dbmigration:
+
