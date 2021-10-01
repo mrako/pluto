@@ -21,6 +21,7 @@ Verify that user can login
     Wait until element is visible               ${USERNAMEFIELDJS}
     Input text                      ${USERNAMEFIELDJS}      ${TESTACCOUNT}
     Wait until element is visible               ${PWFIELDJS}
+    Log                             %{TEST_SECRET}
     Input password                  ${PWFIELDJS}     %{TEST_ACCOUNT_PASSWORD}
     Wait until element is visible               ${SIGNIN_BUTTON}
     Click element                   ${SIGNIN_BUTTON}

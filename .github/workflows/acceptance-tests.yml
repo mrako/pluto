@@ -9,13 +9,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: test secrets
-        run: |
-          env |grep TEST
-        env:
-          TEST_SECRET: ${{ secrets.TEST_SECRET }}
       - name: Run Robot tests
-        uses: joonvena/robotframework-docker-action@v1.0
+        run: robot_tests/run_robot_tests.sh
         env:
           TEST_SECRET: ${{ secrets.TEST_SECRET }}
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
