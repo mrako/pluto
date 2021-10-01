@@ -3,6 +3,9 @@ FROM public.ecr.aws/lambda/python:3.9
 # Copy function code
 COPY app/ ${LAMBDA_TASK_ROOT}
 
+# Clean up the Python compilation cache
+RUN find ${LAMBDA_TASK_ROOT} -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
 

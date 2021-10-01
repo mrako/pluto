@@ -1,5 +1,5 @@
 {
   "path": "/",
-  "httpMethod": "GET",
+  "httpMethod": "POST",
   "queryStringParameters": ""
 }

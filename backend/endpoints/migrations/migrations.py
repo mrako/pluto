@@ -23,11 +23,9 @@ root.addHandler(handler)
 def handler(event, context):
     try:
         log.info("Migrating the database schema")
-        log.info(f"Current directory {os.getcwd()}")
-        log.info(f"Context {context}")
         alembic = Alembic()
         alembic.init_app(app)
-        log.info(f"Script directory {app.config['ALEMBIC']['script_location']}")
+        app.config['ALEMBIC']['script_location'] = 'versions'
 
         with app.app_context():
             return alembic.upgrade()
