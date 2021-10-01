@@ -1,4 +1,4 @@
-# Projects endpoint Lambda for Pluto
+# GraphQL endpoint(s) and Lambda functions for Pluto
 
 ## Testing locally
 
