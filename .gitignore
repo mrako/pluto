@@ -19,6 +19,9 @@
 .env.production.local
 
 npm-debug.log*
+*.log
+log.txt
+
 yarn-debug.log*
 yarn-error.log*
 
@@ -49,3 +52,6 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+__pycache__
+

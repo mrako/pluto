@@ -1,0 +1,9 @@
+{
+  "path": "/projects",
+  "httpMethod": "POST",
+  "queryStringParameters": "",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": "{\"name\": \"another-project\",\"description\": \"Eficode Pluto\"}"
+}

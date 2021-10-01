@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13.3
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+
+  lambda:
+    build: .
+    ports:
+      - 9000:8080
+    environment:
+      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      PYTHONUNBUFFERED: 'TRUE'
+      FLASK_APP: 'app.py'
+
+  dbmigration:
+    build:
+      context: .
+      dockerfile: Dockerfile_migrations
+    ports:
+      - 9001:8080
+    environment:
+      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      PYTHONUNBUFFERED: 'TRUE'
+      FLASK_APP: 'migrations.py'
+    restart: on-failure
+    depends_on:
+      - db
+    links:
+      - db
