@@ -12,7 +12,13 @@ jobs:
       - name: Run Robot tests
         uses: joonvena/robotframework-docker-action@v1.0
         env:
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+      - name: run bash script
+        run: |
+          bash echo $TEST_SECRET
+        env:
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
       - name: upload reports
         uses: actions/upload-artifact@v2
         if: always()
