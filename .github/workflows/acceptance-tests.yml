@@ -10,7 +10,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run Robot tests
-        run: robot_tests/run_robot_tests.sh
+        run: |
+          run_robot_tests.sh
         env:
           TEST_SECRET: ${{ secrets.TEST_SECRET }}
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
