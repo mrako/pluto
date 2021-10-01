@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v2
       - name: test secrets
         run: |
-          bash echo $TEST_SECRET
+          env |grep TEST
         env:
           TEST_SECRET: ${{ secrets.TEST_SECRET }}
       - name: Run Robot tests
