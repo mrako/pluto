@@ -1,0 +1,9 @@
+wheel
+aws-wsgi
+flask
+flask-cors
+flask-sqlalchemy
+ariadne
+flask_alembic
+invoke
+psycopg2-binary

@@ -1,0 +1,38 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Project {
+    id: ID!
+    name: String!
+    description: String
+}
+
+type ProjectResult {
+    success: Boolean!
+    errors: [String]
+    project: Project
+}
+
+type ProjectsResult {
+    success: Boolean!
+    errors: [String]
+    projects: [Project]
+}
+
+type DeleteProjectResult {
+    success: Boolean!
+    errors: [String]
+}
+
+type Query {
+    projects: ProjectsResult!
+    project(projectId: ID!): ProjectResult!
+}
+
+type Mutation {
+    createProject(name: String!, description: String): ProjectResult!
+    updateDescription(description: String!): ProjectResult!
+    deleteProject(projectId: ID!): DeleteProjectResult!
+}

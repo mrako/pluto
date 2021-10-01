@@ -1,11 +1,5 @@
 {
-  "function": {
-    "projects": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  },
+  "function": {},
   "auth": {
     "pluto": {
       "service": "Cognito",
@@ -36,22 +30,7 @@
       }
     }
   },
-  "api": {
-    "projects": {
-      "service": "API Gateway",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "function",
-          "resourceName": "projects",
-          "attributes": [
-            "Name",
-            "Arn"
-          ]
-        }
-      ]
-    }
-  },
+  "api": {},
   "hosting": {
     "amplifyhosting": {
       "service": "amplifyhosting",
