@@ -4,7 +4,7 @@ schema {
 }
 
 type Project {
-    id: ID!
+    uuid: ID!
     name: String!
     description: String
 }
@@ -26,13 +26,22 @@ type DeleteProjectResult {
     errors: [String]
 }
 
+type Organisation {
+    uuid: ID!
+    name: String!
+    owner: String!
+    description: String
+}
+
 type Query {
-    projects: ProjectsResult!
-    project(projectId: ID!): ProjectResult!
+    projectsByOrg(organisationUuid: ID!): ProjectsResult!
+    projectsByUser(userUuid: ID!): ProjectsResult!
+    projectByOrg(organisationUuid: ID!, projectUuid: ID!): ProjectResult!
+    projectByUser(userUuid: ID!, projectUuid: ID!): ProjectResult!
 }
 
 type Mutation {
     createProject(name: String!, description: String): ProjectResult!
     updateDescription(description: String!): ProjectResult!
-    deleteProject(projectId: ID!): DeleteProjectResult!
+    deleteProject(projectUuid: ID!): DeleteProjectResult!
 }
