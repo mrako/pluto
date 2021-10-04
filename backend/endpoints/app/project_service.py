@@ -26,7 +26,7 @@ def query_db(*args, **kwargs):
 
 
 @convert_kwargs_to_snake_case
-def get_all_projects_by_org(*_, organisation_uuid=None):
+def get_all_projects_by_org(*_, organisation_uuid: UUID):
     return query_db('projectsByOrg', find_all_projects_by_org, organisation_uuid=organisation_uuid)
 
 
