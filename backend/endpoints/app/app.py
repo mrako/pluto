@@ -17,6 +17,7 @@ schema = make_executable_schema(
     type_defs, query, snake_case_fallback_resolvers
 )
 
+
 def handler(event, context):
     return awsgi.response(app, event, context)
 

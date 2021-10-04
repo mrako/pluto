@@ -15,7 +15,7 @@ def query_db(*args, **kwargs):
     field_name = args[0]
     try:
         return {"success": True,
-                field_name: args[1](kwargs)}
+                field_name: args[1](**kwargs)}
     except:
         msg = f"Retrieving {field_name} failed"
         log.exception(msg)
@@ -27,10 +27,7 @@ def query_db(*args, **kwargs):
 
 @convert_kwargs_to_snake_case
 def get_all_projects_by_org(*_, organisation_uuid=None):
-    log.debug(f"RUNNING QUERY!!!")
-    result = query_db('projectsByOrg', find_all_projects_by_org, organisation_uuid=organisation_uuid)
-    log.debug(f"Result: {result}")
-    return result
+    return query_db('projectsByOrg', find_all_projects_by_org, organisation_uuid=organisation_uuid)
 
 
 @convert_kwargs_to_snake_case
