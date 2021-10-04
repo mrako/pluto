@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Column, Integer, String, ForeignKey
 
@@ -6,7 +9,7 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = "user"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(UUID, primary_key=True, default=uuid4())
     username = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     projects = relationship(
@@ -18,7 +21,7 @@ class User(Base):
 
 class Organisation(Base):
     __tablename__ = "organisation"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(UUID, primary_key=True, default=uuid4())
     name = Column(String, unique=True, nullable=False)
     projects = relationship(
         'Project',
@@ -29,7 +32,7 @@ class Organisation(Base):
 
 class Project(Base):
     __tablename__ = "project"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(UUID, primary_key=True, default=uuid4())
     name = Column(String, nullable=False)
     description = Column(String)
     boards = relationship(
@@ -41,7 +44,7 @@ class Project(Base):
 
 class Repository(Base):
     __tablename__ = "repository"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(UUID, primary_key=True, default=uuid4())
     url = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     description = Column(String)
@@ -54,17 +57,17 @@ class Repository(Base):
 
 class Board(Base):
     __tablename__ = "board"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(UUID, primary_key=True, default=uuid4())
     name = Column(String, nullable=False)
     description = Column(String)
 
 
 class ProjectOwner(Base):
     __tablename__ = "project_owner"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'), onupdate="CASCADE")
-    organisation_id = Column(Integer, ForeignKey('organisation.id'), onupdate="CASCADE")
-    project_id = Column(Integer, ForeignKey('project.id'), onupdate="CASCADE")
+    uuid = Column(UUID, primary_key=True, default=uuid4())
+    user_uuid = Column(UUID, ForeignKey('user.uuid'), onupdate="CASCADE")
+    organisation_uuid = Column(UUID, ForeignKey('organisation.uuid'), onupdate="CASCADE")
+    project_uuid = Column(UUID, ForeignKey('project.uuid'), onupdate="CASCADE")
     project = relationship("Project", order_by=Project.name, back_populates="owner")
 
 
@@ -73,10 +76,10 @@ Project.owners = relationship("ProjectOwner", back_populates="project")
 
 class BoardOwner(Base):
     __tablename__ = "board_owner"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    project_id = Column(Integer, ForeignKey('project.id'), onupdate="CASCADE")
-    repository_id = Column(Integer, ForeignKey('repository.id'), onupdate="CASCADE")
-    board_id = Column(Integer, ForeignKey('board.id'), onupdate="CASCADE")
+    uuid = Column(UUID, primary_key=True, default=uuid4())
+    project_uuid = Column(UUID, ForeignKey('project.uuid'), onupdate="CASCADE")
+    repository_uuid = Column(UUID, ForeignKey('repository.uuid'), onupdate="CASCADE")
+    board_uuid = Column(UUID, ForeignKey('board.uuid'), onupdate="CASCADE")
     board = relationship("Board", order_by=Board.name, back_populates="owner")
 
 

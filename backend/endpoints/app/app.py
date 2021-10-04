@@ -1,32 +1,29 @@
-import sys
-import logging as log
 import awsgi
-from api import app, db
-from ariadne import load_schema_from_path, make_executable_schema, \
-    graphql_sync, snake_case_fallback_resolvers, ObjectType
+from ariadne.constants import PLAYGROUND_HTML
+
+from api import app
+from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
+    snake_case_fallback_resolvers
 from flask import request, jsonify
 
-from project_service import get_all_projects
+from project_service import get_all_projects_by_org
 
-root = log.getLogger()
-root.setLevel(log.DEBUG)
-handler = log.StreamHandler(sys.stdout)
-handler.setLevel(log.DEBUG)
-formatter = log.Formatter('%(asctime)s %(levelname)s (%(filename)s:%(lineno)d) - %(message)s')
-handler.setFormatter(formatter)
-root.addHandler(handler)
+BASE_ROUTE = '/api'
 
-BASE_ROUTE = '/projects'
 query = ObjectType("Query")
-query.set_field("projects", get_all_projects)
+query.set_field('projectsByOrg', get_all_projects_by_org)
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(
     type_defs, query, snake_case_fallback_resolvers
 )
 
-
 def handler(event, context):
     return awsgi.response(app, event, context)
+
+
+@app.route(BASE_ROUTE, methods=["GET"])
+def graphql_playground():
+    return PLAYGROUND_HTML, 200
 
 
 @app.route(BASE_ROUTE, methods=["POST"])
@@ -40,3 +37,7 @@ def graphql_server():
 
     status_code = 200 if success else 400
     return jsonify(result), status_code
+
+
+if __name__ == "__main__":
+    app.run("0.0.0.0", port=8080, debug=True)
