@@ -26,6 +26,8 @@ The build is minified and the filenames include the hashes.\
 
 ### Python development requirements
 
+For more detailed information about the backend look at backend/endpoints/README.md
+
 You will need to have pipenv installed with your Python as a GLOBAL package
 pipenv needs to be in a PATH of you command line console.
 
