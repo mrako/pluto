@@ -20,42 +20,6 @@ class Organisation(Base):
     name = Column(String, unique=True, nullable=False)
 
 
-class Project(Base):
-    __tablename__ = "project"
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    name = Column(String, nullable=False)
-    description = Column(String)
-
-
-class Repository(Base):
-    __tablename__ = "repository"
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    url = Column(String, unique=True, nullable=False)
-    name = Column(String, nullable=False)
-    description = Column(String)
-    projects = relationship("Project", back_populates="repositories")
-
-
-class Board(Base):
-    __tablename__ = "board"
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    name = Column(String, nullable=False)
-    description = Column(String)
-    projects = relationship("Project", back_populates="boards")
-
-
-class ProjectOwner(Base):
-    __tablename__ = "project_owner"
-    __table_args__ = (
-        UniqueConstraint('user_uuid', 'organisation_uuid', 'project_uuid'),
-    )
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    user_uuid = Column(UUID(as_uuid=True), ForeignKey('user_account.uuid'), onupdate="CASCADE")
-    organisation_uuid = Column(UUID(as_uuid=True), ForeignKey('organisation.uuid'), onupdate="CASCADE")
-    project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), onupdate="CASCADE")
-    projects = relationship("Project", order_by=Project.name)
-
-
 class ProjectBoard(Base):
     __tablename__ = "project_board"
     project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), primary_key=True, onupdate="CASCADE")
@@ -68,5 +32,55 @@ class ProjectRepository(Base):
     repository_uuid = Column(UUID(as_uuid=True), ForeignKey('repository.uuid'), primary_key=True, onupdate="CASCADE")
 
 
-Project.repositories = relationship("Repository", order_by=Repository.name, back_populates="projects")
-Project.boards = relationship("Board", order_by=Repository.name, back_populates="projects")
+class Project(Base):
+    __tablename__ = "project"
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    name = Column(String, nullable=False)
+    description = Column(String)
+    boards = relationship(
+        'Board',
+        secondary='project_board',
+        back_populates="projects",
+        cascade="save-update"
+    )
+    repositories = relationship(
+        'Repository',
+        secondary='project_repository',
+        back_populates="projects",
+        cascade="save-update"
+    )
+
+
+class Repository(Base):
+    __tablename__ = "repository"
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    url = Column(String, unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String)
+    projects = relationship(
+        'Project',
+        secondary='project_repository'
+    )
+
+
+class Board(Base):
+    __tablename__ = "board"
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    name = Column(String, nullable=False)
+    description = Column(String)
+    projects = relationship(
+        'Project',
+        secondary='project_board'
+    )
+
+
+class ProjectOwner(Base):
+    __tablename__ = "project_owner"
+    __table_args__ = (
+        UniqueConstraint('user_uuid', 'organisation_uuid', 'project_uuid'),
+    )
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    user_uuid = Column(UUID(as_uuid=True), ForeignKey('user_account.uuid'), onupdate="CASCADE")
+    organisation_uuid = Column(UUID(as_uuid=True), ForeignKey('organisation.uuid'), onupdate="CASCADE")
+    project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), onupdate="CASCADE")
+    projects = relationship("Project", order_by=Project.name)
