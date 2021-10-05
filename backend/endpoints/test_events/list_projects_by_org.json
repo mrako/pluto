@@ -1,0 +1,9 @@
+{
+  "path": "/api",
+  "httpMethod": "POST",
+  "queryStringParameters": "",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": "{\"query\": \"query { projectsByOrg(organisationUuid: \\\"5ee493f5-f15e-4899-9001-842642ff5a04\\\") { success errors projects { name description }}}\"}"
+}
