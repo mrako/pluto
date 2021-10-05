@@ -57,3 +57,15 @@ def insert_project(name: str, description: str):
                            description=description))
     db.session.commit()
     return get_project(uuid)
+
+
+def update_project(project_uuid: UUID, **kwargs):
+    db.session.query(Project).filter(Project.uuid == project_uuid).update(kwargs)
+    db.session.commit()
+    return get_project(project_uuid)
+
+
+def delete_project(project_uuid: UUID):
+    project = get_project(project_uuid)
+    db.session.delete(project)
+    db.session.commit()
