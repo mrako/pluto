@@ -72,8 +72,8 @@ def add_project_to_github(*_, name: str, description: str):
 
 
 @convert_kwargs_to_snake_case
-def update_project_data(*_, **kwargs):
-    return query_db('project', update_project, **kwargs)
+def update_project_data(*_, **request_fields):
+    return query_db('project', update_project, **request_fields)
 
 
 @convert_kwargs_to_snake_case

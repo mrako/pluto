@@ -59,8 +59,8 @@ def insert_project(name: str, description: str):
     return get_project(uuid)
 
 
-def update_project(project_uuid: UUID, **kwargs):
-    db.session.query(Project).filter(Project.uuid == project_uuid).update(kwargs)
+def update_project(project_uuid: UUID, **update_fields):
+    db.session.query(Project).filter(Project.uuid == project_uuid).update(update_fields)
     db.session.commit()
     return get_project(project_uuid)
 
