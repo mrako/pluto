@@ -1,7 +1,7 @@
 name: Acceptance tests
 on:
   push:
-    branches: [main, task/5-run-acceptance-tests]
+    branches: [main]
 jobs:
 
   acceptance_tests:
