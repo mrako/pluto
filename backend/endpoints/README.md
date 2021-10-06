@@ -92,3 +92,30 @@ query {
   }
 }
 ```
+
+### Update project description
+```
+mutation { 
+  updateDescription(projectUuid: "afdb1ba1-6e9f-40c3-8c34-0777af9153fd", description: "Updated description") 
+  {
+    success 
+    errors 
+    project 
+    { 
+      name 
+      description 
+    }
+  }
+}
+
+```
+### Delete project description
+```
+mutation { 
+  deleteProject(projectUuid: "1b473bb9-8712-4808-b4a8-c1f03d573eae") 
+  {
+    success 
+    errors 
+  }
+}
+```
