@@ -8,6 +8,7 @@
 # testing
 /coverage
 /reports
+/robot_tests/venv
 
 # production
 /build
@@ -53,6 +54,3 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
-
-__pycache__
-

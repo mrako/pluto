@@ -61,16 +61,13 @@ This will close issue number 2 when the PR is merged. More info on https://docs.
 
 ## Robot Framework tests
 
-These instructions explain how to run the Robot Frameworks tests in the robot_tests directory locally.
+These instructions explain how to run the Robot Frameworks tests in the robot_tests directory against a local frontend.
 
-Prerequisites: Python 3.5 or newer, local setup with a local test account.
+Prerequisites: Python 3.5 or newer, local frontend.
 
-Start by creating a Python virtual environment inside the robot_tests directory:
-```
-. ./venv/bin/activate
-```
+Start by creating a Python virtual environment (venv) inside the robot_tests directory.
 
-Install dependencies:
+Inside venv, install dependencies:
 ```
 pip install -r requirements.txt
 ```
@@ -86,7 +83,7 @@ webdrivermanager chrome
 
 Set your local web address:
 ```
-URL=yourlocaladdress
+URL=http://localhost:3000
 export URL
 ```
 
