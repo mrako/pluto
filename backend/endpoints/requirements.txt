@@ -5,3 +5,4 @@ flask-cors
 flask-sqlalchemy
 ariadne
 psycopg2-binary
+requests
