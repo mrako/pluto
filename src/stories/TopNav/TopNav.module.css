@@ -1,0 +1,23 @@
+.top-nav {
+  height: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-black);
+}
+
+.home {
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.below {
+  height: 40px;
+}

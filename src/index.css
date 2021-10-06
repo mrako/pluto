@@ -1,13 +1,41 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+:root {
+  --color-black: #000000;
+  --color-dark-grey: #5c5c5c;
+  --color-grey: #898989;
+  --color-light-grey: #cccccc;
+  --color-white: #ffffff;
+  --color-primary: #0A1f28;
+  --color-secondary: #003e51;
+  --color-secondary-variant: #4c6374;
+  --color-secondary-middle: #275163;
+  --color-dark-yellow: #fdba12;
+  --color-light-yellow: #fed110;
+  --color-orange: #f3a367;
+  --color-blue: #39bbd9;
+  --color-purple: #a4639e;
+  --color-light-indigo: #9aa9ba;
+  --color-hover-grey: #eeeeee;
+  --color-teal: #0b9998;
+  --color-hover-on-light-yellow: var(--color-dark-yellow);
+  --color-hover-on-dark-yellow: var(--color-light-yellow);
+  --color-hover-on-primary: var(--color-secondary);
+  --color-hover-on-secondary: var(--color-primary);
+  --color-hover-on-white: var(--color-light-indigo);
+  --color-primary-disabled: var(--color-grey);
+  --color-red: #f3475b;
+  --color-green: #39b54a;
+  --default-border-radius: 3px;
+  --font-family: 'Lato', sans-serif, 'Helvetica', 'Arial';
+  --default-font-size: 16px;
 }

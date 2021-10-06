@@ -22,9 +22,16 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 
+### `npm run storybook`
+
+Starts storybook where you can see documentation on UI components and develop them in isolation
+Open [http://localhost:6006](http://localhost:6006) to view it in browser
+
 ## Backend
 
 ### Python development requirements
+
+For more detailed information about the backend look at backend/endpoints/README.md
 
 You will need to have pipenv installed with your Python as a GLOBAL package
 pipenv needs to be in a PATH of you command line console.
