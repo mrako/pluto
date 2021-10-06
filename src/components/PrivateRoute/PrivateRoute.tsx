@@ -7,7 +7,6 @@ import { Route, RouteProps, useHistory } from 'react-router-dom';
 export default function PrivateRoute({ children, ...rest }: RouteProps): ReactElement {
   const [auth, setAuth] = useState(false);
   const history = useHistory();
-
   const isAuthenticated = () => {
     setAuth(false);
 
@@ -27,6 +26,7 @@ export default function PrivateRoute({ children, ...rest }: RouteProps): ReactEl
 
   useEffect(() => {
     isAuthenticated();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

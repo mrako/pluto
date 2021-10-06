@@ -1,0 +1,27 @@
+.icon {
+  fill: currentColor;
+}
+
+.actionable {
+  cursor: pointer;
+}
+
+.primary {
+  fill: var(--color-primary);
+}
+
+.secondary {
+  fill: var(--color-secondary);
+}
+
+.black {
+  fill: var(--color-black);
+}
+
+.white {
+  fill: var(--color-white);
+}
+
+.blue {
+  fill: var(--color-blue);
+}

@@ -32,7 +32,10 @@ jobs:
 
     - name: Run tests with coverage
       run: npm run test -- --coverage
-    
+
+    - name: Run linting
+      run: npm run lint
+
     - name: Audit
       run: npm audit --production
 
