@@ -14,7 +14,7 @@ jobs:
         run: |
           bash run_robot_tests.sh
         env:
-          TEST_ACCOUNT_USERNAME:pluto.tester@eficode.invalid
+          TEST_ACCOUNT_USERNAME: pluto.tester@eficode.invalid
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
           WEB_ADDRESS: https://pluto-dev.rnd.eficode.io/
       - name: upload reports

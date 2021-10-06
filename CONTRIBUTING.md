@@ -63,9 +63,7 @@ This will close issue number 2 when the PR is merged. More info on https://docs.
 
 These instructions explain how to run the Robot Frameworks tests in the robot_tests directory locally.
 
-Prerequisites: 
--Python 3.5 or newer
--Local test account
+Prerequisites: Python 3.5 or newer, local setup with a local test account.
 
 Start by creating a Python virtual environment inside the robot_tests directory:
 ```
