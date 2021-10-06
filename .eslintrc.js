@@ -19,6 +19,7 @@ module.exports = {
   },
   plugins: [
     'react',
+    'react-hooks',
     '@typescript-eslint',
     'jest',
   ],
@@ -51,6 +52,8 @@ module.exports = {
     'react/state-in-constructor': 'off',
     'no-else-return': 0,
     'no-shadow': 0,
+    'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
+    'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
     indent: [
       'error',
       2,
@@ -69,4 +72,23 @@ module.exports = {
     'comma-dangle': [1, 'always-multiline'],
     'function-paren-newline': 'off',
   },
+  overrides: [
+    {
+      files: [
+        '**/*.stories.*',
+      ],
+      rules: {
+        'import/no-anonymous-default-export': 'off',
+        'no-console': 'off',
+      },
+    },
+    {
+      files: [
+        '**/*.test.tsx',
+      ],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+  ],
 };

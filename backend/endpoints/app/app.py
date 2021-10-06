@@ -6,8 +6,9 @@ from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_execut
     snake_case_fallback_resolvers
 from flask import request, jsonify
 
-from project_service import get_all_projects_by_org, get_all_projects_by_user, add_project_to_github, get_all_projects, \
-    get_project
+from project_service import get_all_projects_by_org, get_all_projects_by_user, add_project_to_github, \
+    get_all_projects, get_project, delete_project_from_github, update_project_data
+
 from repository_service import get_repository, add_repository_to_github
 
 BASE_ROUTE = '/api'
@@ -25,6 +26,9 @@ query.set_field('repository', get_repository)
 mutation = ObjectType("Mutation")
 mutation.set_field('createProject', add_project_to_github)
 mutation.set_field('createRepository', add_repository_to_github)
+mutation.set_field('updateDescription', update_project_data)
+mutation.set_field('deleteProject', delete_project_from_github)
+
 
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(

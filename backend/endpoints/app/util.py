@@ -14,18 +14,23 @@ def add_error(result, msg):
         result['errors'] = [msg]
 
 
+def build_result(result_field_name: str, result):
+    return {"success": True, result_field_name: result}
+
+
+def build_error_result(message: str, e: Exception):
+    log.error(message, exc_info=e)
+    return {"success": False, "errors": [message]}
+
+
 def fail_with(msg):
     return {'success': False, 'errors': [msg]}
 
 
-def query_db(field_name, func,  **kwargs):
+def query_db(result_field_name: str, dao_function, **kwargs):
     try:
-        return {"success": True,
-                field_name: func(**kwargs)}
-    except:
-        msg = f"Retrieving {field_name} failed"
-        log.exception(msg)
-        return {
-            "success": False,
-            "errors": [msg]
-        }
+        # Execute the dao method and return result
+        return build_result(result_field_name, dao_function(**kwargs))
+    except Exception as e:
+        msg = f"Retrieving {result_field_name} failed"
+        return build_error_result(msg, e)
