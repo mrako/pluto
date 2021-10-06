@@ -9,6 +9,13 @@ type Project {
     description: String
 }
 
+type Repository {
+    uuid: ID!
+    url: String!
+    name: String!
+    description: String
+}
+
 type ProjectResult {
     success: Boolean!
     errors: [String]
@@ -26,6 +33,12 @@ type DeleteProjectResult {
     errors: [String]
 }
 
+type RepositoryResult {
+    success: Boolean!
+    errors: [String]
+    repository: Repository
+}
+
 type Organisation {
     uuid: ID!
     name: String!
@@ -40,10 +53,12 @@ type Query {
     project(projectUuid: ID!): ProjectResult!
     projectByOrg(organisationUuid: ID!, projectUuid: ID!): ProjectResult!
     projectByUser(userUuid: ID!, projectUuid: ID!): ProjectResult!
+    repository(repositoryUuid: ID!): RepositoryResult!
 }
 
 type Mutation {
     createProject(name: String!, description: String): ProjectResult!
     updateDescription(description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
+    createRepository(url: String!, name: String!, description: String): RepositoryResult!
 }

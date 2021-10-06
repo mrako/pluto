@@ -1,4 +1,5 @@
 import logging as log
+from flask import current_app as app
 
 
 def github_auth_headers():
@@ -13,11 +14,14 @@ def add_error(result, msg):
         result['errors'] = [msg]
 
 
-def query_db(*args, **kwargs):
-    field_name = args[0]
+def fail_with(msg):
+    return {'success': False, 'errors': [msg]}
+
+
+def query_db(field_name, func,  **kwargs):
     try:
         return {"success": True,
-                field_name: args[1](**kwargs)}
+                field_name: func(**kwargs)}
     except:
         msg = f"Retrieving {field_name} failed"
         log.exception(msg)

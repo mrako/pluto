@@ -2,7 +2,7 @@ import logging as log
 from uuid import UUID, uuid4
 
 from api import db
-from models import Project, ProjectOwner
+from models import Project, ProjectOwner, Repository
 
 
 def find_all_projects():
@@ -50,10 +50,13 @@ def get_project(project_uuid: UUID):
         .filter(Project.uuid == project_uuid).one()
 
 
-def insert_project(name: str, description: str):
+def insert_project(name: str, description: str, repository: Repository = None):
     uuid = uuid4()
-    db.session.add(Project(uuid=uuid,
-                           name=name,
-                           description=description))
+    project = Project(uuid=uuid,
+                      name=name,
+                      description=description)
+    db.session.add(project)
+    if repository:
+        project.repositories.append(repository)
     db.session.commit()
     return get_project(uuid)
