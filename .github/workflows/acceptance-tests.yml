@@ -1,8 +1,7 @@
 name: Acceptance tests
 on:
-  workflow_run:
-    workflows: ["Development workflow"]
-    types: [completed]
+  push:
+    branches: [main, task/5-run-acceptance-tests]
 jobs:
 
   acceptance_tests:
