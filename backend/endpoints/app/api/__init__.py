@@ -15,7 +15,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 app.config["GITHUB_BASE_URL"] = "https://api.github.com/"
-app.config["GITHUB_ACCESS_TOKEN"] = os.environ.get('GITHUB_ACCESS_TOKEN')
+app.config["GITHUB_ACCESS_TOKEN"] = os.environ.get("GITHUB_ACCESS_TOKEN")
+app.config["GITHUB_ORG_NAME"] = os.environ.get("GITHUB_ORG_NAME")
 
 root = log.getLogger()
 root.setLevel(log.DEBUG)
