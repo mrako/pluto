@@ -15,7 +15,7 @@ jobs:
         env:
           TEST_ACCOUNT_USERNAME: pluto.tester@eficode.invalid
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
-          WEB_ADDRESS: https://pluto-dev.rnd.eficode.io/
+          URL: https://pluto-dev.rnd.eficode.io/
       - name: upload reports
         uses: actions/upload-artifact@v2
         if: always()
