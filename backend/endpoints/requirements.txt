@@ -6,3 +6,4 @@ flask-sqlalchemy
 ariadne
 psycopg2-binary
 requests
+gitpython
