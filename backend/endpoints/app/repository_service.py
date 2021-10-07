@@ -22,18 +22,21 @@ def add_repository_to_github(*_, url: str, name: str, description: str):
             raise Exception("Repository with given url already exists")
 
         repo = insert_repository(url, name, description, False)
-        resp = requests.post(app.config['GITHUB_BASE_URL']+"orgs/EficodeEntDemo/repos", headers=github_auth_headers(),
+        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{app.config['GITHUB_ORG_NAME']}/repos",
+                             headers=github_auth_headers(),
                              json={'url': url, 'name': name, 'body': description})
         if resp.status_code != 201:
             log.warning(f"Failed to create repository with response code {resp.status_code}: {resp.text}")
             raise Exception("Github repository creation failed")
 
         # Add repository project
-        proj = insert_project(name=f"Repository {name}-project", description="Auto-generated project for repository",
+        proj = insert_project(name=f"Repository {repo.name}-project",
+                              description="Auto-generated project for repository",
                               repository=repo,
                               commit_transaction=False)
 
-        resp = requests.post(app.config['GITHUB_BASE_URL'] + f"repos/EficodeEntDemo/{repo.name}/projects",
+        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{app.config['GITHUB_ORG_NAME']}/"
+                             f"{repo.name}/projects",
                              headers=github_auth_headers(),
                              json={'name': proj.name,
                                    'body': proj.description})
