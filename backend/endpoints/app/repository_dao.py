@@ -35,3 +35,9 @@ def insert_repository(url: str, name: str, description: str, commit_session: boo
     if commit_session:
         db.session.commit()
     return get_repository(uuid)
+
+
+def delete_repository(repository_uuid: UUID):
+    repository = get_repository(repository_uuid)
+    db.session.delete(repository)
+    db.session.commit()
