@@ -26,11 +26,12 @@ def get_repository(repository_uuid: UUID):
         .filter(Repository.uuid == repository_uuid).one()
 
 
-def insert_repository(url: str, name: str, description: str):
+def insert_repository(url: str, name: str, description: str, commit_session: bool = True):
     uuid = uuid4()
     db.session.add(Repository(uuid=uuid,
                               url=url,
                               name=name,
                               description=description))
-    db.session.commit()
+    if commit_session:
+        db.session.commit()
     return get_repository(uuid)

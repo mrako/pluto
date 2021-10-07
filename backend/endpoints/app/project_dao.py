@@ -50,7 +50,7 @@ def get_project(project_uuid: UUID):
         .filter(Project.uuid == project_uuid).one()
 
 
-def insert_project(name: str, description: str, repository: Repository = None):
+def insert_project(name: str, description: str, repository: Repository = None, commit_transaction: bool = True):
     uuid = uuid4()
     project = Project(uuid=uuid,
                       name=name,
@@ -58,7 +58,8 @@ def insert_project(name: str, description: str, repository: Repository = None):
     db.session.add(project)
     if repository:
         project.repositories.append(repository)
-    db.session.commit()
+    if commit_transaction:
+        db.session.commit()
     return get_project(uuid)
 
 

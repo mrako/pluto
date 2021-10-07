@@ -23,10 +23,6 @@ def build_error_result(message: str, e: Exception):
     return {"success": False, "errors": [message]}
 
 
-def fail_with(msg):
-    return {'success': False, 'errors': [msg]}
-
-
 def query_db(result_field_name: str, dao_function, **kwargs):
     try:
         # Execute the dao method and return result
