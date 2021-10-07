@@ -7,6 +7,8 @@ docker run --shm-size=1g \
   -e ROBOT_OPTIONS="" \
   -e BROWSER=chrome \
   -e TEST_ACCOUNT_PASSWORD=$TEST_ACCOUNT_PASSWORD \
+  -e TEST_ACCOUNT_USERNAME=$TEST_ACCOUNT_USERNAME \
+  -e URL=$URL \
   -v $(pwd)/reports:/opt/robotframework/reports:Z \
   -v $(pwd)/robot_tests:/opt/robotframework/tests:Z \
   --user $(id -u):$(id -g) \
