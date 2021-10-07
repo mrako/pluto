@@ -63,6 +63,17 @@ class Repository(Base):
     )
 
 
+class Template(Base):
+    __tablename__ = "template"
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    url = Column(String, unique=True, nullable=True)
+    path = Column(String, unique=False, nullable=False)
+    template = Column(String, unique=True, nullable=False)
+    target_name = Column(String, unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String)
+
+
 class Board(Base):
     __tablename__ = "board"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
