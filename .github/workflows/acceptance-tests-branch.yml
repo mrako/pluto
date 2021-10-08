@@ -1,4 +1,4 @@
-name: Acceptance tests
+name: Acceptance tests for feature branches
 on:
   workflow_run:
     workflows: ["Development workflow"]
