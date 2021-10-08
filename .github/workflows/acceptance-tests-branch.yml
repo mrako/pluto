@@ -3,6 +3,8 @@ on:
   workflow_run:
     workflows: ["Development workflow for feature branches"]
     types: [completed]
+  push:
+    branches: [ task/66-acceptance-tests-in-branch ]
 jobs:
 
   acceptance_tests:
