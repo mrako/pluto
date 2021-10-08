@@ -2,6 +2,9 @@ name: Development workflow for feature branches
 on:
   pull_request:
     branches: [task/66-acceptance-tests-in-branch]
+  push:
+    branches: [task/66-acceptance-tests-in-branch]
+
 jobs:
   deploy:
     strategy:

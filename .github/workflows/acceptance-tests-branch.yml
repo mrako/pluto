@@ -1,7 +1,7 @@
 name: Acceptance tests for feature branches
 on:
   workflow_run:
-    workflows: ["Development workflow"]
+    workflows: ["Development workflow for feature branches"]
     types: [completed]
 jobs:
 
