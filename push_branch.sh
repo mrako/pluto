@@ -14,5 +14,5 @@ amplify push \
 --codegen $CODEGEN \
 --yes
 
-amplify env checkout dev
+amplify env checkout evoenv
 amplify publish
