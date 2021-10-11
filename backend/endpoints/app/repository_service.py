@@ -43,7 +43,7 @@ def add_repository_to_github(*_, url: str, name: str, description: str):
 
         if resp.status_code != 201:
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
-
+        db.session.commit()
         return build_result("repository", repo)
     except Exception as e:
         db.session.rollback()

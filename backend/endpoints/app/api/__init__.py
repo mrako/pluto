@@ -17,6 +17,9 @@ db = SQLAlchemy(app)
 app.config["GITHUB_BASE_URL"] = "https://api.github.com/"
 app.config["GITHUB_ACCESS_TOKEN"] = os.environ.get("GITHUB_ACCESS_TOKEN")
 app.config["GITHUB_ORG_NAME"] = os.environ.get("GITHUB_ORG_NAME")
+app.config["WORKDIR"] = os.path.dirname(os.path.abspath(__file__))
+app.config["USERNAME"] = "AdrianMiksa"
+app.config["TEMPLATE_REPO_URL"] = "https://github.com/EficodeEntDemo/PythonTemplateTesting"
 
 root = log.getLogger()
 root.setLevel(log.DEBUG)

@@ -44,6 +44,11 @@ type DeleteRepositoryResult {
     errors: [String]
 }
 
+type RepositoryTemplateResult {
+    success: Boolean!
+    errors: [String]
+}
+
 type Organisation {
     uuid: ID!
     name: String!
@@ -67,4 +72,5 @@ type Mutation {
     deleteProject(projectUuid: ID!): DeleteProjectResult!
     createRepository(url: String!, name: String!, description: String): RepositoryResult!
     deleteRepository(repositoryUuid: ID!): DeleteRepositoryResult!
+    pushRepositoryTemplate(repo_name: String!, repo_url: String!, template: String!): RepositoryTemplateResult!
 }

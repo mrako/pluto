@@ -9,20 +9,27 @@ from git import Repo, FetchInfo
 from models import Template
 import logging as log
 import template_dao
-import repository_dao
+from ariadne import convert_kwargs_to_snake_case
 
 # u+rw,g+r
 ACCESS_RIGHTS = 0o700
+
+@convert_kwargs_to_snake_case
+def run_template_service(*_, repo_name: str, repo_url: str, template):
+    username = app.config["USERNAME"]
+    template_manager = TemplateManager(username)
+    template_manager.push_repo_template(repo_name, repo_url, template, username)
 
 
 def get_repo_name(url):
     return url.split('/')[-1]
 
 
-def get_repository_url(url, username, password):
+def get_repository_url(url, username):
+    access_token = app.config["GITHUB_ACCESS_TOKEN"]
     parts = url.split('://')
     url = parts[0] + '://' + \
-        parse.quote(username) + ':' + parse.quote(password) + '@' + parts[1]
+        parse.quote(username) + ':' + parse.quote(access_token) + '@' + parts[1]
     return url
 
 
@@ -81,10 +88,11 @@ def get_template_name(file_name):
 class TemplateManager:
 
     #todo
-    def __init__(self, repo_uuid, username, password):
-        self.repository = repository_dao.find_repository(repo_uuid)
+    def __init__(self, username):
         self.username = username
-        self.password = password
+        self.repository_url = app.config["TEMPLATE_REPO_URL"]
+        self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
+        self.workdir = app.config["WORKDIR"]
 
     def get_target_name(self, template_name, file_name):
         target_name = template_dao.find_template(template_name)
@@ -94,10 +102,10 @@ class TemplateManager:
         return file_name
 
     def refresh_templates(self):
-        workdir = self.cfg['workdir']
+        workdir = self.workdir
         prepare_work_dir(workdir)
-        repo_dir = get_repo_dir(workdir, self.repository.url)
-        repo_url = get_repository_url(self.repository.url, self.username, self.password)
+        repo_dir = get_repo_dir(workdir, self.repository_url)
+        repo_url = get_repository_url(self.repository_url, self.username)
         repo = get_repository(repo_dir, repo_url)
         pull(repo)
         return repo_dir
@@ -111,6 +119,12 @@ class TemplateManager:
             template_path = path.join(template_dir, file_name)
             if isfile(template_path):
                 templates.append(Template(
+                    name=get_template_name(file_name),
+                    path=template_path,
+                    target_name=self.get_target_name(template_name, file_name),
+                    template=template_name
+                ))
+                template_dao.insert_template(Template(
                     name=get_template_name(file_name),
                     path=template_path,
                     target_name=self.get_target_name(template_name, file_name),
@@ -149,16 +163,16 @@ class TemplateManager:
         template_dir = path.join(repo_dir + "/" + template_dir_name)
         self.recursive_copy(template_dir, target_dir)
 
-    def push_repo_template(self, project_key, repo_url, template, user, apitoken):
-        repo_url = get_repository_url(repo_url, user, apitoken)
+    def push_repo_template(self, repo_name, repo_url, template, user):
+        repo_url = get_repository_url(repo_url, user)
         tcfg = template_dao.find_all_templates()
-        workdir = path.join(tcfg['tmp_repos'], project_key)
+        workdir = path.join(self.workdir, repo_name)
         repo_dir = get_repo_dir(workdir, repo_url)
         try:
             prepare_work_dir(workdir)
             repo = get_repository(repo_dir, repo_url, checkout=False)
 
-            self.copy_template_dir(tcfg['template_dir'], repo_dir)
+            self.copy_template_dir('templates', repo_dir)
             template_path = path.join(repo_dir, self.get_target_name(template.template, template.path))
             template_content = self.get_template_content
             save_file(template_path, template_content)
