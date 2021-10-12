@@ -28,7 +28,8 @@ def handler(event, context):
         app.config['ALEMBIC']['script_location'] = 'versions'
 
         with app.app_context():
-            return alembic.upgrade()
+            alembic.upgrade()
+            return "Database migrated successfully"
     except Exception as e:
         log.exception("Running database migration failed")
         raise e

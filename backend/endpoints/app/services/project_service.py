@@ -2,8 +2,8 @@ import logging as log
 from uuid import UUID
 from ariadne import convert_kwargs_to_snake_case
 
-from project_dao import find_all_projects_by_org, find_all_projects_by_user, find_project_by_org, find_project_by_user, \
-    insert_project, find_all_projects, find_project, delete_project, update_project
+from dao.project_dao import find_all_projects, find_all_projects_by_org, find_all_projects_by_user, find_project, \
+    find_project_by_org, find_project_by_user, insert_project, update_project, delete_project
 
 
 def build_result(result_field_name: str, result):
