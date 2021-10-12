@@ -5,7 +5,7 @@ import hmac
 
 def validate_github_request_sha256(github_signature, webhook_secret, message) -> bool:
     if not webhook_secret:
-        log.error("No github webhook secret defined")
+        log.error("Github webhook_secret not defined! - Payload validation failed")
         return False
 
     github_signature = github_signature.strip()
