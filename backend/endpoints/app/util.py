@@ -1,5 +1,6 @@
 import logging as log
 from flask import current_app as app
+from multiprocessing import Process, Queue
 
 
 def github_auth_headers():
@@ -30,3 +31,4 @@ def query_db(result_field_name: str, dao_function, **kwargs):
     except Exception as e:
         msg = f"Retrieving {result_field_name} failed"
         return build_error_result(msg, e)
+
