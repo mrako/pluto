@@ -1,15 +1,34 @@
 # GraphQL endpoint(s) and Lambda functions for Pluto
 
+## The Docker images
+- Dockerfile
+  - Lambda function providing GraphQL endpoints for Pluto application
+- Dockerfile_migrations
+  - Lambda function providing the database migration support
+- Dockerfile_app_webhook
+  - Lambda function providing a REST API endpoint for receiving Github Application webhook calls (WIP)
+
+
 ## Testing locally
 
 Start the database and the lambda container
 
 ```docker-compose -f docker-compose.lambda.yml up --build```
 
+
+### Testing with github
+You need to run the app_webhook.py _locally_, NOT in the docker container, for local testing. Docker image requires 
+lambda requests to be wrapped. Look at test_events directory and `curl` examples below
+
+```
+npm install smee-client
+<whateverprefix>/node_modules/smee-client/bin/smee.js --url https://smee.io/uWatVYwaiyRN8oF --target http://localhost:8081/pluto-app
+```
+
 ## Sending GraphQL queries
 
 You can either use the lambda invocation below using the curl commands or if you're running the backend Python code
-locally utilise the Ariadne HTML UI with browser at address http://localhost:8080 
+locally utilise the Ariadne HTML UI with browser at address http://localhost:8080
 
 ### Get all projects
 ```
@@ -25,6 +44,14 @@ curl -X POST \
 -H "Content-Type: application/json" \
 -d "@./test_events/migrate_db.json" \
 "http://localhost:9001/2015-03-31/functions/function/invocations"
+```
+
+### Call Pluto app (Github) webhook endpoint
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/github_app_webhook.json" \
+"http://localhost:9002/2015-03-31/functions/function/invocations"
 ```
 
 ## Some example GraphQL query payloads
@@ -109,7 +136,7 @@ mutation {
 }
 
 ```
-### Delete project description
+### Delete project
 ```
 mutation { 
   deleteProject(projectUuid: "1b473bb9-8712-4808-b4a8-c1f03d573eae") 
