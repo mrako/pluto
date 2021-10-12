@@ -9,11 +9,31 @@ multiprocessing.set_start_method("fork")
 multiprocess_queue = Queue()
 
 
-def consume_queue(queue):
+class ExecutionContext:
+    def __init__(self):
+        log.debug("Creating context")
+
+    def __enter__(self):
+        log.debug("Entering context")
+
+    def __exit__(self):
+        log.debug("Destroying execution context")
+
+
+class Task:
+    def __init__(self):
+        pass
+
+    # Actual execution happens here, ctx provides e.g. database connections
+    def execute(self, ctx, *args):
+        pass
+
+
+def consume_queue(queue, ctx):
     try:
         while True:
-            item = queue.get_nowait()
-            item()
+            task = queue.get_nowait()
+            task.execute(ctx)
     except Empty:
         log.debug("Empty queue")
 
@@ -24,9 +44,10 @@ def create_queue_processes(queue):
         if len(queue) == 0:
             time.sleep(0.2)
             continue
-        p = Process(target=consume_queue, args=(queue,))
-        p.start()
-        p.join()
+        with ExecutionContext() as ctx:
+            p = Process(target=consume_queue, args=(queue, ctx))
+            p.start()
+            p.join()
 
 
 def start_calls_processor_thread():
@@ -35,7 +56,7 @@ def start_calls_processor_thread():
     t.start()
 
 
-def put_in_queue(item):
-    multiprocess_queue.put(item)
+def put_in_queue(task):
+    multiprocess_queue.put(task)
 
 
