@@ -59,7 +59,7 @@ def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
 
         if checkout:
             repo.create_head(branch, origin.refs[branch])  # create local branch "master" from remote "master"
-            repo.heads.master.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
+            repo.heads.main.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
             repo.heads[branch].checkout()  # checkout local "master" to working tree
         return repo
     else:
@@ -172,14 +172,23 @@ class TemplateManager:
             prepare_work_dir(workdir)
             repo = get_repository(repo_dir, repo_url, checkout=False)
 
-            self.copy_template_dir('templates', repo_dir)
-            template_path = path.join(repo_dir, self.get_target_name(template.template, template.path))
-            template_content = self.get_template_content
-            save_file(template_path, template_content)
+            if type(template) is str:
+                self.copy_template_dir(template, repo_dir)
+                #template_path = path.join(repo_dir, template)
+                #template_content = self.get_template_content
+                #save_file(template_path, template_content)
+                # template_path = get_repo_dir(self.workdir, self.repository_url)
+                # self.recursive_copy(template_path, repo_dir)
+            else:
+                # self.copy_template_dir(template, repo_dir)
+                # template_path = path.join(repo_dir, self.get_target_name(template.template, template.path))
+                # template_content = self.get_template_content
+                # save_file(template_path, template_content)
+                pass
 
             repo.git.add('--all')
             repo.git.commit(m='initial commit of Root Hub Template files')
-            repo.git.push('--set-upstream', 'origin', 'master')
+            repo.git.push('--set-upstream', 'origin', 'main')
         finally:
             log.info("Removing tmp dir {}".format(repo_dir))
             shutil.rmtree(repo_dir)
