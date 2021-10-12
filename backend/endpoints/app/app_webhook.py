@@ -5,7 +5,7 @@ import awsgi
 from flask import request
 
 from api import app
-from services.github_webhook_service import validate_github_request_sha256
+import services.github_webhook_service as service
 
 BASE_ROUTE = '/pluto-app'
 WEBHOOK_SECRET = os.environ.get('GITHUB_WEBHOOK_SECRET', None)
@@ -19,15 +19,30 @@ def handler(event, context):
 
 @app.route(BASE_ROUTE, methods=["POST"])
 def receive_github_app_webhook():
-    if not validate_github_request_sha256(
-            request.headers.get('x-hub-signature-256', None),
-            WEBHOOK_SECRET,
-            request.data):
-        return "Unauthorized", 401
+    if not app.debug:
+        if not service.validate_github_request_sha256(
+                request.headers.get('x-hub-signature-256', None),
+                WEBHOOK_SECRET,
+                request.data):
+            return "Unauthorized", 401
 
     payload = request.get_json()
-    log.info(f"Received payload {payload}")
-    return "OK", 200
+    action = payload.get('action', None)
+    try:
+        if action == "created":
+            service.register_app_installation(payload)
+        elif action == "suspend":
+            service.deactivate_app_installation(payload)
+        elif action == "unsuspend":
+            service.activate_app_installation(payload)
+        elif action == "deleted":
+            service.remove_app_installation(payload)
+        else:
+            raise Exception(f"Unknown github app webhook action {action}")
+
+        return "OK", 200
+    except Exception as e:
+        log.exception("Processing GitHub webhook action failed")
 
 
 if __name__ == "__main__":

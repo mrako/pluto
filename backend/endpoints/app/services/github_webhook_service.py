@@ -19,3 +19,19 @@ def validate_github_request_sha256(github_signature, webhook_secret, message) ->
     if not result:
         log.warning("Could not verify request signature! ({} vs. {})".format(github_signature, signature))
     return result
+
+
+def register_app_installation(payload):
+    return None
+
+
+def deactivate_app_installation(payload):
+    return None
+
+
+def activate_app_installation(payload):
+    return None
+
+
+def remove_app_installation(payload):
+    return None
