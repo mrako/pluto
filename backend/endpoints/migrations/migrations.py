@@ -24,7 +24,7 @@ def handler(event, context):
     try:
         log.info("Migrating the database schema")
         alembic = Alembic()
-        alembic.init_app(app)
+        alembic.init_app(app, run_mkdir=False)
         app.config['ALEMBIC']['script_location'] = 'versions'
 
         with app.app_context():
