@@ -29,7 +29,8 @@ def handler(event, context):
 
         with app.app_context():
             alembic.upgrade()
-            return "Database migrated successfully"
+            return {'success': True, 'message': 'Database migrated successfully'}
     except Exception as e:
-        log.exception("Running database migration failed")
-        raise e
+        message = "Running database migration failed"
+        log.exception(message)
+        return {'success': False, 'message': message}
