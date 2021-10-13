@@ -5,11 +5,16 @@ Revises:
 Create Date: 2021-10-13 16:21:05.583265
 
 """
+from uuid import UUID
+
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
+from models import DataOrigin
+
 revision = '8812fe22bb92'
 down_revision = None
 branch_labels = None
@@ -105,6 +110,14 @@ def upgrade():
     sa.PrimaryKeyConstraint('user_link_uuid', 'project_uuid')
     )
     # ### end Alembic commands ###
+
+    bind = op.get_bind()
+    session = orm.Session(bind=bind)
+    session.add(DataOrigin(
+        uuid=UUID('40cfebc8-7d7f-42cd-a9e8-c3b80ca6c77e'),
+        name='GitHub'
+    ))
+    session.commit()
 
 
 def downgrade():
