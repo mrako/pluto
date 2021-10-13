@@ -16,6 +16,7 @@ def get_repository(*_, repository_uuid: UUID):
     return query_db('repository', find_repository, repository_uuid=repository_uuid)
 
 
+@convert_kwargs_to_snake_case
 def add_repository_to_github(*_, url: str, name: str, description: str):
     try:
         if find_repository_by_url(url):
