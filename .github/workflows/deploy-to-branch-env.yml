@@ -1,0 +1,39 @@
+name: Deployment workflow for feature branches
+on:
+  pull_request:
+    branches: [task/66-acceptance-tests-in-branch]
+  push:
+    branches: [task/66-acceptance-tests-in-branch]
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        node_version: [12.x]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          ref: task/66-acceptance-tests-in-branch
+      - name: Configure AWS
+        uses: Fooji/create-aws-profile-action@v1
+        with:
+          profile: default
+          region: eu-west-1
+          key: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          secret: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: Install pipenv & Amplify CLI
+        run: |
+          pip3 install --user pipenv
+          npm install -g @aws-amplify/cli --unsafe-perm=true
+          npm ci
+      - name: Create env
+        run: |
+          bash create_env.sh
+        env:
+          ENV_NAME: ${{ github.head_ref }}
