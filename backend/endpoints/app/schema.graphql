@@ -72,5 +72,6 @@ type Mutation {
     deleteProject(projectUuid: ID!): DeleteProjectResult!
     createRepository(url: String!, name: String!, description: String): RepositoryResult!
     deleteRepository(repositoryUuid: ID!): DeleteRepositoryResult!
-    pushRepositoryTemplate(repo_name: String!, repo_url: String!, template: String!): RepositoryTemplateResult!
+    deleteAllFilesFromRepository(repo_name: String!, repo_url: String!, branch: String): RepositoryTemplateResult!
+    pushRepositoryTemplate(repo_name: String!, repo_url: String!, template: String!, branch: String): RepositoryTemplateResult!
 }

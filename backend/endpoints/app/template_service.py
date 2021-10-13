@@ -15,10 +15,16 @@ from ariadne import convert_kwargs_to_snake_case
 ACCESS_RIGHTS = 0o700
 
 @convert_kwargs_to_snake_case
-def run_template_service(*_, repo_name: str, repo_url: str, template):
+def run_template_service(*_, repo_name: str, repo_url: str, template, branch: str = 'main'):
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
-    template_manager.push_repo_template(repo_name, repo_url, template, username)
+    template_manager.push_repo_template(repo_name, repo_url, template, username, branch)
+
+@convert_kwargs_to_snake_case
+def delete_all_files_from_repository(*_, repo_name: str, repo_url: str, branch: str = 'main'):
+    username = app.config["USERNAME"]
+    template_manager = TemplateManager(username)
+    template_manager.clear_repository(repo_name, repo_url, username, branch)
 
 
 def get_repo_name(url):
@@ -40,7 +46,7 @@ def get_repo_dir(workdir, url):
 def prepare_work_dir(workdir):
     if not path.isdir(workdir):
         log.info("Creating directory {}".format(workdir))
-        os.makedirs(workdir, ACCESS_RIGHTS)
+        os.makedirs(workdir, mode=ACCESS_RIGHTS)
 
 
 def save_file(file_path, content):
@@ -58,9 +64,16 @@ def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
         origin.fetch()  # assure we actually have data. fetch() returns useful information
 
         if checkout:
-            repo.create_head(branch, origin.refs[branch])  # create local branch "master" from remote "master"
-            repo.heads.main.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
-            repo.heads[branch].checkout()  # checkout local "master" to working tree
+            if branch == 'main':
+                repo.create_head(branch, origin.refs[branch])  # create local branch "master" from remote "master"
+                repo.heads.main.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
+                repo.heads[branch].checkout()  # checkout local "master" to working tree
+            elif branch == 'master':
+                repo.create_head(branch, origin.refs[branch])  # create local branch "master" from remote "master"
+                repo.heads.master.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
+                repo.heads[branch].checkout()  # checkout local "master" to working tree
+            else:
+                return {'success': False, 'errors': ["Unsupported branch selected! Choose main or master branch."]}
         return repo
     else:
         return Repo(repo_dir)
@@ -163,14 +176,14 @@ class TemplateManager:
         template_dir = path.join(repo_dir + "/" + template_dir_name)
         self.recursive_copy(template_dir, target_dir)
 
-    def push_repo_template(self, repo_name, repo_url, template, user):
+    def push_repo_template(self, repo_name, repo_url, template, user, branch):
         repo_url = get_repository_url(repo_url, user)
         tcfg = template_dao.find_all_templates()
         workdir = path.join(self.workdir, repo_name)
         repo_dir = get_repo_dir(workdir, repo_url)
         try:
             prepare_work_dir(workdir)
-            repo = get_repository(repo_dir, repo_url, checkout=False)
+            repo = get_repository(repo_dir, repo_url, checkout=False, branch=branch)
 
             if type(template) is str:
                 self.copy_template_dir(template, repo_dir)
@@ -187,8 +200,35 @@ class TemplateManager:
                 pass
 
             repo.git.add('--all')
-            repo.git.commit(m='initial commit of Root Hub Template files')
-            repo.git.push('--set-upstream', 'origin', 'main')
+            repo.git.commit(m='initial commit of Pluto Template files')
+            repo.git.push('--set-upstream', 'origin', branch)
         finally:
             log.info("Removing tmp dir {}".format(repo_dir))
             shutil.rmtree(repo_dir)
+        return {'success': True, 'errors': []}
+
+    def clear_repository(self, repo_name, repo_url, user, branch):
+        """
+        This method deletes all files from a repository
+        """
+        repo_url = get_repository_url(repo_url, user)
+        workdir = path.join(self.workdir, repo_name)
+        repo_dir = get_repo_dir(workdir, repo_url)
+        repo = get_repository(repo_dir, repo_url, branch=branch)
+        pull(repo)
+        if not os.path.exists(repo_dir):
+            log.warning("cannot clear the repository - directory does not exist")
+        else:
+            for item in os.listdir(repo_dir):
+                src_path = path.join(repo_dir, item)
+                if os.path.isfile(src_path):
+                    os.remove(src_path)
+                    print(f"deleted {item}")
+
+                elif os.path.isdir(src_path) and item != '.git':
+                    shutil.rmtree(src_path)
+                    print(f"deleted {item}")
+        repo.git.add('--all')
+        repo.git.commit(m='initial commit of Pluto Template files')
+        repo.git.push('--set-upstream', 'origin', branch)
+        return {'success': True, 'errors': []}
