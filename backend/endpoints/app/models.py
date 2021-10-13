@@ -98,14 +98,20 @@ class Board(Base):
     )
 
 
-class ProjectOwner(Base):
-    __tablename__ = "project_owner"
+class UserLink(Base):
+    __tablename__ = "user_link"
     __table_args__ = (
-        UniqueConstraint('user_uuid', 'organisation_uuid', 'project_uuid'),
+        UniqueConstraint('user_uuid', 'project_user_uuid'),
+        UniqueConstraint('project_user_uuid', 'organisation_uuid')
     )
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_uuid = Column(UUID(as_uuid=True), ForeignKey('user_account.uuid'), nullable=False, onupdate="CASCADE")
     project_user_uuid = Column(UUID(as_uuid=True), ForeignKey('project_user.uuid'), nullable=False, onupdate="CASCADE")
     organisation_uuid = Column(UUID(as_uuid=True), ForeignKey('organisation.uuid'), onupdate="CASCADE")
-    project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), nullable=False, onupdate="CASCADE")
+
+
+class ProjectOwner(Base):
+    __tablename__ = "project_owner"
+    user_link_uuid = Column(UUID(as_uuid=True), ForeignKey('user_link.uuid'), primary_key=True, onupdate="CASCADE")
+    project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), primary_key=True, onupdate="CASCADE")
     projects = relationship("Project", order_by=Project.name)

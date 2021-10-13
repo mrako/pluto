@@ -1,8 +1,7 @@
-import logging as log
 from uuid import UUID, uuid4
 
 from api import db
-from models import Project, ProjectOwner
+from models import Project, ProjectOwner, DataOrigin, ProjectUser
 
 
 def find_all_projects():
@@ -69,3 +68,23 @@ def delete_project(project_uuid: UUID):
     project = get_project(project_uuid)
     db.session.delete(project)
     db.session.commit()
+
+
+def find_user_by_ext_id(data_origin: DataOrigin, ext_id: str):
+    return db.session.query(ProjectUser)\
+        .filter(ProjectUser.external_id == ext_id)\
+        .filter(ProjectUser.data_origin_uuid == data_origin.uuid)\
+        .one_or_none()
+
+
+def create_project_user(data_origin: DataOrigin, ext_id: str, username: str):
+    uuid = uuid4()
+    user = ProjectUser(
+        uuid=uuid,
+        data_origin_uuid=data_origin.uuid,
+        external_id=ext_id,
+        username=username
+    )
+    db.session.add(user)
+    db.session.commit()
+    return user
