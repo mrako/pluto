@@ -7,17 +7,41 @@ from sqlalchemy import Column, String, ForeignKey, UniqueConstraint
 Base = declarative_base()
 
 
+class DataOrigin(Base):
+    __tablename__ = "data_origin"
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    name = Column(String, unique=True, nullable=False)
+
+
 class User(Base):
     __tablename__ = "user_account"
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     username = Column(String, unique=True, nullable=False)
-    name = Column(String, nullable=False)
+    name = Column(String)
+
+
+class ProjectUser(Base):
+    __tablename__ = "project_user"
+    __table_args__ = (
+        UniqueConstraint('data_origin_uuid', 'external_id'),
+        UniqueConstraint('data_origin_uuid', 'username')
+    )
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    data_origin_uuid = Column(UUID(as_uuid=True), ForeignKey('data_origin.uuid'), nullable=False)
+    external_id = Column(String, nullable=False)
+    username = Column(String, nullable=False)
 
 
 class Organisation(Base):
     __tablename__ = "organisation"
+    __table_args__ = (
+        UniqueConstraint('data_origin_uuid', 'external_id'),
+        UniqueConstraint('data_origin_uuid', 'name')
+    )
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    name = Column(String, unique=True, nullable=False)
+    data_origin_uuid = Column(UUID(as_uuid=True), ForeignKey('data_origin.uuid'), nullable=False)
+    external_id = Column(String, nullable=False)
+    name = Column(String, nullable=False)
 
 
 class ProjectBoard(Base):
@@ -80,7 +104,8 @@ class ProjectOwner(Base):
         UniqueConstraint('user_uuid', 'organisation_uuid', 'project_uuid'),
     )
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    user_uuid = Column(UUID(as_uuid=True), ForeignKey('user_account.uuid'), onupdate="CASCADE")
+    user_uuid = Column(UUID(as_uuid=True), ForeignKey('user_account.uuid'), nullable=False, onupdate="CASCADE")
+    project_user_uuid = Column(UUID(as_uuid=True), ForeignKey('project_user.uuid'), nullable=False, onupdate="CASCADE")
     organisation_uuid = Column(UUID(as_uuid=True), ForeignKey('organisation.uuid'), onupdate="CASCADE")
-    project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), onupdate="CASCADE")
+    project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), nullable=False, onupdate="CASCADE")
     projects = relationship("Project", order_by=Project.name)
