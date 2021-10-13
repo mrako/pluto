@@ -9,7 +9,7 @@ services:
     ports:
       - '5432:5432'
 
-  lambda:
+  app:
     build: .
     ports:
       - 9000:8080
