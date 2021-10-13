@@ -39,7 +39,6 @@ def handler(event, context):
         app.config['ALEMBIC']['script_location'] = 'versions'
 
         with app.app_context():
-            raise Exception("foo")
             alembic.upgrade()
             return build_response({'success': True, 'message': 'Database migrated successfully'}, 200)
     except Exception as e:
