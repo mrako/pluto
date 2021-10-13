@@ -1,6 +1,7 @@
 import os
 import sys
 import logging as log
+import json
 from flask import Flask
 from flask_alembic import Alembic
 from flask_sqlalchemy import SQLAlchemy
@@ -20,6 +21,16 @@ handler.setFormatter(formatter)
 root.addHandler(handler)
 
 
+def build_response(result: dict, status_code: int):
+    return {
+        'statusCode': f"{status_code}",
+        'body': json.dumps(result),
+        'headers': {
+            'Content-Type': 'application/json',
+        }
+    }
+
+
 def handler(event, context):
     try:
         log.info("Migrating the database schema")
@@ -28,9 +39,10 @@ def handler(event, context):
         app.config['ALEMBIC']['script_location'] = 'versions'
 
         with app.app_context():
+            raise Exception("foo")
             alembic.upgrade()
-            return {'success': True, 'message': 'Database migrated successfully'}
+            return build_response({'success': True, 'message': 'Database migrated successfully'}, 200)
     except Exception as e:
         message = "Running database migration failed"
         log.exception(message)
-        return {'success': False, 'message': message}
+        return build_response({'success': False, 'message': message}, 500)
