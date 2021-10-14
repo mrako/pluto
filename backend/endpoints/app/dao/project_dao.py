@@ -1,7 +1,7 @@
 from uuid import UUID, uuid4
 
 from api import db
-from models import Project, ProjectOwner, DataOrigin, ProjectUser
+from models import Project, ProjectMember, DataOrigin, ProjectUser
 
 
 def find_all_projects():
@@ -10,15 +10,15 @@ def find_all_projects():
 
 def find_all_projects_by_org(organisation_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
-        .filter(ProjectOwner.organisation_uuid == organisation_uuid)\
+        .join(ProjectMember)\
+        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
         .all()
 
 
 def find_all_projects_by_user(user_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
-        .filter(ProjectOwner.user_uuid == user_uuid)\
+        .join(ProjectMember)\
+        .filter(ProjectMember.user_uuid == user_uuid)\
         .all()
 
 
@@ -30,17 +30,17 @@ def find_project(project_uuid: UUID):
 
 def find_project_by_org(organisation_uuid: UUID, project_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
+        .join(ProjectMember)\
         .filter(Project.uuid == project_uuid)\
-        .filter(ProjectOwner.organisation_uuid == organisation_uuid)\
+        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
         .one_or_none()
 
 
 def find_project_by_user(user_uuid: UUID, project_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
+        .join(ProjectMember)\
         .filter(Project.uuid == project_uuid)\
-        .filter(ProjectOwner.user_uuid == user_uuid)\
+        .filter(ProjectMember.user_uuid == user_uuid)\
         .one_or_none()
 
 
