@@ -10,12 +10,15 @@ from models import Template
 import logging as log
 import template_dao
 from ariadne import convert_kwargs_to_snake_case
+import stat
+import tempfile
+import time
 
 # u+rw,g+r
 ACCESS_RIGHTS = 0o700
 
 @convert_kwargs_to_snake_case
-def run_template_service(*_, repo_name: str, repo_url: str, template, branch: str = 'main'):
+def run_template_service(*_, repo_url: str, template, branch: str = 'main'):
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
     return template_manager.push_repo_template(repo_name, repo_url, template, username, branch)
@@ -42,6 +45,13 @@ def get_repository_url(url, username):
 
 def get_repo_dir(workdir, url):
     return path.join(workdir, get_repo_name(url))
+
+
+def on_rm_error( func, path, exc_info):
+    # path contains the path of the file that couldn't be removed
+    # let's just assume that it's read-only and unlink it.
+    os.chmod(path, stat.S_IWRITE)
+    os.unlink(path)
 
 
 def prepare_work_dir(workdir):
@@ -177,36 +187,25 @@ class TemplateManager:
         template_dir = path.join(repo_dir + "/" + template_dir_name)
         self.recursive_copy(template_dir, target_dir)
 
-    def push_repo_template(self, repo_name, repo_url, template, user, branch):
+    def push_repo_template(self, repo_url, template, user, branch):
         repo_url = get_repository_url(repo_url, user)
         tcfg = template_dao.find_all_templates()
-        workdir = path.join(self.workdir, repo_name)
-        repo_dir = get_repo_dir(workdir, repo_url)
+        self.workdir = tempfile.mkdtemp()
+        repo_dir = get_repo_dir(self.workdir, repo_url)
         try:
-            prepare_work_dir(workdir)
+            prepare_work_dir(self.workdir)
             repo = get_repository(repo_dir, repo_url, checkout=False)
+            self.copy_template_dir(template, repo_dir)
 
-            if type(template) is str:
-                self.copy_template_dir(template, repo_dir)
-                #template_path = path.join(repo_dir, template)
-                #template_content = self.get_template_content
-                #save_file(template_path, template_content)
-                # template_path = get_repo_dir(self.workdir, self.repository_url)
-                # self.recursive_copy(template_path, repo_dir)
-            else:
-                # self.copy_template_dir(template, repo_dir)
-                # template_path = path.join(repo_dir, self.get_target_name(template.template, template.path))
-                # template_content = self.get_template_content
-                # save_file(template_path, template_content)
-                pass
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
             repo.git.commit(m='initial commit of Pluto Template files')
             repo.git.push('--set-upstream', 'origin', branch)
         finally:
             log.info("Removing tmp dir {}".format(repo_dir))
-            shutil.rmtree(repo_dir)
-        return {'success': True, 'errors': []}
+            os.chdir(app.config["WORKDIR"])
+            shutil.rmtree(self.workdir, onerror=on_rm_error)
+            return {'success': True, 'errors': []}
 
     def clear_repository(self, repo_name, repo_url, user, branch):
         """
