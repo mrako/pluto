@@ -2,9 +2,15 @@ import os
 import sys
 import logging as log
 import json
+from os.path import dirname, abspath
+
 from flask import Flask
 from flask_alembic import Alembic
 from flask_sqlalchemy import SQLAlchemy
+
+sys.path.insert(0, dirname(dirname(abspath(__file__))) + "/app")
+sys.path.insert(0, dirname(dirname(abspath(__file__))) + "/migrations")
+sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 app = Flask(__name__)
 
