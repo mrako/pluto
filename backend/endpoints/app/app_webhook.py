@@ -43,6 +43,7 @@ def receive_github_app_webhook():
         return "OK", 200
     except Exception as e:
         log.exception("Processing GitHub webhook action failed")
+        return "Webhook processing failed", 500
 
 
 if __name__ == "__main__":

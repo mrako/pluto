@@ -70,19 +70,19 @@ def delete_project(project_uuid: UUID):
     db.session.commit()
 
 
-def find_user_by_ext_id(data_origin: DataOrigin, ext_id: str):
+def find_user_by_ext_id(data_origin: DataOrigin, ext_id):
     return db.session.query(ProjectUser)\
-        .filter(ProjectUser.external_id == ext_id)\
+        .filter(ProjectUser.external_id == f"{ext_id}")\
         .filter(ProjectUser.data_origin_uuid == data_origin.uuid)\
         .one_or_none()
 
 
-def create_project_user(data_origin: DataOrigin, ext_id: str, username: str):
+def create_project_user(data_origin: DataOrigin, ext_id, username: str):
     uuid = uuid4()
     user = ProjectUser(
         uuid=uuid,
         data_origin_uuid=data_origin.uuid,
-        external_id=ext_id,
+        external_id=f"{ext_id}",
         username=username
     )
     db.session.add(user)

@@ -45,8 +45,11 @@ def register_app_installation(payload: dict):
     organisation = None
     if account['type'] == 'Organization':
         organisation = find_or_create_org(data_origin, account)
-    project_user = find_or_create_project_user(data_origin, payload['requester'])
-    return None
+    project_user = find_or_create_project_user(data_origin, payload['sender'])
+
+    # TODO! Find out the pluto user account by some extra id added to the payload
+    # and link the org + project user with the pluto account
+    return
 
 
 def deactivate_app_installation(payload):
