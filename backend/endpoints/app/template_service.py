@@ -18,7 +18,8 @@ ACCESS_RIGHTS = 0o700
 def run_template_service(*_, repo_name: str, repo_url: str, template, branch: str = 'main'):
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
-    template_manager.push_repo_template(repo_name, repo_url, template, username, branch)
+    return template_manager.push_repo_template(repo_name, repo_url, template, username, branch)
+
 
 @convert_kwargs_to_snake_case
 def delete_all_files_from_repository(*_, repo_name: str, repo_url: str, branch: str = 'main'):
