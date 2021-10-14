@@ -12,6 +12,8 @@ from template_service import run_template_service, delete_all_files_from_reposit
 
 from repository_service import get_repository, add_repository_to_github, delete_repository_from_github
 
+from pluto_multiprocess import start_processor_thread
+
 BASE_ROUTE = '/api'
 
 query = ObjectType("Query")
@@ -61,4 +63,5 @@ def graphql_server():
 
 
 if __name__ == "__main__":
+    start_processor_thread()
     app.run("0.0.0.0", port=8080, debug=True)
