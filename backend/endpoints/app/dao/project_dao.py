@@ -1,8 +1,7 @@
-import logging as log
 from uuid import UUID, uuid4
 
 from api import db
-from models import Project, ProjectOwner
+from models import Project, ProjectMember, DataOrigin, ProjectUser
 
 
 def find_all_projects():
@@ -11,15 +10,15 @@ def find_all_projects():
 
 def find_all_projects_by_org(organisation_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
-        .filter(ProjectOwner.organisation_uuid == organisation_uuid)\
+        .join(ProjectMember)\
+        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
         .all()
 
 
 def find_all_projects_by_user(user_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
-        .filter(ProjectOwner.user_uuid == user_uuid)\
+        .join(ProjectMember)\
+        .filter(ProjectMember.user_uuid == user_uuid)\
         .all()
 
 
@@ -31,17 +30,17 @@ def find_project(project_uuid: UUID):
 
 def find_project_by_org(organisation_uuid: UUID, project_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
+        .join(ProjectMember)\
         .filter(Project.uuid == project_uuid)\
-        .filter(ProjectOwner.organisation_uuid == organisation_uuid)\
+        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
         .one_or_none()
 
 
 def find_project_by_user(user_uuid: UUID, project_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectOwner)\
+        .join(ProjectMember)\
         .filter(Project.uuid == project_uuid)\
-        .filter(ProjectOwner.user_uuid == user_uuid)\
+        .filter(ProjectMember.user_uuid == user_uuid)\
         .one_or_none()
 
 
@@ -69,3 +68,23 @@ def delete_project(project_uuid: UUID):
     project = get_project(project_uuid)
     db.session.delete(project)
     db.session.commit()
+
+
+def find_user_by_ext_id(data_origin: DataOrigin, ext_id):
+    return db.session.query(ProjectUser)\
+        .filter(ProjectUser.external_id == f"{ext_id}")\
+        .filter(ProjectUser.data_origin_uuid == data_origin.uuid)\
+        .one_or_none()
+
+
+def create_project_user(data_origin: DataOrigin, ext_id, username: str):
+    uuid = uuid4()
+    user = ProjectUser(
+        uuid=uuid,
+        data_origin_uuid=data_origin.uuid,
+        external_id=f"{ext_id}",
+        username=username
+    )
+    db.session.add(user)
+    db.session.commit()
+    return user

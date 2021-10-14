@@ -1,0 +1,9 @@
+{
+  "path": "/pluto-app",
+  "httpMethod": "POST",
+  "queryStringParameters": "",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": "{\"name\": \"test-payload\",\"description\": \"Just some stuff\"}"
+}

@@ -6,23 +6,22 @@ from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_execut
     snake_case_fallback_resolvers
 from flask import request, jsonify
 
-from project_service import get_all_projects_by_org, get_all_projects_by_user, add_project_to_github, get_all_projects, \
-    get_project, delete_project_from_github, update_project_data
+import services.project_service as project_service
 
 BASE_ROUTE = '/api'
 
 query = ObjectType("Query")
-query.set_field('projects', get_all_projects)
-query.set_field('projectsByOrg', get_all_projects_by_org)
-query.set_field('projectsByUser', get_all_projects_by_user)
-query.set_field('project', get_project)
-query.set_field('projectByOrg', get_all_projects_by_user)
-query.set_field('projectByUser', get_all_projects_by_user)
+query.set_field('projects', project_service.get_all_projects)
+query.set_field('projectsByOrg', project_service.get_all_projects_by_org)
+query.set_field('projectsByUser', project_service.get_all_projects_by_user)
+query.set_field('project', project_service.get_project)
+query.set_field('projectByOrg', project_service.get_project_by_org)
+query.set_field('projectByUser', project_service.get_project_by_user)
 
 mutation = ObjectType("Mutation")
-mutation.set_field('createProject', add_project_to_github)
-mutation.set_field('updateDescription', update_project_data)
-mutation.set_field('deleteProject', delete_project_from_github)
+mutation.set_field('createProject', project_service.add_project_to_github)
+mutation.set_field('updateDescription', project_service.update_project_data)
+mutation.set_field('deleteProject', project_service.delete_project_from_github)
 
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(
