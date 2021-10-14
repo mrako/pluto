@@ -10,15 +10,18 @@ from models import Template
 import logging as log
 import template_dao
 from ariadne import convert_kwargs_to_snake_case
+from pluto_multiprocess import execute_in_child_process
 
 # u+rw,g+r
 ACCESS_RIGHTS = 0o700
+
 
 @convert_kwargs_to_snake_case
 def run_template_service(*_, repo_name: str, repo_url: str, template, branch: str = 'main'):
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
-    return template_manager.push_repo_template(repo_name, repo_url, template, username, branch)
+    execute_in_child_process(template_manager.push_repo_template, repo_name, repo_url, template, username, branch)
+    return {'success': True, 'errors': []}
 
 
 @convert_kwargs_to_snake_case
@@ -31,13 +34,6 @@ def delete_all_files_from_repository(*_, repo_name: str, repo_url: str, branch: 
 def get_repo_name(url):
     return url.split('/')[-1]
 
-
-def get_repository_url(url, username):
-    access_token = app.config["GITHUB_ACCESS_TOKEN"]
-    parts = url.split('://')
-    url = parts[0] + '://' + \
-        parse.quote(username) + ':' + parse.quote(access_token) + '@' + parts[1]
-    return url
 
 
 def get_repo_dir(workdir, url):
@@ -104,9 +100,16 @@ class TemplateManager:
     #todo
     def __init__(self, username):
         self.username = username
+        self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
         self.repository_url = app.config["TEMPLATE_REPO_URL"]
         self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
         self.workdir = app.config["WORKDIR"]
+
+    def get_repository_url(self, url):
+        parts = url.split('://')
+        url = parts[0] + '://' + \
+              parse.quote(self.username) + ':' + parse.quote(self.access_token) + '@' + parts[1]
+        return url
 
     def get_target_name(self, template_name, file_name):
         target_name = template_dao.find_template(template_name)
@@ -119,7 +122,7 @@ class TemplateManager:
         workdir = self.workdir
         prepare_work_dir(workdir)
         repo_dir = get_repo_dir(workdir, self.repository_url)
-        repo_url = get_repository_url(self.repository_url, self.username)
+        repo_url = self.get_repository_url(self.repository_url)
         repo = get_repository(repo_dir, repo_url)
         pull(repo)
         return repo_dir
@@ -178,7 +181,7 @@ class TemplateManager:
         self.recursive_copy(template_dir, target_dir)
 
     def push_repo_template(self, repo_name, repo_url, template, user, branch):
-        repo_url = get_repository_url(repo_url, user)
+        repo_url = self.get_repository_url(repo_url)
         tcfg = template_dao.find_all_templates()
         workdir = path.join(self.workdir, repo_name)
         repo_dir = get_repo_dir(workdir, repo_url)
@@ -206,13 +209,12 @@ class TemplateManager:
         finally:
             log.info("Removing tmp dir {}".format(repo_dir))
             shutil.rmtree(repo_dir)
-        return {'success': True, 'errors': []}
 
     def clear_repository(self, repo_name, repo_url, user, branch):
         """
         This method deletes all files from a repository
         """
-        repo_url = get_repository_url(repo_url, user)
+        repo_url = self.get_repository_url(repo_url)
         workdir = path.join(self.workdir, repo_name)
         repo_dir = get_repo_dir(workdir, repo_url)
         repo = get_repository(repo_dir, repo_url, branch=branch)
