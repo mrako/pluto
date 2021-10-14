@@ -183,7 +183,7 @@ class TemplateManager:
         repo_dir = get_repo_dir(workdir, repo_url)
         try:
             prepare_work_dir(workdir)
-            repo = get_repository(repo_dir, repo_url, checkout=False, branch=branch)
+            repo = get_repository(repo_dir, repo_url, checkout=False)
 
             if type(template) is str:
                 self.copy_template_dir(template, repo_dir)
@@ -198,7 +198,7 @@ class TemplateManager:
                 # template_content = self.get_template_content
                 # save_file(template_path, template_content)
                 pass
-
+            repo.git.checkout('-b', branch)
             repo.git.add('--all')
             repo.git.commit(m='initial commit of Pluto Template files')
             repo.git.push('--set-upstream', 'origin', branch)
