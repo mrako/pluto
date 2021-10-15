@@ -17,11 +17,15 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Build, tag and push backend image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: pluto-backend
-          IMAGE_TAG: 1.0.${{ github.run_number }}-backend
+          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-backend
         run: |
           docker build ./backend/endpoints -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -39,11 +43,15 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: Build, tag and push migrations image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: pluto-backend
-          IMAGE_TAG: 1.0.${{ github.run_number }}-migrations
+          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
         run: |
           docker build -f ./backend/endpoints/Dockerfile_migrations ./backend/endpoints -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

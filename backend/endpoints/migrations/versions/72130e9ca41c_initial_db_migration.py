@@ -1,16 +1,21 @@
 """Initial db migration
 
-Revision ID: a0448417b398
+Revision ID: 72130e9ca41c
 Revises: 
-Create Date: 2021-10-05 10:47:36.402077
+Create Date: 2021-10-14 09:18:11.713121
 
 """
+from uuid import UUID
+
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'a0448417b398'
+from models import DataOrigin
+
+revision = '72130e9ca41c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,7 +29,7 @@ def upgrade():
     sa.Column('description', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('uuid')
     )
-    op.create_table('organisation',
+    op.create_table('data_origin',
     sa.Column('uuid', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('uuid'),
@@ -47,9 +52,19 @@ def upgrade():
     op.create_table('user_account',
     sa.Column('uuid', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('username', sa.String(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('name', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('uuid'),
     sa.UniqueConstraint('username')
+    )
+    op.create_table('organisation',
+    sa.Column('uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('data_origin_uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('external_id', sa.String(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.ForeignKeyConstraint(['data_origin_uuid'], ['data_origin.uuid'], ),
+    sa.PrimaryKeyConstraint('uuid'),
+    sa.UniqueConstraint('data_origin_uuid', 'external_id'),
+    sa.UniqueConstraint('data_origin_uuid', 'name')
     )
     op.create_table('project_board',
     sa.Column('project_uuid', postgresql.UUID(as_uuid=True), nullable=False),
@@ -58,17 +73,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['project_uuid'], ['project.uuid'], ),
     sa.PrimaryKeyConstraint('project_uuid', 'board_uuid')
     )
-    op.create_table('project_owner',
-    sa.Column('uuid', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('user_uuid', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('organisation_uuid', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('project_uuid', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.ForeignKeyConstraint(['organisation_uuid'], ['organisation.uuid'], ),
-    sa.ForeignKeyConstraint(['project_uuid'], ['project.uuid'], ),
-    sa.ForeignKeyConstraint(['user_uuid'], ['user_account.uuid'], ),
-    sa.PrimaryKeyConstraint('uuid'),
-    sa.UniqueConstraint('user_uuid', 'organisation_uuid', 'project_uuid')
-    )
     op.create_table('project_repository',
     sa.Column('project_uuid', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('repository_uuid', postgresql.UUID(as_uuid=True), nullable=False),
@@ -76,17 +80,56 @@ def upgrade():
     sa.ForeignKeyConstraint(['repository_uuid'], ['repository.uuid'], ),
     sa.PrimaryKeyConstraint('project_uuid', 'repository_uuid')
     )
+    op.create_table('project_user',
+    sa.Column('uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('data_origin_uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('external_id', sa.String(), nullable=False),
+    sa.Column('username', sa.String(), nullable=False),
+    sa.ForeignKeyConstraint(['data_origin_uuid'], ['data_origin.uuid'], ),
+    sa.PrimaryKeyConstraint('uuid'),
+    sa.UniqueConstraint('data_origin_uuid', 'external_id'),
+    sa.UniqueConstraint('data_origin_uuid', 'username')
+    )
+    op.create_table('user_link',
+    sa.Column('uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('user_uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('project_user_uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('organisation_uuid', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.ForeignKeyConstraint(['organisation_uuid'], ['organisation.uuid'], ),
+    sa.ForeignKeyConstraint(['project_user_uuid'], ['project_user.uuid'], ),
+    sa.ForeignKeyConstraint(['user_uuid'], ['user_account.uuid'], ),
+    sa.PrimaryKeyConstraint('uuid'),
+    sa.UniqueConstraint('project_user_uuid', 'organisation_uuid'),
+    sa.UniqueConstraint('user_uuid', 'project_user_uuid')
+    )
+    op.create_table('project_member',
+    sa.Column('user_link_uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.Column('project_uuid', postgresql.UUID(as_uuid=True), nullable=False),
+    sa.ForeignKeyConstraint(['project_uuid'], ['project.uuid'], ),
+    sa.ForeignKeyConstraint(['user_link_uuid'], ['user_link.uuid'], ),
+    sa.PrimaryKeyConstraint('user_link_uuid', 'project_uuid')
+    )
     # ### end Alembic commands ###
+
+    bind = op.get_bind()
+    session = orm.Session(bind=bind)
+    session.add(DataOrigin(
+        uuid=UUID('40cfebc8-7d7f-42cd-a9e8-c3b80ca6c77e'),
+        name='GitHub'))
+    session.commit()
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table('project_member')
+    op.drop_table('user_link')
+    op.drop_table('project_user')
     op.drop_table('project_repository')
-    op.drop_table('project_owner')
     op.drop_table('project_board')
+    op.drop_table('organisation')
     op.drop_table('user_account')
     op.drop_table('repository')
     op.drop_table('project')
-    op.drop_table('organisation')
+    op.drop_table('data_origin')
     op.drop_table('board')
     # ### end Alembic commands ###
