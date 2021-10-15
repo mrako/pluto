@@ -43,25 +43,10 @@ def get_repo_dir(workdir, url):
     return path.join(workdir, get_repo_name(url))
 
 
-def on_rm_error( func, path, exc_info):
-    # path contains the path of the file that couldn't be removed
-    # let's just assume that it's read-only and unlink it.
-    os.chmod(path, stat.S_IWRITE)
-    os.unlink(path)
-
-
 def prepare_work_dir(workdir):
     if not path.isdir(workdir):
         log.info("Creating directory {}".format(workdir))
         os.makedirs(workdir, mode=ACCESS_RIGHTS)
-
-
-def save_file(file_path, content):
-    if not path.exists(file_path):
-        with open(file_path, 'w') as file:
-            file.write(content)
-    else:
-        raise Exception("ERROR: Path {} already exists!".format(file_path))
 
 
 def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
@@ -107,7 +92,6 @@ def get_template_name(file_name):
 
 class TemplateManager:
 
-    #todo
     def __init__(self, username):
         self.username = username
         self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
@@ -136,28 +120,6 @@ class TemplateManager:
         repo = get_repository(repo_dir, repo_url)
         pull(repo)
         return repo_dir
-
-    def get_templates(self, template_name):
-        repo_dir = self.refresh_templates()
-        template_dir = path.join(repo_dir + "/" + template_name)
-
-        templates = []
-        for file_name in listdir(template_dir):
-            template_path = path.join(template_dir, file_name)
-            if isfile(template_path):
-                templates.append(Template(
-                    name=get_template_name(file_name),
-                    path=template_path,
-                    target_name=self.get_target_name(template_name, file_name),
-                    template=template_name
-                ))
-                template_dao.insert_template(Template(
-                    name=get_template_name(file_name),
-                    path=template_path,
-                    target_name=self.get_target_name(template_name, file_name),
-                    template=template_name
-                ))
-        return templates
 
     def get_template_content(self, template_path):
         self.refresh_templates()
