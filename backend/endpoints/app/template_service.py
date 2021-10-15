@@ -150,7 +150,6 @@ class TemplateManager:
     def push_repo_template(self, repo_url, template, branch):
         repo_url = self.get_repository_url(repo_url)
         with tempfile.TemporaryDirectory() as tmpdirname:
-            self.workdir = tmpdirname
             repo_dir = get_repo_dir(tmpdirname, repo_url)
             prepare_work_dir(tmpdirname)
             repo = get_repository(repo_dir, repo_url, checkout=False)
