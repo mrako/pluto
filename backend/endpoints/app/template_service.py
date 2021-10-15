@@ -28,10 +28,11 @@ def run_template_service(*_, repo_url: str, template, branch: str = 'main'):
 
 
 @convert_kwargs_to_snake_case
-def delete_all_files_from_repository(*_, repo_name: str, repo_url: str, branch: str = 'main'):
+def delete_all_files_from_repository(*_: object, repo_name: str, repo_url: str, branch: str = 'main') -> dict:
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
-    template_manager.clear_repository(repo_name, repo_url, branch)
+    execute_in_child_process(template_manager.clear_repository, repo_name, repo_url, branch)
+    return {'success': True, 'errors': []}
 
 
 def get_repo_name(url):
@@ -42,25 +43,10 @@ def get_repo_dir(workdir, url):
     return path.join(workdir, get_repo_name(url))
 
 
-def on_rm_error( func, path, exc_info):
-    # path contains the path of the file that couldn't be removed
-    # let's just assume that it's read-only and unlink it.
-    os.chmod(path, stat.S_IWRITE)
-    os.unlink(path)
-
-
 def prepare_work_dir(workdir):
     if not path.isdir(workdir):
         log.info("Creating directory {}".format(workdir))
         os.makedirs(workdir, mode=ACCESS_RIGHTS)
-
-
-def save_file(file_path, content):
-    if not path.exists(file_path):
-        with open(file_path, 'w') as file:
-            file.write(content)
-    else:
-        raise Exception("ERROR: Path {} already exists!".format(file_path))
 
 
 def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
@@ -106,7 +92,6 @@ def get_template_name(file_name):
 
 class TemplateManager:
 
-    #todo
     def __init__(self, username):
         self.username = username
         self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
@@ -135,28 +120,6 @@ class TemplateManager:
         repo = get_repository(repo_dir, repo_url)
         pull(repo)
         return repo_dir
-
-    def get_templates(self, template_name):
-        repo_dir = self.refresh_templates()
-        template_dir = path.join(repo_dir + "/" + template_name)
-
-        templates = []
-        for file_name in listdir(template_dir):
-            template_path = path.join(template_dir, file_name)
-            if isfile(template_path):
-                templates.append(Template(
-                    name=get_template_name(file_name),
-                    path=template_path,
-                    target_name=self.get_target_name(template_name, file_name),
-                    template=template_name
-                ))
-                template_dao.insert_template(Template(
-                    name=get_template_name(file_name),
-                    path=template_path,
-                    target_name=self.get_target_name(template_name, file_name),
-                    template=template_name
-                ))
-        return templates
 
     def get_template_content(self, template_path):
         self.refresh_templates()
@@ -208,23 +171,24 @@ class TemplateManager:
         This method deletes all files from a repository
         """
         repo_url = self.get_repository_url(repo_url)
-        workdir = path.join(self.workdir, repo_name)
-        repo_dir = get_repo_dir(workdir, repo_url)
-        repo = get_repository(repo_dir, repo_url, branch=branch)
-        pull(repo)
-        if not os.path.exists(repo_dir):
-            log.warning("cannot clear the repository - directory does not exist")
-        else:
-            for item in os.listdir(repo_dir):
-                src_path = path.join(repo_dir, item)
-                if os.path.isfile(src_path):
-                    os.remove(src_path)
-                    print(f"deleted {item}")
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            workdir = path.join(tmpdirname, repo_name)
+            repo_dir = get_repo_dir(workdir, repo_url)
+            repo = get_repository(repo_dir, repo_url, branch=branch)
+            pull(repo)
+            if not os.path.exists(repo_dir):
+                log.warning("cannot clear the repository - directory does not exist")
+            else:
+                for item in os.listdir(repo_dir):
+                    src_path = path.join(repo_dir, item)
+                    if os.path.isfile(src_path):
+                        os.remove(src_path)
+                        print(f"deleted {item}")
 
-                elif os.path.isdir(src_path) and item != '.git':
-                    shutil.rmtree(src_path)
-                    print(f"deleted {item}")
-        repo.git.add('--all')
-        repo.git.commit(m='initial commit of Pluto Template files')
-        repo.git.push('--set-upstream', 'origin', branch)
-        return {'success': True, 'errors': []}
+                    elif os.path.isdir(src_path) and item != '.git':
+                        shutil.rmtree(src_path)
+                        print(f"deleted {item}")
+            repo.git.add('--all')
+            repo.git.commit(m='initial commit of Pluto Template files')
+            repo.git.push('--set-upstream', 'origin', branch)
+
