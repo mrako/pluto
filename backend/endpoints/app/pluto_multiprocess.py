@@ -1,11 +1,14 @@
 import logging as log
-import time
+import time, platform
 import multiprocessing
 from multiprocessing import Process, Queue
 from queue import Empty
 from threading import Thread
 
-multiprocessing.set_start_method("fork")
+# For local development on Macs
+if platform.system() == "Darwin":
+    multiprocessing.set_start_method("fork")
+
 multiprocess_queue = Queue()
 
 
