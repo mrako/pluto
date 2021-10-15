@@ -2,15 +2,10 @@ import os
 import os.path as path
 import shutil
 import urllib.parse as parse
-from os.path import isfile
-from os import listdir
 from flask import current_app as app
 from git import Repo, FetchInfo
-from models import Template
 import logging as log
-import template_dao
 from ariadne import convert_kwargs_to_snake_case
-import stat
 import tempfile
 from pluto_multiprocess import execute_in_child_process
 
