@@ -38,7 +38,6 @@ def get_repo_name(url):
     return url.split('/')[-1]
 
 
-
 def get_repo_dir(workdir, url):
     return path.join(workdir, get_repo_name(url))
 
@@ -192,10 +191,9 @@ class TemplateManager:
 
     def push_repo_template(self, repo_url, template, branch):
         repo_url = self.get_repository_url(repo_url)
-        self.workdir = tempfile.mkdtemp()
-        repo_dir = get_repo_dir(self.workdir, repo_url)
-        try:
-            prepare_work_dir(self.workdir)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            repo_dir = get_repo_dir(tmpdirname, repo_url)
+            prepare_work_dir(tmpdirname)
             repo = get_repository(repo_dir, repo_url, checkout=False)
             self.copy_template_dir(template, repo_dir)
 
@@ -203,9 +201,6 @@ class TemplateManager:
             repo.git.add('--all')
             repo.git.commit(m='initial commit of Pluto Template files')
             repo.git.push('--set-upstream', 'origin', branch)
-        finally:
-            log.info("Removing tmp dir {}".format(repo_dir))
-            shutil.rmtree(self.workdir, onerror=on_rm_error)
 
     def clear_repository(self, repo_name, repo_url, branch):
         """
