@@ -39,6 +39,13 @@ curl -X POST \
 "http://localhost:8081/pluto-app"
 ```
 
+### Test Cognito post confirmation event test endpoint
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/direct_payloads/app_post_confirmation.json" \
+"http://localhost:8083/post-confirm"
+```
 
 ## Invoking lambda functions inside running docker container
 You can do lambda invocations by using the curl commands below against running docker containers. If you're in need to
@@ -61,6 +68,7 @@ curl -X POST \
 -d "@./test_events/lambda_invocations/migrate_db.json" \
 "http://localhost:9001/2015-03-31/functions/function/invocations"
 ```
+
 
 ### Call Pluto app (Github) webhook endpoint
 ```
