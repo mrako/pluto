@@ -2,7 +2,6 @@ import logging as log
 import time, platform
 import multiprocessing
 from multiprocessing import Process, Queue
-from queue import Empty
 from threading import Thread
 
 # For local development on Macs
@@ -13,12 +12,12 @@ multiprocess_queue = Queue()
 
 
 def consume_queue(queue):
-    try:
-        while True:
-            func, *args = queue.get_nowait()
+    while not queue.empty():
+        func, *args = queue.get_nowait()
+        try:
             func(*args)
-    except Empty:
-        log.debug("Empty queue")
+        except Exception as e:
+            log.error(e)
 
 
 # Loop forever and kick up a new process to consume contents of queue
