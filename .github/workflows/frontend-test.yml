@@ -23,10 +23,11 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-
-    - name: Create a dummy aws config file
-      run: echo -e "const awsmobile = {};\nexport default awsmobile;" > ./src/aws-exports.js
-
+    - uses: "finnp/create-file-action@master"
+      env:
+        FILE_NAME: "src/aws-exports.js"
+        FILE_DATA: "const awsmobile = {aws_project_region: '', aws_user_pools_id: '', aws_cognito_identity_pool_id: '', aws_user_pools_web_client_id: ''};\nexport default awsmobile;"
+    
     - name: Install dependencies
       run: npm ci
 

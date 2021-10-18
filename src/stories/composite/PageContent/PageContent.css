@@ -1,0 +1,10 @@
+.page-content {
+  min-height: calc(100vh - var(--top-navigation-height));
+  max-height: calc(100vh - var(--top-navigation-height));
+  overflow-y: scroll;
+  padding: 24px;
+  padding-bottom: 0px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
