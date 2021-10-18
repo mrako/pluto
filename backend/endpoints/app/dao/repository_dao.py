@@ -2,7 +2,7 @@ import logging as log
 from uuid import UUID, uuid4
 
 from api import db
-from models import Repository, ProjectRepository
+from models import Repository
 
 
 def find_all_repositories():

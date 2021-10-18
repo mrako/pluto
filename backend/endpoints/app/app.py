@@ -6,8 +6,7 @@ from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_execut
     snake_case_fallback_resolvers
 from flask import request, jsonify
 
-import services.project_service as project_service
-import repository_service, template_service
+from services import project_service, repository_service, template_service
 
 from pluto_multiprocess import start_processor_thread
 
