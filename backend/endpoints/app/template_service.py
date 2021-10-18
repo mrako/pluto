@@ -100,13 +100,6 @@ class TemplateManager:
               parse.quote(self.username) + ':' + parse.quote(self.access_token) + '@' + parts[1]
         return url
 
-    def get_target_name(self, template_name, file_name):
-        target_name = template_dao.find_template(template_name)
-        if target_name.target_name:
-            return target_name
-
-        return file_name
-
     def refresh_templates(self):
         workdir = self.workdir
         prepare_work_dir(workdir)
