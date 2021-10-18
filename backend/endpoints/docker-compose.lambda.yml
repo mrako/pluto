@@ -9,7 +9,7 @@ services:
     ports:
       - '5432:5432'
 
-  lambda:
+  app:
     build: .
     ports:
       - 9000:8080
@@ -33,3 +33,25 @@ services:
       - db
     links:
       - db
+
+  github_webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile_app_webhook
+    ports:
+      - 9002:8080
+    environment:
+      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      PYTHONUNBUFFERED: 'TRUE'
+      FLASK_APP: 'app_webhook.py'
+
+  post_confirmation:
+    build:
+      context: .
+      dockerfile: Dockerfile_post_confirmation_hook
+    ports:
+      - 9003:8080
+    environment:
+      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      PYTHONUNBUFFERED: 'TRUE'
+      FLASK_APP: 'app_post_confirmation.py'

@@ -1,7 +1,8 @@
 name: Acceptance tests
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["Development workflow"]
+    types: [completed]
 jobs:
 
   acceptance_tests:
@@ -13,7 +14,9 @@ jobs:
         run: |
           bash run_robot_tests.sh
         env:
+          TEST_ACCOUNT_USERNAME: pluto.tester@eficode.invalid
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+          URL: https://pluto-dev.rnd.eficode.io/
       - name: upload reports
         uses: actions/upload-artifact@v2
         if: always()

@@ -1,0 +1,10 @@
+{
+    "request": {
+        "userAttributes": {
+            "username": "user@example.com",
+            "email": "user@example.com",
+            "email_verified": true
+        }
+    },
+    "response": {}
+}

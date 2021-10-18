@@ -8,7 +8,7 @@ from util import query_db, github_auth_headers, build_result, build_error_result
 from ariadne import convert_kwargs_to_snake_case
 
 from repository_dao import find_repository, insert_repository, delete_repository, find_repository_by_url
-from project_dao import insert_project
+from dao.project_dao import insert_project
 
 
 @convert_kwargs_to_snake_case
