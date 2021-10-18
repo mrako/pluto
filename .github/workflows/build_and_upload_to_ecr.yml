@@ -29,7 +29,7 @@ jobs:
         run: |
           for i in $(seq 10)
           do
-            docker build -f ./backend/endpoints/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && break 1
+            docker build -f ./backend/endpoints/Dockerfile ./backend/endpoints/ -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && break 1
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
