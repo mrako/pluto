@@ -17,7 +17,7 @@ def consume_queue(queue):
         try:
             func(*args)
         except Exception as e:
-            log.error(e)
+            log.exception(e)
 
 
 # Loop forever and kick up a new process to consume contents of queue
