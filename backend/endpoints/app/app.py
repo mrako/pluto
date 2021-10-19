@@ -1,14 +1,14 @@
 import awsgi
 from ariadne.constants import PLAYGROUND_HTML
 
-from api import app
+from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
     snake_case_fallback_resolvers
 from flask import request, jsonify
 
 import services.project_service as project_service
 
-BASE_ROUTE = '/api'
+BASE_PATH = BASE_ROUTE + 'api'
 
 query = ObjectType("Query")
 query.set_field('projects', project_service.get_all_projects)
@@ -33,12 +33,12 @@ def handler(event, context):
     return awsgi.response(app, event, context)
 
 
-@app.route(BASE_ROUTE, methods=["GET"])
+@app.route(BASE_PATH, methods=["GET"])
 def graphql_playground():
     return PLAYGROUND_HTML, 200
 
 
-@app.route(BASE_ROUTE, methods=["POST"])
+@app.route(BASE_PATH, methods=["POST"])
 def graphql_server():
     success, result = graphql_sync(
         schema,
