@@ -1,4 +1,4 @@
-name: Build and deploy to ECR
+name: Build and deploy lambdas
 on:
   push:
     branches: [main]
@@ -33,6 +33,16 @@ jobs:
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Update pluto-development-api lambda
+        run: |
+          bash deploy_lambda.sh
+        env:
+          ECR_URL: ${{ steps.login-ecr.outputs.registry }}
+          FUNCTION_NAME: pluto-development-api
+          ALIAS: development
+          DESCRIPTION: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-api
+          ECR_REPO: pluto-backend
+          ECR_IMAGE: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-api
   build-migrations:
     runs-on: ubuntu-latest
     steps:
@@ -63,3 +73,14 @@ jobs:
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Update pluto-development-migrations lambda
+        run: |
+          bash deploy_lambda.sh
+        env:
+          ECR_URL: ${{ steps.login-ecr.outputs.registry }}
+          FUNCTION_NAME: pluto-development-migrations
+          ALIAS: development
+          DESCRIPTION: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
+          ECR_REPO: pluto-backend
+          ECR_IMAGE: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
+  
