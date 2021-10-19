@@ -17,6 +17,13 @@ type Organisation {
     installationId: String!
 }
 
+type User {
+    uuid: ID!
+    username: String!
+    email: String!
+    name: String
+}
+
 type ProjectUser {
     uuid: ID!
     dataOrigin: String!
@@ -43,9 +50,10 @@ type DeleteProjectResult {
     errors: [String]
 }
 
-type ProjectUserResult {
+type BindUserResult {
     success: Boolean!
     errors: [String]
+    userAccount: User
     projectUser: ProjectUser
     organisation: Organisation
 }
@@ -63,5 +71,5 @@ type Mutation {
     createProject(name: String!, description: String): ProjectResult!
     updateDescription(projectUuid: ID!, description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
-    bindPlutoUser(installationId: ID!, plutoUserUUID: ID!): ProjectUserResult
+    bindPlutoUser(installationId: ID!, plutoUserUUID: ID!): BindUserResult
 }

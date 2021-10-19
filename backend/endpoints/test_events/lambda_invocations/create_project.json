@@ -1,9 +1,11 @@
 {
-  "path": "/projects",
+  "path": "/api",
   "httpMethod": "POST",
   "queryStringParameters": "",
   "headers": {
     "content-type": "application/json"
   },
-  "body": "{\"name\": \"another-project\",\"description\": \"Eficode Pluto\"}"
+  "body": "mutation {createProject(name: \"test-project\", description: \"This is my awesome project\"){success errors project { name description }}}"
 }
+
+

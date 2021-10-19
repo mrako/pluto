@@ -77,6 +77,11 @@ def find_user_by_ext_id(data_origin: DataOrigin, ext_id):
         .one_or_none()
 
 
+def get_user_by_installation_id(installation_id):
+    return db.session.query(ProjectUser)\
+        .filter(ProjectUser.installation_id == f"{installation_id}").one()
+
+
 def create_project_user(data_origin: DataOrigin, installation_id: int, ext_id, username: str):
     uuid = uuid4()
     user = ProjectUser(

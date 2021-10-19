@@ -4,10 +4,16 @@ from ariadne import convert_kwargs_to_snake_case
 
 import dao.project_dao as dao
 import dao.user_dao as user_dao
+from dao import project_dao, organisation_dao
 
 
 def build_result(result_field_name: str, result):
     return {"success": True, result_field_name: result}
+
+
+def build_result_from_dict(result_dict: dict):
+    result = {"success": True} | result_dict
+    return result
 
 
 def build_error_result(message: str, e: Exception):
@@ -16,14 +22,14 @@ def build_error_result(message: str, e: Exception):
 
 
 def query_db(result_field_name: str, dao_function, **kwargs):
-    execute_db(result_field_name, dao_function, operation='Retrieving', **kwargs)
+    return execute_db(result_field_name, dao_function, operation='Retrieving', **kwargs)
 
 
 def update_db(result_field_name: str, dao_function, **kwargs):
-    execute_db(result_field_name, dao_function, operation='Updating', **kwargs)
+    return execute_db(result_field_name, dao_function, operation='Updating', **kwargs)
 
 
-def execute_db(result_field_name: str, dao_function, operation:str = 'Querying', **kwargs):
+def execute_db(result_field_name: str, dao_function, operation: str = 'Querying', **kwargs):
     try:
         # Execute the dao method and return result
         return build_result(result_field_name, dao_function(**kwargs))
@@ -90,6 +96,18 @@ def delete_project_from_github(*_, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def bind_user_to_installation(*_, installation_id: str, pluto_user_id: UUID):
+def bind_user_to_installation(*_, installation_id: str, pluto_user_uuid: UUID):
+    try:
+        user = user_dao.get_user(pluto_user_uuid)
+        project_user = project_dao.get_user_by_installation_id(installation_id)
+        org = organisation_dao.get_by_installation_id(installation_id)
+        user_dao.bind_users(pluto_user_uuid=user.uuid,
+                                   project_user_uuid=project_user.uuid,
+                                   organisation_uuid=org.uuid)
+        return build_result_from_dict({'user_account': user,
+                                       'project_user': project_user,
+                                       'organisation': org})
+    except Exception as e:
+        msg = f"Binding pluto user {pluto_user_uuid} to installation {installation_id} failed"
+        return build_error_result(msg, e)
 
-    return update_db('projectUser', user_dao.bind_users, installation_id=installation_id, pluto_user_id=pluto_user_id)
