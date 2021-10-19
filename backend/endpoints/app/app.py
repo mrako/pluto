@@ -22,6 +22,7 @@ mutation = ObjectType("Mutation")
 mutation.set_field('createProject', project_service.add_project_to_github)
 mutation.set_field('updateDescription', project_service.update_project_data)
 mutation.set_field('deleteProject', project_service.delete_project_from_github)
+mutation.set_field('bindPlutoUser', project_service.bind_project_user)
 
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(

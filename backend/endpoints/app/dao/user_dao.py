@@ -1,7 +1,7 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from api import db
-from models import User
+from models import User, UserLink
 
 
 def create_user(username: str, email: str, name: str):
@@ -15,3 +15,9 @@ def create_user(username: str, email: str, name: str):
     db.session.add(user)
     db.session.commit()
     return user
+
+
+def bind_users(pluto_user_id: UUID, project_user: UUID, organisation: UUID = None):
+    uuid = uuid4()
+    link = UserLink(uuid=uuid,
+                    )
