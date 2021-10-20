@@ -31,6 +31,9 @@ class ProjectUser(Base):
     data_origin_uuid = Column(UUID(as_uuid=True), ForeignKey('data_origin.uuid'), nullable=False)
     external_id = Column(String, nullable=False)
     installation_id = Column(String, nullable=False)
+    code = Column(String)
+    personal_access_token = Column(String)
+    refresh_token = Column(String)
     username = Column(String, nullable=False)
     email = Column(String)
 
