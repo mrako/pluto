@@ -32,12 +32,14 @@ export default function Home(): ReactElement {
       <h2>Welcome to Pluto</h2>
       <div className="home-cards">
         <Card
+          id="new-project"
           title="Create new project"
           subtitle="You can create a new project and repository effortlessly using our ready made templates"
           action={newProject}
           actionTitle="Create New Project"
         />
         <Card
+          id="install-pluto-app"
           title="Install Pluto App"
           subtitle="You have installed the Pluto Github App successfully!"
           titleIcon="checkmark"
@@ -48,6 +50,7 @@ export default function Home(): ReactElement {
         {loading ? 'Loading...' : projects.map((project):ReactElement => (
           <Card
             key={project.uuid}
+            id={`${project.name}-card`}
             title={project.name}
             subtitle={project.description}
             action={() => goToProject(project.uuid)}
