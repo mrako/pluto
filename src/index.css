@@ -35,7 +35,13 @@ code {
   --color-primary-disabled: var(--color-grey);
   --color-red: #f3475b;
   --color-green: #39b54a;
-  --default-border-radius: 3px;
+}
+
+:root {
+  --color-primary-text: #333333;
+  --color-error: #ED0004;
   --font-family: 'Lato', sans-serif, 'Helvetica', 'Arial';
   --default-font-size: 16px;
+  --top-navigation-height: 77px;
+  --default-border-radius: 0px;
 }

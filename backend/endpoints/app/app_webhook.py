@@ -4,10 +4,10 @@ import os
 import awsgi
 from flask import request
 
-from api import app
+from api import app, BASE_ROUTE
 import services.github_webhook_service as service
 
-BASE_ROUTE = '/pluto-app'
+BASE_PATH = BASE_ROUTE + 'pluto-app'
 WEBHOOK_SECRET = os.environ.get('GITHUB_WEBHOOK_SECRET', None)
 if not WEBHOOK_SECRET:
     log.error("GITHUB_WEBHOOK_SECRET environment variable not defined!")
@@ -17,7 +17,7 @@ def handler(event, context):
     return awsgi.response(app, event, context)
 
 
-@app.route(BASE_ROUTE, methods=["POST"])
+@app.route(BASE_PATH, methods=["POST"])
 def receive_github_app_webhook():
     if not app.debug:
         if not service.validate_github_request_sha256(

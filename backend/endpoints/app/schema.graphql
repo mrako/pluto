@@ -16,6 +16,30 @@ type Repository {
     description: String
 }
 
+type Organisation {
+    uuid: ID!
+    dataOrigin: String!
+    externalId: String!
+    name: String!
+    installationId: String!
+}
+
+type User {
+    uuid: ID!
+    username: String!
+    email: String!
+    name: String
+}
+
+type ProjectUser {
+    uuid: ID!
+    dataOrigin: String!
+    externalId: String!
+    username: String!
+    installationId: String!
+    email: String
+}
+
 type ProjectResult {
     success: Boolean!
     errors: [String]
@@ -49,11 +73,12 @@ type RepositoryTemplateResult {
     errors: [String]
 }
 
-type Organisation {
-    uuid: ID!
-    name: String!
-    owner: String!
-    description: String
+type BindUserResult {
+    success: Boolean!
+    errors: [String]
+    userAccount: User
+    projectUser: ProjectUser
+    organisation: Organisation
 }
 
 type Query {
@@ -74,4 +99,5 @@ type Mutation {
     deleteRepository(repositoryUuid: ID!): DeleteRepositoryResult!
     deleteAllFilesFromRepository(repo_name: String!, repo_url: String!, branch: String): RepositoryTemplateResult!
     pushRepositoryTemplate(repo_url: String!, template: String!, branch: String): RepositoryTemplateResult!
+    bindPlutoUser(installationId: ID!, plutoUserUUID: ID!): BindUserResult
 }

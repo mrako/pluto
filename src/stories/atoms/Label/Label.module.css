@@ -1,0 +1,18 @@
+.label {
+  font-family: var(--font-family);
+  color: var(--color-primary-text);
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 17px;
+  display: flex;
+  align-items: center;
+}
+
+.disabled-label {
+  color: var(--color-grey);
+}
+
+.label span {
+  margin-right: 10px;
+}

@@ -5,6 +5,11 @@ export interface IUser {
   emailVerified: boolean,
   sub: string,
 }
+export interface IProject {
+  name: string,
+  description?: string,
+  uuid: string,
+}
 
 // Infer the `RootState type from the store itself
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;

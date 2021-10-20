@@ -1,11 +1,11 @@
 import logging as log
 
-from api import app
+from api import app, BASE_ROUTE
 from flask import request
 from services import cognito_service
 from services.cognito_service import InvalidUserException
 
-BASE_ROUTE = '/post-confirm'
+BASE_PATH = BASE_ROUTE + 'post-confirm'
 
 
 def handler(event, context):
@@ -28,7 +28,7 @@ def receive_aws_post_confirmation_hook(event):
         raise Exception("Post confirmation hook failed")
 
 
-@app.route(BASE_ROUTE, methods=["POST"])
+@app.route(BASE_PATH, methods=["POST"])
 def test_endpoint():
     payload = request.get_json()
     log.info(f"PAYLOAD {payload}")

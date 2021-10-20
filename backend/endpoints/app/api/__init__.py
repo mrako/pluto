@@ -9,6 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 CORS(app)
 
+BASE_ROUTE = os.environ.get('BASE_ROUTE', '/')
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL',
                                                        'postgresql://postgres:postgres@localhost:5432/postgres')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

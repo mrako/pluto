@@ -1,7 +1,7 @@
 import awsgi
 from ariadne.constants import PLAYGROUND_HTML
 
-from api import app
+from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
     snake_case_fallback_resolvers
 from flask import request, jsonify
@@ -11,7 +11,7 @@ from services import project_service, repository_service, template_service
 from pluto_multiprocess import start_processor_thread
 
 
-BASE_ROUTE = '/api'
+BASE_PATH = BASE_ROUTE + 'api'
 
 query = ObjectType("Query")
 
@@ -34,7 +34,7 @@ mutation.set_field('deleteAllFilesFromRepository', template_service.delete_all_f
 
 
 mutation = ObjectType("Mutation")
-
+mutation.set_field('bindPlutoUser', project_service.bind_user_to_installation)
 
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(
@@ -46,12 +46,12 @@ def handler(event, context):
     return awsgi.response(app, event, context)
 
 
-@app.route(BASE_ROUTE, methods=["GET"])
+@app.route(BASE_PATH, methods=["GET"])
 def graphql_playground():
     return PLAYGROUND_HTML, 200
 
 
-@app.route(BASE_ROUTE, methods=["POST"])
+@app.route(BASE_PATH, methods=["POST"])
 def graphql_server():
     success, result = graphql_sync(
         schema,

@@ -2,30 +2,60 @@ import React, { ReactElement } from 'react';
 import Amplify from 'aws-amplify';
 import { Provider } from 'react-redux';
 import {
-  BrowserRouter, Route, Switch,
+  Router, Redirect, Route, Switch,
 } from 'react-router-dom';
-import PrivateRoute from './components/PrivateRoute/PrivateRoute';
+import history from 'customHistory';
+import PrivateRoute from './views/PrivateRoute/PrivateRoute';
 import store from './store/configureStore';
 import config from './aws-exports';
-import './App.css';
-import Login from './components/Login/Login';
-import LoggedInView from './components/LoggedInView/LoggedInView';
+import Login from './views/Login/Login';
+import Home from './views/Home/Home';
+import CreateProject from './views/CreateProject/CreateProject';
+import Project from './views/Project/Project';
 
-Amplify.configure(config);
+const amplifyConfig = {
+  Auth: {
+    mandatorySignIn: true,
+    region: config.aws_project_region,
+    userPoolId: config.aws_user_pools_id,
+    identityPoolId: config.aws_cognito_identity_pool_id,
+    userPoolWebClientId: config.aws_user_pools_web_client_id,
+  },
+  API: {
+    endpoints: [
+      {
+        name: 'api',
+        region: process.env.REACT_APP_REGION,
+        endpoint: process.env.REACT_APP_PROJECT_API_URL,
+      },
+    ],
+  },
+};
+
+Amplify.configure(amplifyConfig);
 
 function App(): ReactElement {
   return (
     <Provider store={store}>
-      <BrowserRouter>
+      <Router history={history}>
         <Switch>
-          <PrivateRoute exact path="/">
-            <LoggedInView />
+          <PrivateRoute exact path="/home">
+            <Home />
           </PrivateRoute>
-          <Route path="/login/">
+          <PrivateRoute exact path="/project/create">
+            <CreateProject />
+          </PrivateRoute>
+          <PrivateRoute exact path="/project/:uuid">
+            <Project />
+          </PrivateRoute>
+          <Route exact path="/login">
             <Login />
           </Route>
+          <Route>
+            <Redirect to="/home" />
+          </Route>
         </Switch>
-      </BrowserRouter>
+      </Router>
     </Provider>
   );
 }
