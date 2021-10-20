@@ -24,3 +24,19 @@ services:
       - db
     links:
       - db
+
+dbsetup:
+    build:
+      context: .
+      dockerfile: Dockerfile_db_setup
+    ports:
+      - 9004:8080
+    environment:
+      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      PYTHONUNBUFFERED: 'TRUE'
+      FLASK_APP: 'migrations.py'
+    restart: on-failure
+    depends_on:
+      - db
+    links:
+      - db
