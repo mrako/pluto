@@ -9,6 +9,30 @@ type Project {
     description: String
 }
 
+type Organisation {
+    uuid: ID!
+    dataOrigin: String!
+    externalId: String!
+    name: String!
+    installationId: String!
+}
+
+type User {
+    uuid: ID!
+    username: String!
+    email: String!
+    name: String
+}
+
+type ProjectUser {
+    uuid: ID!
+    dataOrigin: String!
+    externalId: String!
+    username: String!
+    installationId: String!
+    email: String
+}
+
 type ProjectResult {
     success: Boolean!
     errors: [String]
@@ -26,11 +50,12 @@ type DeleteProjectResult {
     errors: [String]
 }
 
-type Organisation {
-    uuid: ID!
-    name: String!
-    owner: String!
-    description: String
+type BindUserResult {
+    success: Boolean!
+    errors: [String]
+    userAccount: User
+    projectUser: ProjectUser
+    organisation: Organisation
 }
 
 type Query {
@@ -46,4 +71,5 @@ type Mutation {
     createProject(name: String!, description: String): ProjectResult!
     updateDescription(projectUuid: ID!, description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
+    bindPlutoUser(installationId: ID!, plutoUserUUID: ID!): BindUserResult
 }

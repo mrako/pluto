@@ -30,6 +30,7 @@ class ProjectUser(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     data_origin_uuid = Column(UUID(as_uuid=True), ForeignKey('data_origin.uuid'), nullable=False)
     external_id = Column(String, nullable=False)
+    installation_id = Column(String, nullable=False)
     username = Column(String, nullable=False)
     email = Column(String)
 
@@ -43,6 +44,7 @@ class Organisation(Base):
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     data_origin_uuid = Column(UUID(as_uuid=True), ForeignKey('data_origin.uuid'), nullable=False)
     external_id = Column(String, nullable=False)
+    installation_id = Column(String, nullable=False)
     name = Column(String, nullable=False)
 
 
