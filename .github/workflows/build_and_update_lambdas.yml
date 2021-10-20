@@ -83,4 +83,9 @@ jobs:
           DESCRIPTION: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
           ECR_REPO: pluto-backend
           ECR_IMAGE: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
-  
+      - name: Invoke pluto-development-migrations lambda
+        run: |
+          bash invoke_migrations_lambda.sh
+        env:
+          FUNCTION_NAME: pluto-development-migrations
+          ALIAS: development
