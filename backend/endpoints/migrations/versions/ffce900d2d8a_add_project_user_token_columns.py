@@ -1,4 +1,4 @@
-"""Add project user roken columns
+"""Add project user token columns
 
 Revision ID: ffce900d2d8a
 Revises: 700ff4e6aafb
