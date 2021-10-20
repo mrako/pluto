@@ -1,0 +1,9 @@
+{
+  "path": "/api",
+  "httpMethod": "POST",
+  "queryStringParameters": "",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "body": "mutation {bindPlutoUser(installationId: 20177601, plutoUserUUID: \"09769b14-1cbe-4449-ba68-0e173159c1cc\"){ success  errors  userAccount {username} projectUser {username} organisation {name}}}"
+}

@@ -1,0 +1,25 @@
+.top-nav {
+  height: var(--top-navigation-height);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-black);
+  padding: 0px 24px;
+}
+
+.home {
+  cursor: pointer;
+  margin: 0px;
+}
+
+.below {
+  min-height: var(--top-navigation-height);
+  max-height: var(--top-navigation-height);
+}

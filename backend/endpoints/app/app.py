@@ -1,14 +1,14 @@
 import awsgi
 from ariadne.constants import PLAYGROUND_HTML
 
-from api import app
+from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
     snake_case_fallback_resolvers
 from flask import request, jsonify
 
 import services.project_service as project_service
 
-BASE_ROUTE = '/api'
+BASE_PATH = BASE_ROUTE + 'api'
 
 query = ObjectType("Query")
 query.set_field('projects', project_service.get_all_projects)
@@ -22,6 +22,7 @@ mutation = ObjectType("Mutation")
 mutation.set_field('createProject', project_service.add_project_to_github)
 mutation.set_field('updateDescription', project_service.update_project_data)
 mutation.set_field('deleteProject', project_service.delete_project_from_github)
+mutation.set_field('bindPlutoUser', project_service.bind_user_to_installation)
 
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(
@@ -33,12 +34,12 @@ def handler(event, context):
     return awsgi.response(app, event, context)
 
 
-@app.route(BASE_ROUTE, methods=["GET"])
+@app.route(BASE_PATH, methods=["GET"])
 def graphql_playground():
     return PLAYGROUND_HTML, 200
 
 
-@app.route(BASE_ROUTE, methods=["POST"])
+@app.route(BASE_PATH, methods=["POST"])
 def graphql_server():
     success, result = graphql_sync(
         schema,
