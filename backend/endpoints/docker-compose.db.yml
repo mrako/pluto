@@ -16,7 +16,7 @@ services:
     ports:
       - 9001:8080
     environment:
-      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'migrations.py'
     restart: on-failure
@@ -25,7 +25,7 @@ services:
     links:
       - db
 
-dbsetup:
+  dbsetup:
     build:
       context: .
       dockerfile: Dockerfile_db_setup

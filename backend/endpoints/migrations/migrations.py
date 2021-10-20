@@ -1,16 +1,18 @@
 import os
 import sys
-import logging as log
-import json
 from os.path import dirname, abspath
+sys.path.insert(0, dirname(dirname(abspath(__file__))) + "/app")
+sys.path.insert(0, dirname(dirname(abspath(__file__))) + "/migrations")
+sys.path.insert(0, dirname(dirname(abspath(__file__))))
+
+import logging as log
 
 from flask import Flask
 from flask_alembic import Alembic
 from flask_sqlalchemy import SQLAlchemy
 
-sys.path.insert(0, dirname(dirname(abspath(__file__))) + "/app")
-sys.path.insert(0, dirname(dirname(abspath(__file__))) + "/migrations")
-sys.path.insert(0, dirname(dirname(abspath(__file__))))
+from utils.response_utils import build_response
+
 
 app = Flask(__name__)
 
@@ -27,16 +29,6 @@ handler.setFormatter(formatter)
 root.addHandler(handler)
 
 
-def build_response(result: dict, status_code: int):
-    return {
-        'statusCode': f"{status_code}",
-        'body': json.dumps(result),
-        'headers': {
-            'Content-Type': 'application/json',
-        }
-    }
-
-
 def handler(event, context):
     try:
         log.info("Migrating the database schema")
@@ -47,7 +39,7 @@ def handler(event, context):
         with app.app_context():
             alembic.upgrade()
             return build_response({'success': True, 'message': 'Database migrated successfully'}, 200)
-    except Exception as e:
+    except Exception:
         message = "Running database migration failed"
         log.exception(message)
         return build_response({'success': False, 'message': message}, 500)

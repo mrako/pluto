@@ -1,7 +1,10 @@
 FROM public.ecr.aws/lambda/python:3.9
 
 # Copy function code
-COPY app/app_db_setup.py ${LAMBDA_TASK_ROOT}/app/
+COPY app/models.py ${LAMBDA_TASK_ROOT}/app/
+COPY app/utils/response_utils.py ${LAMBDA_TASK_ROOT}/app/utils/
+COPY migrations/app_db_setup.py ${LAMBDA_TASK_ROOT}/migrations/
+
 
 # Clean up the Python compilation cache
 RUN find ${LAMBDA_TASK_ROOT} -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
@@ -14,4 +17,4 @@ RUN  pip3 install --upgrade pip
 RUN  pip3 install -r requirements_db_setup.txt --target "${LAMBDA_TASK_ROOT}"
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
-CMD [ "app_db_setup.handler" ]
+CMD [ "migrations.app_db_setup.handler" ]

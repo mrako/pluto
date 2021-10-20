@@ -14,7 +14,7 @@ services:
     ports:
       - 9000:8080
     environment:
-      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'app.py'
 
@@ -25,7 +25,7 @@ services:
     ports:
       - 9001:8080
     environment:
-      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'migrations.py'
     restart: on-failure
@@ -41,7 +41,7 @@ services:
     ports:
       - 9002:8080
     environment:
-      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'app_webhook.py'
 
@@ -52,6 +52,23 @@ services:
     ports:
       - 9003:8080
     environment:
-      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'app_post_confirmation.py'
+
+  dbsetup:
+    build:
+      context: .
+      dockerfile: Dockerfile_db_setup
+    ports:
+      - 9004:8080
+    environment:
+      DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres'
+      PYTHONUNBUFFERED: 'TRUE'
+      FLASK_APP: 'migrations.py'
+    restart: on-failure
+    depends_on:
+      - db
+    links:
+      - db
+
