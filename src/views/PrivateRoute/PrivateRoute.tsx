@@ -2,13 +2,16 @@ import { Auth } from 'aws-amplify';
 import React, {
   ReactElement, useCallback, useEffect, useState,
 } from 'react';
-import { Route, RouteProps, useHistory } from 'react-router-dom';
+import {
+  Route, RouteProps, useHistory, useLocation,
+} from 'react-router-dom';
 import PageContent from 'stories/composite/PageContent/PageContent';
 import TopNav from 'stories/composite/TopNav/TopNav';
 
 export default function PrivateRoute({ children, ...rest }: RouteProps): ReactElement {
   const [auth, setAuth] = useState(false);
   const history = useHistory();
+  const location = useLocation();
 
   const onHome = useCallback(() => {
     history.push('/home');
@@ -20,30 +23,31 @@ export default function PrivateRoute({ children, ...rest }: RouteProps): ReactEl
   }, [history]);
 
   useEffect(() => {
-    const isAuthenticated = () => {
-      setAuth(false);
-
-      const redirectToLogin = () => {
-        history.push('/login');
-      };
-      Auth.currentSession().then((response) => {
-        if (response.isValid()) {
-          setAuth(true);
-        } else {
-          redirectToLogin();
-        }
-      }).catch(() => {
-        redirectToLogin();
-      });
+    const redirectToLogin = () => {
+      history.push('/login', { from: location });
     };
-    isAuthenticated();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    Auth.currentSession().then((response) => {
+      if (response.isValid()) {
+        setAuth(true);
+      } else {
+        setAuth(false);
+        redirectToLogin();
+      }
+    }).catch(() => {
+      setAuth(false);
+      redirectToLogin();
+    });
+  }, [history, location]);
 
   return (
     <Route {...rest}>
-      <TopNav onHome={onHome} onLogout={onLogout} />
-      <PageContent>{ auth ? children : null }</PageContent>
+      {auth ? (
+        <>
+          <TopNav onHome={onHome} onLogout={onLogout} />
+          <PageContent>{children}</PageContent>
+        </>
+      ) : null}
+
     </Route>
   );
 }
