@@ -1,18 +1,9 @@
 import logging as log
 from flask import current_app as app
-from multiprocessing import Process, Queue
 
 
 def github_auth_headers():
     return {'Authorization': 'Bearer '+app.config['GITHUB_ACCESS_TOKEN']}
-
-
-def add_error(result, msg):
-    result['success'] = False
-    if 'errors' in result:
-        result['errors'].append(msg)
-    else:
-        result['errors'] = [msg]
 
 
 def build_result(result_field_name: str, result):
