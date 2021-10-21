@@ -12,7 +12,7 @@ CORS(app)
 BASE_ROUTE = os.environ.get('BASE_ROUTE', '/')
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL',
-                                                       'postgresql://postgres:postgres@localhost:5432/postgres')
+                                                       'postgresql://pluto:pluto@localhost:5432/pluto')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
