@@ -69,6 +69,14 @@ curl -X POST \
 "http://localhost:9001/2015-03-31/functions/function/invocations"
 ```
 
+### Test Cognito post confirmation event test endpoint
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/app_post_confirmation.json" \
+"http://localhost:9003/2015-03-31/functions/function/invocations"
+```
+
 ### Get all projects
 ```
 curl -X POST \
