@@ -32,18 +32,60 @@ def handler(event, context):
 
 
 def setup_db(event):
+    action = event.get('action', None)
     try:
-        log.info("Creating database role and schema")
-        db.session.connection().connection.set_isolation_level(0)
-        db_username = event['owner']
-        if not postgres_user_exists(db_username):
-            add_postgres_user(username=db_username, password=event['password'])
-        create_datatabase(db_name=event['db_name'], owner=db_username)
-        return build_response({'success': True, 'message': 'Database role and schema created'}, 200)
+        if action:
+            if action == "create":
+                return create_db(event)
+            elif action == "drop-db":
+                return drop_db(event)
+            elif action == "drop-user":
+                return drop_user(event)
+            else:
+                return build_response({
+                    'success': False,
+                    'message': "Unknown action. Valid actions are 'create', 'drop-db' and 'drop-user'"},
+                    400)
+        else:
+            return build_response({'success': False, 'message': "Action not defined"}, 400)
     except Exception:
-        message = "Creating database role or schema failed"
+        message = f"setup db failed! Action {action}"
         log.exception(message)
         return build_response({'success': False, 'message': message}, 500)
+
+
+def create_db(event):
+    log.info("Creating database role and schema")
+    db.session.connection().connection.set_isolation_level(0)
+    db_username = event['owner']
+    if not postgres_user_exists(db_username):
+        add_postgres_user(username=db_username, password=event['password'])
+    create_datatabase(db_name=event['db_name'], owner=db_username)
+    return build_response({'success': True, 'message': 'Database role and schema created'}, 200)
+
+
+def drop_db(event):
+    log.info("Dropping database schema")
+    db.session.connection().connection.set_isolation_level(0)
+    db_name = event['db_name']
+    if "'" in db_name:
+        raise Exception("Bad database name")
+
+    db.session.execute("DROP DATABASE " + db_name)
+    db.session.commit()
+    return build_response({'success': True, 'message': 'Database schema dropped'}, 200)
+
+
+def drop_user(event):
+    log.info("Dropping database user")
+    db.session.connection().connection.set_isolation_level(0)
+    username = event['username']
+    if "'" in username:
+        raise Exception("Bad database name")
+
+    db.session.execute("DROP USER " + username)
+    db.session.commit()
+    return build_response({'success': True, 'message': 'Database user dropped'}, 200)
 
 
 def postgres_user_exists(user_name):
