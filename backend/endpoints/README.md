@@ -53,12 +53,12 @@ access the APIs running purely on local see 'Sending direct API calls'
 
 Lambda function invocation payloads for testing purposes can be found from test_events/lambda_invocations directory.
 
-### Get all projects
+### Create database user and database
 ```
 curl -X POST \
 -H "Content-Type: application/json" \
--d "@./test_events/lambda_invocations/list_projects.json" \
-"http://localhost:9000/2015-03-31/functions/function/invocations"
+-d "@./test_events/lambda_invocations/create_db.json" \
+"http://localhost:9004/2015-03-31/functions/function/invocations"
 ```
 
 ### Invoke db migrations (alembic upgrade head)
@@ -69,6 +69,13 @@ curl -X POST \
 "http://localhost:9001/2015-03-31/functions/function/invocations"
 ```
 
+### Get all projects
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/list_projects.json" \
+"http://localhost:9000/2015-03-31/functions/function/invocations"
+```
 
 ### Call Pluto app (Github) webhook endpoint
 ```
