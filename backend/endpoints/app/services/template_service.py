@@ -147,8 +147,6 @@ class TemplateManager:
             prepare_work_dir(tmpdirname)
             repo = get_repository(repo_dir, repo_url, checkout=False)
             self.copy_template_dir(template, repo_dir)
-            print("===>"+repo_dir)
-
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
             repo.git.commit(m='initial commit of Pluto Template files')
