@@ -15,11 +15,15 @@ def handler(event, context):
 
 def receive_aws_post_confirmation_hook(event):
     try:
+        username = event.get('username', None)
+        if not username:
+            raise Exception("Invalid post confirmation. Username was not defined")
+
         user_attributes = event.get('request', {}).get('userAttributes', {})
         if not user_attributes.get('email_verified', False):
-            log.error("Invalid post confirmation. Email was not verified.")
-        else:
-            cognito_service.create_user(user_attributes)
+            raise Exception("Invalid post confirmation. Email was not verified.")
+
+        cognito_service.create_user(username, user_attributes)
     except InvalidUserException:
         log.exception("Received invalid user payload")
         raise Exception("Post confirmation hook failed")
