@@ -9,8 +9,9 @@ def get_user(user_uuid: UUID):
         .filter(User.uuid == user_uuid).one()
 
 
-def create_user(username: str, email: str, name: str):
-    uuid = uuid4()
+def create_user(uuid: UUID, username: str, email: str, name: str):
+    if not uuid:
+        uuid = uuid4()
     user = User(
         uuid=uuid,
         username=username,
