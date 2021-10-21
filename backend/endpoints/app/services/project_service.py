@@ -96,14 +96,15 @@ def delete_project_from_github(*_, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def bind_user_to_installation(*_, installation_id: str, pluto_user_uuid: UUID):
+def bind_user_to_installation(*_, installation_id: str, code: str, pluto_user_uuid: UUID):
     try:
         user = user_dao.get_user(pluto_user_uuid)
         project_user = project_dao.get_user_by_installation_id(installation_id)
         org = organisation_dao.get_by_installation_id(installation_id)
         user_dao.bind_users(pluto_user_uuid=user.uuid,
-                                   project_user_uuid=project_user.uuid,
-                                   organisation_uuid=org.uuid)
+                            project_user_uuid=project_user.uuid,
+                            code=code,
+                            organisation_uuid=org.uuid)
         return build_result_from_dict({'user_account': user,
                                        'project_user': project_user,
                                        'organisation': org})
