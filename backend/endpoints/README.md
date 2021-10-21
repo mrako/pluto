@@ -53,6 +53,30 @@ access the APIs running purely on local see 'Sending direct API calls'
 
 Lambda function invocation payloads for testing purposes can be found from test_events/lambda_invocations directory.
 
+### Create database user and database schema
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/create_db.json" \
+"http://localhost:9004/2015-03-31/functions/function/invocations"
+```
+
+### Drop database schema
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/drop_db.json" \
+"http://localhost:9004/2015-03-31/functions/function/invocations"
+```
+
+### Drop database user
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/drop_db_user.json" \
+"http://localhost:9004/2015-03-31/functions/function/invocations"
+```
+
 ### Create database user and database
 ```
 curl -X POST \
