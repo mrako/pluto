@@ -1,58 +1,16 @@
 import requests
-import logging as log
 from flask import current_app as app
 from uuid import UUID
 from api import db
-from util import query_db, github_auth_headers, build_result, build_error_result
+from utils.common import build_result, build_error_result, build_result_from_dict
+from utils.db_common import query_db, update_db, delete_from_db
+from utils.github_common import github_auth_headers
 
 from ariadne import convert_kwargs_to_snake_case
 
 import dao.project_dao as dao
 import dao.user_dao as user_dao
 from dao import project_dao, organisation_dao
-
-
-def build_result(result_field_name: str, result):
-    return {"success": True, result_field_name: result}
-
-
-def build_result_from_dict(result_dict: dict):
-    result = {"success": True} | result_dict
-    return result
-
-
-def build_error_result(message: str, e: Exception):
-    log.error(message, exc_info=e)
-    return {"success": False, "errors": [message]}
-
-
-def query_db(result_field_name: str, dao_function, **kwargs):
-    return execute_db(result_field_name, dao_function, operation='Retrieving', **kwargs)
-
-
-def update_db(result_field_name: str, dao_function, **kwargs):
-    return execute_db(result_field_name, dao_function, operation='Updating', **kwargs)
-
-
-def execute_db(result_field_name: str, dao_function, operation: str = 'Querying', **kwargs):
-    try:
-        # Execute the dao method and return result
-        return build_result(result_field_name, dao_function(**kwargs))
-    except Exception as e:
-        msg = f"{operation} {result_field_name} failed"
-        return build_error_result(msg, e)
-
-
-def delete_from_db(object_name: str, dao_function, **kwargs):
-    try:
-        # Execute the dao method
-        dao_function(**kwargs)
-
-        # Return result
-        return {"success": True}
-    except Exception as e:
-        msg = f"Deleting {object_name} with args {kwargs} failed"
-        return build_error_result(msg, e)
 
 
 @convert_kwargs_to_snake_case

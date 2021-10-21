@@ -3,7 +3,9 @@ import logging as log
 from flask import current_app as app
 from uuid import UUID
 from api import db
-from util import query_db, github_auth_headers, build_result, build_error_result
+from utils.common import build_result, build_error_result
+from utils.db_common import query_db
+from utils.github_common import github_auth_headers
 
 from ariadne import convert_kwargs_to_snake_case
 

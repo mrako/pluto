@@ -31,9 +31,6 @@ mutation.set_field('createRepository', repository_service.add_repository_to_gith
 mutation.set_field('deleteRepository', repository_service.delete_repository_from_github)
 mutation.set_field('pushRepositoryTemplate', template_service.run_template_service)
 mutation.set_field('deleteAllFilesFromRepository', template_service.delete_all_files_from_repository)
-
-
-mutation = ObjectType("Mutation")
 mutation.set_field('bindPlutoUser', project_service.bind_user_to_installation)
 
 type_defs = load_schema_from_path("schema.graphql")
