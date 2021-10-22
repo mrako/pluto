@@ -8,8 +8,9 @@ if [[ -z $S3_BUCKET || -z $S3_ZIP_FILE || -z $S3_PATH ]]; then
 fi
 
 rm -rf $FOLDER
-mkdir -p $FOLDER/app
+mkdir -p $FOLDER/app/utils
 cp backend/endpoints/app/models.py $FOLDER/app
+cp backend/endpoints/app/utils/response_utils.py $FOLDER/app/utils
 cp backend/endpoints/alembic.ini $FOLDER/
 cp -r backend/endpoints/migrations $FOLDER/
 cp backend/endpoints/requirements_migrations.txt $FOLDER
