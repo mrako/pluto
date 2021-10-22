@@ -1,7 +1,7 @@
 name: Build and deploy lambdas
 on:
   push:
-    branches: [main]
+    branches: [main, build_lambdas_zip_files]
 jobs:
   build-api:
     runs-on: ubuntu-latest
@@ -21,28 +21,17 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: Build, tag and push api image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: pluto-backend
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-api
+      - name: Build lambda zip file and update pluto-development-api lambda
         run: |
-          for i in $(seq 10)
-          do
-            docker build -f ./backend/endpoints/Dockerfile ./backend/endpoints/ -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && break 1
-            sleep 1
-          done
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      - name: Update pluto-development-api lambda
-        run: |
-          bash deploy_lambda.sh
+          bash zip_api_lambda.sh
+          bash deploy_lambda_from_zip.sh
         env:
-          ECR_URL: ${{ steps.login-ecr.outputs.registry }}
           FUNCTION_NAME: pluto-development-api
           ALIAS: development
           DESCRIPTION: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-api
-          ECR_REPO: pluto-backend
-          ECR_IMAGE: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-api
+          S3_BUCKET: ${{ secrets.S3_BACKEND_BUCKET_NAME }}
+          S3_ZIP_FILE: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-api.zip
+          S3_PATH: 'api'
   build-migrations:
     runs-on: ubuntu-latest
     steps:
@@ -61,28 +50,17 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: Build, tag and push migrations image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: pluto-backend
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
+      - name: Build lambda zip file and update pluto-development-migrations lambda
         run: |
-          for i in $(seq 10)
-          do
-            docker build -f ./backend/endpoints/Dockerfile_migrations ./backend/endpoints -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && break 1
-            sleep 1
-          done
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      - name: Update pluto-development-migrations lambda
-        run: |
-          bash deploy_lambda.sh
+          bash zip_migrations_lambda.sh
+          bash deploy_lambda_from_zip.sh
         env:
-          ECR_URL: ${{ steps.login-ecr.outputs.registry }}
           FUNCTION_NAME: pluto-development-migrations
           ALIAS: development
           DESCRIPTION: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
-          ECR_REPO: pluto-backend
-          ECR_IMAGE: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations
+          S3_BUCKET: ${{ secrets.S3_BACKEND_BUCKET_NAME }}
+          S3_ZIP_FILE: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}-migrations.zip
+          S3_PATH: 'migrations'
       - name: Invoke pluto-development-migrations lambda
         run: |
           bash invoke_migrations_lambda.sh
