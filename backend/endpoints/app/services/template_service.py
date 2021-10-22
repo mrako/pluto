@@ -22,14 +22,6 @@ def run_template_service(*_, repo_url: str, template, branch: str = 'main'):
     return {'success': True, 'errors': []}
 
 
-@convert_kwargs_to_snake_case
-def delete_all_files_from_repository(*_: object, repo_name: str, repo_url: str, branch: str = 'main') -> dict:
-    username = app.config["USERNAME"]
-    template_manager = TemplateManager(username)
-    execute_in_child_process(template_manager.clear_repository, repo_name, repo_url, branch)
-    return {'success': True, 'errors': []}
-
-
 def get_repo_name(url):
     return url.split('/')[-1]
 
@@ -141,30 +133,3 @@ class TemplateManager:
             repo.git.add('--all')
             repo.git.commit(m='initial commit of Pluto Template files')
             repo.git.push('--set-upstream', 'origin', branch)
-
-    def clear_repository(self, repo_name, repo_url, branch):
-        """
-        This method deletes all files from a repository
-        """
-        repo_url = self.get_repository_url(repo_url)
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            workdir = path.join(tmpdirname, repo_name)
-            repo_dir = get_repo_dir(workdir, repo_url)
-            repo = get_repository(repo_dir, repo_url, branch=branch)
-            pull(repo)
-            if not os.path.exists(repo_dir):
-                log.warning("cannot clear the repository - directory does not exist")
-            else:
-                for item in os.listdir(repo_dir):
-                    src_path = path.join(repo_dir, item)
-                    if os.path.isfile(src_path):
-                        os.remove(src_path)
-                        print(f"deleted {item}")
-
-                    elif os.path.isdir(src_path) and item != '.git':
-                        shutil.rmtree(src_path)
-                        print(f"deleted {item}")
-            repo.git.add('--all')
-            repo.git.commit(m='initial commit of Pluto Template files')
-            repo.git.push('--set-upstream', 'origin', branch)
-
