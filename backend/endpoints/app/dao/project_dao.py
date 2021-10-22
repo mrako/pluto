@@ -30,22 +30,6 @@ def find_project(project_uuid: UUID):
         .one_or_none()
 
 
-def find_project_by_org(organisation_uuid: UUID, project_uuid: UUID):
-    return db.session.query(Project)\
-        .join(ProjectMember)\
-        .filter(Project.uuid == project_uuid)\
-        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
-        .one_or_none()
-
-
-def find_project_by_user(user_uuid: UUID, project_uuid: UUID):
-    return db.session.query(Project)\
-        .join(ProjectMember)\
-        .filter(Project.uuid == project_uuid)\
-        .filter(ProjectMember.user_uuid == user_uuid)\
-        .one_or_none()
-
-
 def get_project(project_uuid: UUID):
     return db.session.query(Project)\
         .filter(Project.uuid == project_uuid).one()

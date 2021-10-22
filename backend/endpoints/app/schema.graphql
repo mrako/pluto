@@ -86,8 +86,6 @@ type Query {
     projectsByOrg(organisationUuid: ID!): ProjectsResult!
     projectsByUser(userUuid: ID!): ProjectsResult!
     project(projectUuid: ID!): ProjectResult!
-    projectByOrg(organisationUuid: ID!, projectUuid: ID!): ProjectResult!
-    projectByUser(userUuid: ID!, projectUuid: ID!): ProjectResult!
     repository(repositoryUuid: ID!): RepositoryResult!
 }
 
