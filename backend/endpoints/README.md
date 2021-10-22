@@ -101,6 +101,14 @@ curl -X POST \
 "http://localhost:9003/2015-03-31/functions/function/invocations"
 ```
 
+### Bind pluto user to project user
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/bind_project_user.json" \
+"http://localhost:9000/2015-03-31/functions/function/invocations"
+```
+
 ### Get all projects
 ```
 curl -X POST \
