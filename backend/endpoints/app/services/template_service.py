@@ -137,7 +137,6 @@ class TemplateManager:
         with tempfile.TemporaryDirectory() as workdir:
             repo_dir = get_repo_dir(workdir, repo_url)
             repo = get_repository(repo_dir, repo_url, checkout=False)
-            self.copy_template_dir(template, repo_dir)
             self.copy_template_dir(workdir, template, repo_dir)
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
