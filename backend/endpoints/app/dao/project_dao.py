@@ -18,8 +18,9 @@ def find_all_projects_by_org(organisation_uuid: UUID):
 
 def find_all_projects_by_user(user_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectMember)\
-        .filter(ProjectMember.user_uuid == user_uuid)\
+        .join(ProjectMember) \
+        .join(UserLink) \
+        .filter(UserLink.user_uuid == user_uuid)\
         .all()
 
 
