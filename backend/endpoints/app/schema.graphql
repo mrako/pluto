@@ -99,5 +99,5 @@ type Mutation {
     deleteRepository(repositoryUuid: ID!): DeleteRepositoryResult!
     deleteAllFilesFromRepository(repo_name: String!, repo_url: String!, branch: String): RepositoryTemplateResult!
     pushRepositoryTemplate(repo_url: String!, template: String!, branch: String): RepositoryTemplateResult!
-    bindPlutoUser(installationId: ID!, plutoUserUUID: ID!): BindUserResult
+    bindPlutoUser(installationId: ID!, code: ID!, plutoUserUUID: ID!): BindUserResult
 }
