@@ -18,8 +18,7 @@ ACCESS_RIGHTS = 0o700
 def run_template_service(*_, repo_url: str, template, branch: str = 'main'):
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
-    template_manager.push_repo_template(repo_url, template, branch)
-    #execute_in_child_process(template_manager.push_repo_template, repo_url, template, branch)
+    execute_in_child_process(template_manager.push_repo_template, repo_url, template, branch)
     return {'success': True, 'errors': []}
 
 
