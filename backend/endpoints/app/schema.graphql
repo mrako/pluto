@@ -71,5 +71,5 @@ type Mutation {
     createProject(name: String!, description: String): ProjectResult!
     updateDescription(projectUuid: ID!, description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
-    bindPlutoUser(installationId: ID!, plutoUserUUID: ID!): BindUserResult
+    bindPlutoUser(installationId: ID!, code: ID!, plutoUserUUID: ID!): BindUserResult
 }

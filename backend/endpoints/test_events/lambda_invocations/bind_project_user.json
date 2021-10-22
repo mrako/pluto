@@ -5,5 +5,5 @@
   "headers": {
     "content-type": "application/json"
   },
-  "body": "mutation {bindPlutoUser(installationId: 20177601, plutoUserUUID: \"09769b14-1cbe-4449-ba68-0e173159c1cc\"){ success  errors  userAccount {username} projectUser {username} organisation {name}}}"
+  "body": "{\"query\": \"mutation { bindPlutoUser(installationId: 23456789, code: \\\"foobarfoo\\\", plutoUserUUID: \\\"f031e256-f133-44a4-a57c-b2b58ffb15ca\\\") { success errors userAccount { username } projectUser { username } organisation { name }}}\"}"
 }
