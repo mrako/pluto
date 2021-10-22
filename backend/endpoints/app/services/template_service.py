@@ -18,7 +18,8 @@ ACCESS_RIGHTS = 0o700
 def run_template_service(*_, repo_url: str, template, branch: str = 'main'):
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
-    execute_in_child_process(template_manager.push_repo_template, repo_url, template, branch)
+    template_manager.push_repo_template(repo_url, template, branch)
+    #execute_in_child_process(template_manager.push_repo_template, repo_url, template, branch)
     return {'success': True, 'errors': []}
 
 
@@ -36,12 +37,6 @@ def get_repo_name(url):
 
 def get_repo_dir(workdir, url):
     return path.join(workdir, get_repo_name(url))
-
-
-def prepare_work_dir(workdir):
-    if not path.isdir(workdir):
-        log.info("Creating directory {}".format(workdir))
-        os.makedirs(workdir, mode=ACCESS_RIGHTS)
 
 
 def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
@@ -92,7 +87,6 @@ class TemplateManager:
         self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
         self.repository_url = app.config["TEMPLATE_REPO_URL"]
         self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
-        self.workdir = app.config["WORKDIR"]
 
     def get_repository_url(self, url):
         parts = url.split('://')
@@ -100,9 +94,7 @@ class TemplateManager:
               parse.quote(self.username) + ':' + parse.quote(self.access_token) + '@' + parts[1]
         return url
 
-    def refresh_templates(self):
-        workdir = self.workdir
-        prepare_work_dir(workdir)
+    def refresh_templates(self, workdir):
         repo_dir = get_repo_dir(workdir, self.repository_url)
         repo_url = self.get_repository_url(self.repository_url)
         repo = get_repository(repo_dir, repo_url)
@@ -135,18 +127,18 @@ class TemplateManager:
                 os.mkdir(new_dst)
                 self.recursive_copy(os.path.abspath(src_path), new_dst)
 
-    def copy_template_dir(self, template_dir_name, target_dir):
-        repo_dir = self.refresh_templates()
+    def copy_template_dir(self, workdir, template_dir_name, target_dir):
+        repo_dir = self.refresh_templates(workdir)
         template_dir = path.join(repo_dir + "/" + template_dir_name)
         self.recursive_copy(template_dir, target_dir)
 
     def push_repo_template(self, repo_url, template, branch):
         repo_url = self.get_repository_url(repo_url)
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            repo_dir = get_repo_dir(tmpdirname, repo_url)
-            prepare_work_dir(tmpdirname)
+        with tempfile.TemporaryDirectory() as workdir:
+            repo_dir = get_repo_dir(workdir, repo_url)
             repo = get_repository(repo_dir, repo_url, checkout=False)
             self.copy_template_dir(template, repo_dir)
+            self.copy_template_dir(workdir, template, repo_dir)
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
             repo.git.commit(m='initial commit of Pluto Template files')
