@@ -1,7 +1,7 @@
 from uuid import UUID, uuid4
 
 from api import db
-from models import Project, Repository, ProjectMember, DataOrigin, ProjectUser
+from models import Project, Repository, ProjectMember, DataOrigin, ProjectUser, UserLink
 
 
 def find_all_projects():
@@ -11,7 +11,8 @@ def find_all_projects():
 def find_all_projects_by_org(organisation_uuid: UUID):
     return db.session.query(Project)\
         .join(ProjectMember)\
-        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
+        .join(UserLink)\
+        .filter(UserLink.organisation_uuid == organisation_uuid)\
         .all()
 
 
