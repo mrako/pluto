@@ -6,3 +6,4 @@ ariadne
 flask_alembic
 invoke
 psycopg2-binary
+gitpython
