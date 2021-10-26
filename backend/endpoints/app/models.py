@@ -31,6 +31,8 @@ class ProjectUser(Base):
     data_origin_uuid = Column(UUID(as_uuid=True), ForeignKey('data_origin.uuid'), nullable=False)
     external_id = Column(String, nullable=False)
     installation_id = Column(String, nullable=False)
+    personal_access_token = Column(String)
+    refresh_token = Column(String)
     username = Column(String, nullable=False)
     email = Column(String)
 
@@ -112,6 +114,7 @@ class UserLink(Base):
     user_uuid = Column(UUID(as_uuid=True), ForeignKey('user_account.uuid'), nullable=False, onupdate="CASCADE")
     project_user_uuid = Column(UUID(as_uuid=True), ForeignKey('project_user.uuid'), nullable=False, onupdate="CASCADE")
     organisation_uuid = Column(UUID(as_uuid=True), ForeignKey('organisation.uuid'), onupdate="CASCADE")
+    code = Column(String)
 
 
 class ProjectMember(Base):
