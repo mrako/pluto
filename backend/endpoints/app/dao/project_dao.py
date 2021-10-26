@@ -48,6 +48,14 @@ def insert_project(name: str, description: str, repository: Repository = None, c
     return get_project(uuid)
 
 
+def insert_project_member(user_link: UserLink, project: Project, commit_transaction: bool = True):
+    project_member = ProjectMember(user_link_uuid=user_link.uuid, project_uuid=project.uuid)
+    db.session.add(project_member)
+    if commit_transaction:
+        db.session.commit()
+    return project_member
+
+
 def update_project(project_uuid: UUID, **update_fields):
     db.session.query(Project).filter(Project.uuid == project_uuid).update(update_fields)
     db.session.commit()

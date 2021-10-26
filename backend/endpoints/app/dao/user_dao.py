@@ -23,6 +23,11 @@ def create_user(uuid: UUID, username: str, email: str, name: str):
     return user
 
 
+def get_user_link_for_by_user_uuid(user_uuid: UUID):
+    return db.session.query(UserLink) \
+        .filter(UserLink.user_uuid == user_uuid).one()
+
+
 def bind_users(pluto_user_uuid: UUID, project_user_uuid: UUID, code: str, organisation_uuid: UUID = None):
     uuid = uuid4()
     link = UserLink(uuid=uuid,

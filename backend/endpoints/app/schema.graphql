@@ -93,8 +93,8 @@ type Mutation {
     createProject(name: String!, description: String): ProjectResult!
     updateDescription(projectUuid: ID!, description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
-    createRepository(url: String!, name: String!, description: String): RepositoryResult!
-    deleteRepository(repositoryUuid: ID!): DeleteRepositoryResult!
+    createRepository(userUuid: ID!, url: String!, name: String!, description: String): RepositoryResult!
+    deleteRepository(userUuid: ID!, repositoryUuid: ID!): DeleteRepositoryResult!
     pushRepositoryTemplate(repo_url: String!, template: String!, branch: String): RepositoryTemplateResult!
     bindPlutoUser(installationId: ID!, code: ID!, plutoUserUUID: ID!): BindUserResult
 }
