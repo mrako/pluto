@@ -1,17 +1,17 @@
 import awsgi
 from ariadne.constants import PLAYGROUND_HTML
-
 from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
     snake_case_fallback_resolvers
 from flask import request, jsonify
 
+from dao import user_dao
 from services import project_service, repository_service, template_service
-
 from pluto_multiprocess import start_processor_thread
-
+from utils.jwt_common import JWTParser
 
 BASE_PATH = BASE_ROUTE + 'api'
+jwt_parser = JWTParser()
 
 query = ObjectType("Query")
 
@@ -37,6 +37,9 @@ schema = make_executable_schema(
 
 
 def handler(event, context):
+    token = event['token']
+    claims = jwt_parser.parse_token(token)
+    event['pluto-user'] = user_dao.get_user(claims['sub'])
     return awsgi.response(app, event, context)
 
 
