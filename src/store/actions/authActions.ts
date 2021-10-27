@@ -8,6 +8,7 @@ export const login = () => async (dispatch: Dispatch<Action>): Promise<void> => 
     email: userDetails.attributes.email,
     emailVerified: userDetails.attributes.email_verified,
     sub: userDetails.attributes.sub,
+    token: userDetails.signInUserSession.idToken.jwtToken,
   };
   localStorage.setItem('user', JSON.stringify(user));
   dispatch({

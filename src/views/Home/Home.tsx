@@ -22,6 +22,9 @@ export default function Home(): ReactElement {
     history.push(`/project/${uuid}`);
   }, [history],
   );
+  const installApp = useCallback(() => {
+    window.location.href = process.env.REACT_APP_GITHUB_APP_INSTALLATION_URL as string;
+  }, []);
 
   useEffect(() => {
     dispatch(projectActions.GetProjectsAction());
@@ -41,8 +44,9 @@ export default function Home(): ReactElement {
         <Card
           id="install-pluto-app"
           title="Install Pluto App"
-          subtitle="You have installed the Pluto Github App successfully!"
-          titleIcon="checkmark"
+          subtitle="Install Pluto Github app"
+          action={installApp}
+          actionTitle="Install"
         />
       </div>
       <h2>Projects</h2>

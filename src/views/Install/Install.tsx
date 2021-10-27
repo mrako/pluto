@@ -1,19 +1,21 @@
 import React, { ReactElement, useEffect } from 'react';
-// import { Redirect } from 'react-router-dom';
-import { useQuery } from 'utils';
+import { useDispatch } from 'react-redux';
+import { bindPlutoUserToProject } from 'store/actions/projectActions';
+import { Redirect } from 'react-router-dom';
+import { useAppSelector, useQuery } from 'utils';
 
 export default function Install(): ReactElement {
   const queryParams = useQuery();
+  const dispatch = useDispatch();
+  const user = useAppSelector((state) => state.auth.user);
   useEffect(() => {
-    if (queryParams.get('installation_id') && queryParams.get('setup_action') === 'install') {
-      console.log('something here');
+    const installationId = queryParams.get('installation_id');
+    const setupAction = queryParams.get('setup_action');
+    if (installationId && setupAction === 'install' && user) {
+      dispatch(bindPlutoUserToProject(installationId, user.sub));
     }
-  }, [queryParams]);
+  }, [queryParams, dispatch, user]);
   return (
-    <div>
-      {queryParams.get('installation_id')}
-      {queryParams.get('setup_action')}
-    </div>
-    /* <Redirect to="/home" state: { from: routeProps.location } }/> */
+    <Redirect to="/home" />
   );
 }

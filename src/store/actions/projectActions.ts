@@ -1,9 +1,10 @@
 import { Dispatch } from 'redux';
 import { API } from 'aws-amplify';
-import { createProjectMutation } from 'graphql/mutations';
+import { createProjectMutation, bindUserToProjectMutation } from 'graphql/mutations';
 import { getProjectByUUIDQuery, getProjectsQuery } from 'graphql/queries';
 import { IProject } from 'types/types';
 import history from 'customHistory';
+import store from 'store/configureStore';
 import { ActionType, Action } from '../actionTypes';
 
 const apiName = 'api';
@@ -56,7 +57,7 @@ export const CreateProjectAction = (name: string, description: string) => async 
 export const GetProjectsAction = () => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.PROJECTS_LOADING });
   const request = {
-    headers,
+    headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
     body: { query: getProjectsQuery() },
   };
   try {
@@ -101,4 +102,24 @@ export const GetProjectByUUID = (uuid:string) => async (dispatch: Dispatch<Actio
 
 export const ClearCurrentProject = () => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.CLEAR_CURRENT_PROJECT });
+};
+
+export const bindPlutoUserToProject = (installationId: string, plutoUserId: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+  const request = {
+    headers,
+    body: { query: bindUserToProjectMutation(installationId, plutoUserId) },
+  };
+  try {
+    const response = await API.post(apiName, path, request);
+    checkErrors(response, 'bindPlutoUser');
+    dispatch({
+      type: ActionType.BIND_PROJECT_USER_SUCCESS,
+    });
+  } catch (error) {
+    const errorString = getErrorString(error);
+    dispatch({
+      type: ActionType.BIND_PROJECT_USER_FAILED,
+      payload: errorString,
+    });
+  }
 };
