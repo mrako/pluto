@@ -12,6 +12,9 @@ jest.mock('react-redux', () => ({
 }));
 
 const mockPush = jest.fn();
+const mockPath = {
+  pathname: '/project/create', search: '', hash: '', state: undefined, key: '2gaabn',
+};
 jest.mock('react-router-dom', () => {
   const originalModule = jest.requireActual('react-router-dom');
   return {
@@ -20,6 +23,7 @@ jest.mock('react-router-dom', () => {
     useHistory: () => (
       { push: mockPush }
     ),
+    useLocation: () => mockPath,
   };
 });
 
@@ -42,6 +46,6 @@ describe('PrivateRoute', () => {
     shallow(<PrivateRoute>testing</PrivateRoute>);
     await Promise.resolve();
     expect(useHistory().push).toHaveBeenCalledTimes(1);
-    expect(useHistory().push).toHaveBeenCalledWith('/login');
+    expect(useHistory().push).toHaveBeenCalledWith('/login', { from: mockPath });
   });
 });
