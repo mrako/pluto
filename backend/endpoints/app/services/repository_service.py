@@ -11,6 +11,7 @@ from ariadne import convert_kwargs_to_snake_case
 
 import dao.repository_dao as repository_dao
 import dao.project_dao as project_dao
+import dao.user_dao as user_dao
 
 
 @convert_kwargs_to_snake_case
@@ -19,14 +20,16 @@ def get_repository(*_, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_repository_to_github(*_, url: str, name: str, description: str):
+def add_repository_to_github(*_, user_uuid: UUID, url: str, name: str, description: str):
     try:
         if repository_dao.find_repository_by_url(url):
             raise Exception("Repository with given url already exists")
 
+        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
+
         repo = repository_dao.insert_repository(url, name, description, False)
-        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{app.config['GITHUB_ORG_NAME']}/repos",
-                             headers=github_auth_headers(),
+        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
+                             headers=github_auth_headers(user_link.project_user.personal_access_token),
                              json={'url': url, 'name': name, 'body': description})
         if resp.status_code != 201:
             log.warning(f"Failed to create repository with response code {resp.status_code}: {resp.text}")
@@ -38,9 +41,12 @@ def add_repository_to_github(*_, url: str, name: str, description: str):
                                           repository=repo,
                                           commit_transaction=False)
 
+        # Add project member
+        project_dao.insert_project_member(user_link, proj)
+
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{app.config['GITHUB_ORG_NAME']}/"
                              f"{repo.name}/projects",
-                             headers=github_auth_headers(),
+                             headers=github_auth_headers(user_link.project_user.personal_access_token),
                              json={'name': proj.name,
                                    'body': proj.description})
 
@@ -54,17 +60,17 @@ def add_repository_to_github(*_, url: str, name: str, description: str):
 
 
 @convert_kwargs_to_snake_case
-def delete_repository_from_github(*_, repository_uuid: UUID):
-    repo = repository_dao.find_repository(repository_uuid)
-    if not repo:
-        return {
-            'success': False,
-            'errors': ["Repository not found"]
-        }
+def delete_repository_from_github(*_, user_uuid: UUID, repository_uuid: UUID):
     try:
-        resp = requests.delete(f"{app.config['GITHUB_BASE_URL']}repos/{app.config['GITHUB_ORG_NAME']}/"
+        repo = repository_dao.find_repository(repository_uuid)
+        if not repo:
+            raise Exception("Repository not found")
+
+        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
+
+        resp = requests.delete(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
                                f"{repo.name}",
-                               headers=github_auth_headers())
+                               headers=github_auth_headers(user_link.project_user.personal_access_token))
         if resp.status_code == 204:
             repository_dao.delete_repository(repo.uuid)
             return {'success': True, 'errors': []}
