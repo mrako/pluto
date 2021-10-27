@@ -13,6 +13,8 @@ services:
     build: .
     ports:
       - 9000:8080
+    env_file:
+      dev.env
     environment:
       DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'

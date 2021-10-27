@@ -35,7 +35,7 @@ schema = make_executable_schema(
 
 def handler(event, context):
     token = event['token']
-    claims = jwt_parser.parse_token(token)
+    claims = jwt_parser.parse_token(token, 'aud')
     event['pluto-user'] = user_dao.get_user(claims['sub'])
     return awsgi.response(app, event, context)
 
