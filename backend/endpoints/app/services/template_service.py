@@ -5,20 +5,16 @@ import urllib.parse as parse
 from flask import current_app as app
 from git import Repo, FetchInfo
 import logging as log
-from ariadne import convert_kwargs_to_snake_case
 import tempfile
-from pluto_multiprocess import execute_in_child_process
 
 
 # u+rw,g+r
 ACCESS_RIGHTS = 0o700
 
 
-@convert_kwargs_to_snake_case
-def run_template_service(*_, repo_url: str, template, branch: str = 'main'):
+def run_template_service(repo_url: str, template, branch: str = 'main'):
     username = app.config["USERNAME"]
     template_manager = TemplateManager(username)
-    execute_in_child_process(template_manager.push_repo_template, repo_url, template, branch)
     return {'success': True, 'errors': []}
 
 
