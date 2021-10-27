@@ -5,6 +5,7 @@ import {
   Router, Redirect, Route, Switch,
 } from 'react-router-dom';
 import history from 'customHistory';
+import Install from './views/Install/Install';
 import PrivateRoute from './views/PrivateRoute/PrivateRoute';
 import store from './store/configureStore';
 import config from './aws-exports';
@@ -47,6 +48,9 @@ function App(): ReactElement {
           </PrivateRoute>
           <PrivateRoute exact path="/project/:uuid">
             <Project />
+          </PrivateRoute>
+          <PrivateRoute exact path="/install">
+            <Install />
           </PrivateRoute>
           <Route exact path="/login">
             <Login />

@@ -49,7 +49,8 @@ export default function project(state:IProjectState = initState, action:Action):
     }
     case ActionType.GET_PROJECTS_FAILED:
     case ActionType.CREATE_PROJECT_FAILED:
-    case ActionType.GET_CURRENT_PROJECT_FAILED: {
+    case ActionType.GET_CURRENT_PROJECT_FAILED:
+    case ActionType.BIND_PROJECT_USER_FAILED: {
       return {
         ...state,
         projects: [],
