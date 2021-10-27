@@ -6,15 +6,19 @@ from flask import current_app as app
 from git import Repo, FetchInfo
 import logging as log
 import tempfile
-
+from dao import user_dao
+from uuid import UUID
 
 # u+rw,g+r
 ACCESS_RIGHTS = 0o700
 
+username = "CptPicard" # Hardcoded for development
+TEMPLATE_REPO_URL = "https://github.com/EficodeEntDemo/PythonTemplateTesting"
 
-def run_template_service(repo_url: str, template, branch: str = 'main'):
-    username = app.config["USERNAME"]
-    template_manager = TemplateManager(username)
+
+def run_template_service(user_uuid: UUID, repo_url: str, template, branch: str = 'main'):
+    template_manager = TemplateManager(user_uuid)
+    template_manager.push_repo_template(repo_url, template, branch)
     return {'success': True, 'errors': []}
 
 
@@ -69,11 +73,11 @@ def get_template_name(file_name):
 
 class TemplateManager:
 
-    def __init__(self, username):
+    def __init__(self, user_uuid):
+        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
         self.username = username
-        self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
-        self.repository_url = app.config["TEMPLATE_REPO_URL"]
-        self.access_token = app.config["GITHUB_ACCESS_TOKEN"]
+        self.access_token = user_link.project_user.personal_access_token
+        self.repository_url = TEMPLATE_REPO_URL
 
     def get_repository_url(self, url):
         parts = url.split('://')

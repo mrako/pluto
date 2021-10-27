@@ -7,12 +7,14 @@ BASE_PATH = BASE_ROUTE + 'pluto-git'
 
 
 def handler(event, context):
+    print("Hello")
     handle_template_service_call(event)
     return event
 
 
 def handle_template_service_call(event):
-    service.run_template_service(event.get('repo_url'),
+    service.run_template_service(event.get('user_uuid'),
+                                 event.get('repo_url'),
                                  event.get('template'),
                                  event.get('branch', None))
 
