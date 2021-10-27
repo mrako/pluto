@@ -128,8 +128,10 @@ class TemplateManager:
         with tempfile.TemporaryDirectory() as workdir:
             repo_dir = get_repo_dir(workdir, repo_url)
             repo = get_repository(repo_dir, repo_url, checkout=False)
+            os.system("git config --global user.name \"Jean-Luc Picard\"")
+            os.system("git config --global user.email \"picard@enterprise.ufp\"")
             self.copy_template_dir(workdir, template, repo_dir)
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
-            repo.git.commit(m='initial commit of Pluto Template files', author=username)
+            repo.git.commit(m='initial commit of Pluto Template files')
             repo.git.push('--set-upstream', 'origin', branch)
