@@ -83,4 +83,8 @@ services:
     environment:
       DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
-      FLASK_APP: 'app_post_confirmation.py'
+      FLASK_APP: 'pluto_git.py'
+    depends_on:
+      - db
+    links:
+      - db
