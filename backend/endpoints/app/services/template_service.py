@@ -131,5 +131,5 @@ class TemplateManager:
             self.copy_template_dir(workdir, template, repo_dir)
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
-            repo.git.commit(m='initial commit of Pluto Template files')
+            repo.git.commit(m='initial commit of Pluto Template files', author=username)
             repo.git.push('--set-upstream', 'origin', branch)
