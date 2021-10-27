@@ -24,7 +24,7 @@ export default function PrivateRoute({ children, ...rest }: RouteProps): ReactEl
     dispatch(logout());
     setAuth(false);
     history.push('/login');
-  }, [history]);
+  }, [history, dispatch]);
 
   useEffect(() => {
     const redirectToLogin = () => {
