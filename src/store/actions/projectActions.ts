@@ -34,7 +34,7 @@ function getErrorString(error: unknown): string {
 export const CreateProjectAction = (name: string, description: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.PROJECTS_LOADING });
   const request = {
-    headers,
+    headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
     body: { query: createProjectMutation(name, description) },
   };
   try {
@@ -80,7 +80,7 @@ export const GetProjectsAction = () => async (dispatch: Dispatch<Action>): Promi
 export const GetProjectByUUID = (uuid:string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.PROJECTS_LOADING });
   const request = {
-    headers,
+    headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
     body: { query: getProjectByUUIDQuery(uuid) },
   };
   try {
@@ -106,7 +106,7 @@ export const ClearCurrentProject = () => async (dispatch: Dispatch<Action>): Pro
 
 export const bindPlutoUserToProject = (installationId: string, plutoUserId: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   const request = {
-    headers,
+    headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
     body: { query: bindUserToProjectMutation(installationId, plutoUserId) },
   };
   try {
