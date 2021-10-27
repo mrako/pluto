@@ -9,6 +9,13 @@ type Project {
     description: String
 }
 
+type Repository {
+    uuid: ID!
+    url: String!
+    name: String!
+    description: String
+}
+
 type Organisation {
     uuid: ID!
     dataOrigin: String!
@@ -50,6 +57,22 @@ type DeleteProjectResult {
     errors: [String]
 }
 
+type RepositoryResult {
+    success: Boolean!
+    errors: [String]
+    repository: Repository
+}
+
+type DeleteRepositoryResult {
+    success: Boolean!
+    errors: [String]
+}
+
+type RepositoryTemplateResult {
+    success: Boolean!
+    errors: [String]
+}
+
 type BindUserResult {
     success: Boolean!
     errors: [String]
@@ -63,13 +86,15 @@ type Query {
     projectsByOrg(organisationUuid: ID!): ProjectsResult!
     projectsByUser(userUuid: ID!): ProjectsResult!
     project(projectUuid: ID!): ProjectResult!
-    projectByOrg(organisationUuid: ID!, projectUuid: ID!): ProjectResult!
-    projectByUser(userUuid: ID!, projectUuid: ID!): ProjectResult!
+    repository(repositoryUuid: ID!): RepositoryResult!
 }
 
 type Mutation {
     createProject(name: String!, description: String): ProjectResult!
     updateDescription(projectUuid: ID!, description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
-    bindPlutoUser(installationId: ID!, plutoUserUUID: ID!): BindUserResult
+    createRepository(url: String!, name: String!, description: String): RepositoryResult!
+    deleteRepository(repositoryUuid: ID!): DeleteRepositoryResult!
+    pushRepositoryTemplate(repo_url: String!, template: String!, branch: String): RepositoryTemplateResult!
+    bindPlutoUser(installationId: ID!, code: ID!, plutoUserUUID: ID!): BindUserResult
 }

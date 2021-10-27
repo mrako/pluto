@@ -1,7 +1,7 @@
 from uuid import UUID, uuid4
 
 from api import db
-from models import Project, ProjectMember, DataOrigin, ProjectUser
+from models import Project, Repository, ProjectMember, DataOrigin, ProjectUser, UserLink
 
 
 def find_all_projects():
@@ -11,14 +11,16 @@ def find_all_projects():
 def find_all_projects_by_org(organisation_uuid: UUID):
     return db.session.query(Project)\
         .join(ProjectMember)\
-        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
+        .join(UserLink)\
+        .filter(UserLink.organisation_uuid == organisation_uuid)\
         .all()
 
 
 def find_all_projects_by_user(user_uuid: UUID):
     return db.session.query(Project)\
-        .join(ProjectMember)\
-        .filter(ProjectMember.user_uuid == user_uuid)\
+        .join(ProjectMember) \
+        .join(UserLink) \
+        .filter(UserLink.user_uuid == user_uuid)\
         .all()
 
 
@@ -28,33 +30,21 @@ def find_project(project_uuid: UUID):
         .one_or_none()
 
 
-def find_project_by_org(organisation_uuid: UUID, project_uuid: UUID):
-    return db.session.query(Project)\
-        .join(ProjectMember)\
-        .filter(Project.uuid == project_uuid)\
-        .filter(ProjectMember.organisation_uuid == organisation_uuid)\
-        .one_or_none()
-
-
-def find_project_by_user(user_uuid: UUID, project_uuid: UUID):
-    return db.session.query(Project)\
-        .join(ProjectMember)\
-        .filter(Project.uuid == project_uuid)\
-        .filter(ProjectMember.user_uuid == user_uuid)\
-        .one_or_none()
-
-
 def get_project(project_uuid: UUID):
     return db.session.query(Project)\
         .filter(Project.uuid == project_uuid).one()
 
 
-def insert_project(name: str, description: str):
+def insert_project(name: str, description: str, repository: Repository = None, commit_transaction: bool = True):
     uuid = uuid4()
-    db.session.add(Project(uuid=uuid,
-                           name=name,
-                           description=description))
-    db.session.commit()
+    project = Project(uuid=uuid,
+                      name=name,
+                      description=description)
+    db.session.add(project)
+    if repository:
+        project.repositories.append(repository)
+    if commit_transaction:
+        db.session.commit()
     return get_project(uuid)
 
 

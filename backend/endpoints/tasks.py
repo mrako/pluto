@@ -2,7 +2,7 @@ import os
 
 from invoke import run, task
 
-db_url = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/postgres')
+db_url = os.environ.get('DATABASE_URL', 'postgresql://pluto:pluto@localhost:5432/pluto')
 env = {'PYTHONUNBUFFERED': 'TRUE', 'DATABASE_URL': db_url}
 
 
