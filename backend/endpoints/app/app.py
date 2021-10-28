@@ -8,10 +8,10 @@ from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_execut
 from flask import request, jsonify
 from dao import user_dao
 from services import project_service, repository_service
-from utils.jwt_common import JWTParser
+from services.flask_context_service import ContextCreationException, build_context
+from utils.common import build_error_result
 
 BASE_PATH = BASE_ROUTE + 'api'
-jwt_parser = JWTParser()
 
 query = ObjectType("Query")
 
@@ -36,11 +36,6 @@ schema = make_executable_schema(
 
 
 def handler(event, context):
-    log.debug(f"Event: {json.dumps(event)}")
-    log.debug(f"Context: {context}")
-    token = event['token']
-    claims = jwt_parser.parse_token(token, 'aud')
-    event['pluto-user'] = user_dao.get_user(claims['sub'])
     return awsgi.response(app, event, context)
 
 
@@ -51,15 +46,20 @@ def graphql_playground():
 
 @app.route(BASE_PATH, methods=["POST"])
 def graphql_server():
-    success, result = graphql_sync(
-        schema,
-        request.get_json(),
-        context_value=request,
-        debug=app.debug
-    )
+    try:
+        success, result = graphql_sync(
+            schema,
+            request.get_json(),
+            context_value=build_context(request),
+            debug=app.debug
+        )
 
-    status_code = 200 if success else 400
-    return jsonify(result), status_code
+        status_code = 200 if success else 400
+        return jsonify(result), status_code
+    except ContextCreationException as e:
+        return jsonify(build_error_result(
+            "Bad Request", e,
+            log_exception=False)), 400
 
 
 if __name__ == "__main__":
