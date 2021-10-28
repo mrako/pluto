@@ -104,6 +104,6 @@ def push_repository_template(*_, user_uuid: UUID, repo_url: str, template: str, 
             return {'success': True, 'errors': []}
     else:
         client = boto3.client('lambda')
-        response = client.invoke(FunctionName='childFuncName', InvocationType='RequestResponse',
+        response = client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',
                                  Payload=json.dumps(payload))
         log.info(f"Response from other lambda: {response}")
