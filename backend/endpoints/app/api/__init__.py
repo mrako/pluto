@@ -21,6 +21,8 @@ app.config["GITHUB_ACCESS_TOKEN"] = os.environ.get("GITHUB_ACCESS_TOKEN")
 app.config["GITHUB_ORG_NAME"] = os.environ.get("GITHUB_ORG_NAME")
 app.config["USERNAME"] = os.environ.get("GITHUB_USERNAME")
 app.config["TEMPLATE_REPO_URL"] = "https://github.com/EficodeEntDemo/PythonTemplateTesting"
+app.config["USE_LOCAL_LAMBDA_CALLS"] = True
+app.config["GIT_LAMBDA_LOCAL_URL"] = "http://localhost:9005/2015-03-31/functions/function/invocations"
 
 root = log.getLogger()
 root.setLevel(log.DEBUG)

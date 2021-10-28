@@ -3,7 +3,7 @@ import logging as log
 from flask import current_app as app
 from uuid import UUID
 from api import db
-from utils.common import build_result, build_error_result
+from utils.common import build_result, build_error_result, build_local_lambda_payload
 from utils.db_common import query_db
 from utils.github_common import github_auth_headers
 
@@ -84,3 +84,17 @@ def delete_repository_from_github(*_, user_uuid: UUID, repository_uuid: UUID):
     except Exception as e:
         db.session.rollback()
         return build_error_result(str(e), e)
+
+
+@convert_kwargs_to_snake_case
+def push_repository_template(*_, user_uuid: UUID, repo_url: str, template: str, branch: str = 'main'):
+    if app.config['USE_LOCAL_LAMBDA_CALLS']:
+        resp = requests.post(app.config['GIT_LAMBDA_LOCAL_URL'], json={'user_uuid': user_uuid,
+                                                                       'repo_url': repo_url,
+                                                                       'template': template,
+                                                                       'branch': branch})
+        if resp.status_code != 200:
+            raise Exception("HTTP call to local git lambda failed")
+        else:
+            log.info(f"Got response from local lambda call: {resp.text}")
+            return {'success': True, 'errors': []}
