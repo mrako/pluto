@@ -15,6 +15,10 @@ Start the database and the lambda container
 
 ```docker-compose -f docker-compose.lambda.yml up --build```
 
+## JWT Token verification
+JWT token verification is implemented as helper module/class in utils/jwt_common.py based on the awslabs example
+https://github.com/awslabs/aws-support-tools/tree/master/Cognito/decode-verify-jwt
+
 
 ### Testing with github
 You need to run the app_webhook.py _locally_, NOT in the docker container, for local testing. Docker image requires 

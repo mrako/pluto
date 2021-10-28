@@ -7,3 +7,5 @@ psycopg2-binary
 requests
 gitpython
 boto3
+python-jose
+
