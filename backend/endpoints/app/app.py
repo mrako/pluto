@@ -6,9 +6,7 @@ from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_execut
     snake_case_fallback_resolvers
 from flask import request, jsonify
 
-from services import project_service, repository_service, template_service
-
-from pluto_multiprocess import start_processor_thread
+from services import project_service, repository_service
 
 
 BASE_PATH = BASE_ROUTE + 'api'
@@ -27,7 +25,6 @@ mutation.set_field('updateDescription', project_service.update_project_data)
 mutation.set_field('deleteProject', project_service.delete_project_from_github)
 mutation.set_field('createRepository', repository_service.add_repository_to_github)
 mutation.set_field('deleteRepository', repository_service.delete_repository_from_github)
-mutation.set_field('pushRepositoryTemplate', template_service.run_template_service)
 mutation.set_field('bindPlutoUser', project_service.bind_user_to_installation)
 
 type_defs = load_schema_from_path("schema.graphql")
@@ -59,5 +56,4 @@ def graphql_server():
 
 
 if __name__ == "__main__":
-    start_processor_thread()
     app.run("0.0.0.0", port=8080, debug=True)
