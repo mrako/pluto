@@ -117,6 +117,7 @@ class UserLink(Base):
     code = Column(String)
     project_user = relationship("ProjectUser")
     organisation = relationship("Organisation")
+    user_account = relationship("User")
 
 
 class ProjectMember(Base):

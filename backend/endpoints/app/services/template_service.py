@@ -75,7 +75,7 @@ class TemplateManager:
 
     def __init__(self, user_uuid):
         user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
-        self.username = username
+        self.username = user_link.user_account.username
         self.access_token = user_link.project_user.personal_access_token
         self.repository_url = TEMPLATE_REPO_URL
 
