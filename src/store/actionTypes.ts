@@ -11,6 +11,8 @@ export enum ActionType {
   GET_CURRENT_PROJECT_SUCCESS = 'GET_CURRENT_PROJECT_SUCCESS',
   GET_CURRENT_PROJECT_FAILED = 'GET_CURRENT_PROJECT_FAILED',
   CLEAR_CURRENT_PROJECT = 'CLEAR_CURRENT_PROJECT',
+  BIND_PROJECT_USER_SUCCESS = 'BIND_PROJECT_USER_SUCCESS',
+  BIND_PROJECT_USER_FAILED = 'BIND_PROJECT_USER_FAILED',
 }
 
 interface actionSignin {
@@ -54,7 +56,14 @@ interface actionGetCurrentProjectFailed {
 interface actionClearCurrentProject {
   type: ActionType.CLEAR_CURRENT_PROJECT
 }
+interface actionBindProjectUserSuccess {
+  type: ActionType.BIND_PROJECT_USER_SUCCESS
+}
+interface actionBindProjectUserFailed {
+  type: ActionType.BIND_PROJECT_USER_FAILED
+  payload: string,
+}
 
 export type Action = actionSignin | actionSignout | actionGetProjectsSuccess | actionProjectsLoading | actionGetProjectsFailed |
   actionCreateProjectSuccess | actionCreateProjectFailed | actionGetCurrentProjectSuccess | actionGetCurrentProjectFailed |
-  actionClearCurrentProject;
+  actionClearCurrentProject | actionBindProjectUserSuccess | actionBindProjectUserFailed;

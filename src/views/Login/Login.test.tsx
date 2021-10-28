@@ -10,16 +10,27 @@ jest.mock('react-redux', () => ({
 
 const mockHistory = {
   push: jest.fn(),
+  location: {
+    state: {
+      from: {
+        pathname: '/home',
+        hash: 'string',
+        key: 'string',
+        search: '',
+      },
+    },
+  },
 };
 jest.mock('react-router-dom', () => ({
   useHistory: () => mockHistory,
 }));
 
 describe('Login', () => {
-  test('Calls dispatch and history.push on signed in event', () => {
+  test('Calls dispatch and history.push on signed in event', async () => {
     const wrapper = shallow(<Login />);
     wrapper.prop('handleAuthStateChange')('signedin');
     expect(mockDispatch).toHaveBeenCalledTimes(1);
+    await Promise.resolve();
     expect(mockHistory.push).toHaveBeenCalledTimes(1);
     expect(mockHistory.push).toHaveBeenCalledWith('/home');
   });
