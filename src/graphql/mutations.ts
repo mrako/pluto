@@ -14,3 +14,16 @@ export function createProjectMutation(name: string, description:string):string {
     }`
   );
 }
+
+export function bindUserToProjectMutation(installationId: string, plutoUserUUID: string): string {
+  return (`mutation {
+    bindPlutoUser(installationId: "${installationId}", plutoUserUUID: "${plutoUserUUID}")
+    {
+      success
+      errors
+      userAccount { username }
+      projectUser { username }
+      organisation { name }
+    }
+  }`);
+}

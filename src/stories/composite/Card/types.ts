@@ -6,4 +6,5 @@ export interface CardProps {
   action?: React.MouseEventHandler<HTMLButtonElement>,
   actionTitle?: string,
   titleIcon?: IconName,
+  id?: string,
 }
