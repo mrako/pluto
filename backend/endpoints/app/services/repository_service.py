@@ -1,5 +1,6 @@
-import requests
 import logging as log
+import json
+import requests
 from flask import current_app as app
 from uuid import UUID
 from api import db
@@ -8,6 +9,8 @@ from utils.db_common import query_db
 from utils.github_common import github_auth_headers
 
 from ariadne import convert_kwargs_to_snake_case
+
+import boto3
 
 import dao.repository_dao as repository_dao
 import dao.project_dao as project_dao
@@ -88,13 +91,19 @@ def delete_repository_from_github(*_, user_uuid: UUID, repository_uuid: UUID):
 
 @convert_kwargs_to_snake_case
 def push_repository_template(*_, user_uuid: UUID, repo_url: str, template: str, branch: str = 'main'):
+    payload={'user_uuid': user_uuid,
+             'repo_url': repo_url,
+             'template': template,
+             'branch': branch}
     if app.config['USE_LOCAL_LAMBDA_CALLS']:
-        resp = requests.post(app.config['GIT_LAMBDA_LOCAL_URL'], json={'user_uuid': user_uuid,
-                                                                       'repo_url': repo_url,
-                                                                       'template': template,
-                                                                       'branch': branch})
+        resp = requests.post(app.config['GIT_LAMBDA_LOCAL_URL'], json=payload)
         if resp.status_code != 200:
             raise Exception("HTTP call to local git lambda failed")
         else:
             log.info(f"Got response from local lambda call: {resp.text}")
             return {'success': True, 'errors': []}
+    else:
+        client = boto3.client('lambda')
+        response = client.invoke(FunctionName='childFuncName', InvocationType='RequestResponse',
+                                 Payload=json.dumps(payload))
+        log.info(f"Response from other lambda: {response}")
