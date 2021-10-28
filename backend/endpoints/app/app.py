@@ -1,4 +1,6 @@
 import awsgi
+import logging as log
+import json
 from ariadne.constants import PLAYGROUND_HTML
 from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
@@ -34,6 +36,8 @@ schema = make_executable_schema(
 
 
 def handler(event, context):
+    log.debug(f"Event: {json.dumps(event)}")
+    log.debug(f"Context: {context}")
     token = event['token']
     claims = jwt_parser.parse_token(token, 'aud')
     event['pluto-user'] = user_dao.get_user(claims['sub'])
