@@ -1,10 +1,10 @@
 import os
 import time
+import json
 import requests
 from jose import jwk, jwt
 from jose.utils import base64url_decode
-from functools import wraps
-from flask import request
+
 
 def get_key_index(keys, kid):
     index = -1
@@ -15,20 +15,34 @@ def get_key_index(keys, kid):
     return None
 
 
+class JWTParserInitialisationException(Exception):
+    pass
+
+
 class JWTVerificationException(Exception):
     pass
 
 
 class JWTParser:
 
-    def __init__(self):
-        self.region = os.environ['AWS_REGION']
-        self.userpool_id = os.environ['USER_POOL_ID']
-        self.app_client_id = os.environ['APP_CLIENT_ID']
-        self.keys_url = f"https://cognito-idp.{self.region}.amazonaws.com/{self.userpool_id}/.well-known/jwks.json"
-        self.keys = requests.get(self.keys_url).json()['keys']
+    def __init__(self, keys_file_path=None):
+        self.app_client_id = os.environ.get('APP_CLIENT_ID', None)
 
-    def parse_token(self, token: str, audience_claim: str, verify_expiration: bool = True):
+        if keys_file_path is not None:
+            with open(keys_file_path, 'r') as json_file:
+                self.keys = json.load(json_file)['keys']
+        else:
+            self.region = os.environ.get('AWS_REGION', None)
+            self.userpool_id = os.environ.get('USER_POOL_ID', None)
+
+            if self.region is None or self.userpool_id is None or self.app_client_id is None:
+                raise JWTParserInitialisationException(
+                    "AWS_REGION, USER_POOL_ID and APP_CLIENT_ID must be defined as environment variables")
+
+            self.keys_url = f"https://cognito-idp.{self.region}.amazonaws.com/{self.userpool_id}/.well-known/jwks.json"
+            self.keys = requests.get(self.keys_url).json()['keys']
+
+    def parse_token(self, token: str, verify_expiration: bool = True, audience_claim: str = 'aud'):
         """
         Parses and validates a JWT token
 
@@ -36,12 +50,14 @@ class JWTParser:
         ----------
         token : str
             The JWT token string to parse
-        audience_claim : str
-            Claim name the audience should be parsed from ('aud', 'client_id')
-            use 'client_id' if parsing an access token
-            use 'aud' if parsing id token
         verify_expiration: bool
             Whether or not to verify if the token has expired (default is True)
+        audience_claim : str
+            Claim name the audience should be parsed from ('aud', 'client_id', None)
+            use 'client_id' if parsing an access token
+            use 'aud' if parsing id token
+            use None if you wish not to verify the audience
+
         """
         # get the kid from the headers prior to verification
         headers = jwt.get_unverified_headers(token)
@@ -76,7 +92,7 @@ class JWTParser:
 
         # and the Audience  (use claims['client_id'] if verifying an access token)
         audience = claims.get(audience_claim, None)
-        if audience != self.app_client_id:
+        if audience and audience != self.app_client_id:
             raise JWTVerificationException(f"Incorrect audience. Audience claim used: {audience_claim}")
 
         return claims
