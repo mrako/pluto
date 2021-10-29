@@ -5,13 +5,26 @@ import { useHistory } from 'react-router-dom';
 import * as authActions from 'store/actions/authActions';
 import './Login.css';
 
+interface IHistoryFrom {
+  from: {
+    hash: string,
+    key: string,
+    pathname: string,
+    search: string,
+  }
+}
 export default function Login(): ReactElement {
   const history = useHistory();
   const dispatch = useDispatch();
-  const handleAuthStateChange = (authState: string) => {
+  const handleAuthStateChange = async (authState: string) => {
     if (authState === 'signedin') {
-      dispatch(authActions.login());
-      history.push('/home');
+      await dispatch(authActions.login());
+      if (history.location.state) {
+        const historyState = history.location.state as IHistoryFrom;
+        history.push(historyState.from.pathname + historyState.from.search);
+      } else if (history.location.pathname === '/login') {
+        history.push('/home');
+      }
     }
   };
   return (

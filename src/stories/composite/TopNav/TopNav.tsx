@@ -14,8 +14,8 @@ export default function TopNav({
   return (
     <>
       <nav className={styles['top-nav']}>
-        <h1 className={styles.home} onClick={onHome}>Pluto</h1>
-        <Button variant="link" icon="logout" iconPlace="right" className={styles.logout} onClick={onLogout}>Logout</Button>
+        <h1 id="home" className={styles.home} onClick={onHome}>Pluto</h1>
+        <Button id="logout" variant="link" icon="logout" iconPlace="right" className={styles.logout} onClick={onLogout}>Logout</Button>
       </nav>
       <div className={styles.below} />
     </>

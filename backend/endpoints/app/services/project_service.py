@@ -1,3 +1,4 @@
+import logging as log
 import requests
 from flask import current_app as app
 from uuid import UUID
@@ -14,7 +15,8 @@ from dao import project_dao, organisation_dao
 
 
 @convert_kwargs_to_snake_case
-def get_all_projects(*_):
+def get_all_projects(obj, info):
+    log.debug(f"Context: {info.context}")
     return query_db('projects', dao.find_all_projects)
 
 
@@ -44,13 +46,16 @@ def get_project_by_user(*_, user_uuid: UUID, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_project_to_github(*_, name: str, description: str):
+def add_project_to_github(*_, user_uuid: UUID, name: str, description: str):
     try:
+        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
         proj = dao.insert_project(name=name,
                                   description=description,
                                   commit_transaction=False)
-        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{app.config['GITHUB_ORG_NAME']}/projects",
-                             headers=github_auth_headers(),
+        # Add project member
+        project_dao.insert_project_member(user_link, proj)
+        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/projects",
+                             headers=github_auth_headers(user_link.project_user.personal_access_token),
                              json={'name': name, 'body': description})
         if resp.status_code != 201:
             raise Exception(f"Failed to create project with response code {resp.status_code}: {resp.text}")

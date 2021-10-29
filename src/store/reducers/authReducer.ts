@@ -6,8 +6,9 @@ interface IAuthState {
   user: IUser | null
 }
 
+const localStorageUser = localStorage.getItem('user');
 const initState: IAuthState = {
-  user: null,
+  user: localStorageUser ? JSON.parse(localStorageUser) : null,
 };
 
 export default function auth(state:IAuthState = initState, action:AnyAction):IAuthState {
@@ -19,7 +20,7 @@ export default function auth(state:IAuthState = initState, action:AnyAction):IAu
       };
     }
     case ActionType.SIGNOUT: {
-      return { ...initState };
+      return { ...initState, user: null };
     }
     default: {
       return state;

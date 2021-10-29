@@ -4,6 +4,7 @@ export interface IUser {
   email: string,
   emailVerified: boolean,
   sub: string,
+  token: string,
 }
 export interface IProject {
   name: string,

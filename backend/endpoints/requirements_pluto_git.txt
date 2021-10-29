@@ -6,4 +6,3 @@ ariadne
 psycopg2-binary
 requests
 gitpython
-python-jose

@@ -15,6 +15,10 @@ Start the database and the lambda container
 
 ```docker-compose -f docker-compose.lambda.yml up --build```
 
+## JWT Token verification
+JWT token verification is implemented as helper module/class in utils/jwt_common.py based on the awslabs example
+https://github.com/awslabs/aws-support-tools/tree/master/Cognito/decode-verify-jwt
+
 
 ### Testing with github
 You need to run the app_webhook.py _locally_, NOT in the docker container, for local testing. Docker image requires 
@@ -45,6 +49,15 @@ curl -X POST \
 -H "Content-Type: application/json" \
 -d "@./test_events/direct_payloads/app_post_confirmation.json" \
 "http://localhost:8083/post-confirm"
+```
+
+### Test get all projects
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJraWQiOiJwU3hsaUNWRW1GUTBYU2p5bitUYXlcLzFMR0JjSG5xUHB0RnJVUHg3aVF2OD0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhNDZjNjJjZS1hODRlLTRlYzAtYmI4Ny1iNDk2ODg3ZTNhY2YiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfS0F5TmhTMmlRIiwiY29nbml0bzp1c2VybmFtZSI6ImE0NmM2MmNlLWE4NGUtNGVjMC1iYjg3LWI0OTY4ODdlM2FjZiIsIm9yaWdpbl9qdGkiOiIzNjBmY2ZhZi0yNDQ2LTRiYmYtODgyNi1iZmU4YzhmYjk2YjAiLCJhdWQiOiI1NnQ0ZG5oOG41djhqa2Q0MWY5c3N2MDJtdCIsImV2ZW50X2lkIjoiYzk1YjNkYzItMTc4Yy00OTU5LWIzYjQtNjk3NmVmNGRmYWQ3IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2MzUyNDkyNzksImV4cCI6MTYzNTI1Mjg3OSwiaWF0IjoxNjM1MjQ5Mjc5LCJqdGkiOiIzM2IwN2Y3Ni0xMzRiLTQ1YjctYTIwMi0wZjIxZjNjOTY2NzMiLCJlbWFpbCI6Im1pa2tpLmxldm9uQGdtYWlsLmNvbSJ9.WziFuStSjWDEL5NbIrlL3ApcLV8pww0E6beIVCyGwu4QHuIlM7dTB4mgOD_73mXetKH536etWVmiM_CHkYCBCNkoCta5iWGNmh63khsWDiz3ioOrww7xaORuNjoThREmz46aBXXFpp2PZw-3sgnBRzgbsx0jYyyFHyiANr1AsUon5kBohAehAu4Pc8qQfS0Y6FbGW8D5irl7iPRtiOIDZXe7xFp8RT_ifHBuFhPu87f5KpTpG3EXgJ8lJWesec-4jypW398kDn1FWlrwn_iGthBLldbdmpaSHezKEYxaogiNy3-vxdXhGaq9rrJmTfe_MU12wtq_CHa1i2O5gX19lw" \
+-d "@./test_events/direct_payloads/list_projects.json" \
+"http://localhost:8080/api"
 ```
 
 ## Invoking lambda functions inside running docker container

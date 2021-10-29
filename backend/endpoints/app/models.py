@@ -115,6 +115,8 @@ class UserLink(Base):
     project_user_uuid = Column(UUID(as_uuid=True), ForeignKey('project_user.uuid'), nullable=False, onupdate="CASCADE")
     organisation_uuid = Column(UUID(as_uuid=True), ForeignKey('organisation.uuid'), onupdate="CASCADE")
     code = Column(String)
+    project_user = relationship("ProjectUser")
+    organisation = relationship("Organisation")
 
 
 class ProjectMember(Base):
