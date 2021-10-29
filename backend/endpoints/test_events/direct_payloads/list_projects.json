@@ -1,0 +1,3 @@
+{
+  "query": "query { projects { success errors projects { name description }}}"
+}

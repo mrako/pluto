@@ -1,15 +1,16 @@
 import awsgi
-import logging as log
 from ariadne.constants import PLAYGROUND_HTML
 from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
     snake_case_fallback_resolvers
 from flask import request, jsonify
 from services import project_service, repository_service
-from services.flask_context_service import ContextCreationException, build_context
+from services.flask_context_service import ContextBuilder, ContextCreationException
 from utils.common import build_error_result
+from utils.jwt_common import JWTParserInitialisationException
 
 BASE_PATH = BASE_ROUTE + 'api'
+ctx_builder = ContextBuilder()
 
 query = ObjectType("Query")
 
@@ -50,7 +51,7 @@ def graphql_server():
         success, result = graphql_sync(
             schema,
             request.get_json(),
-            context_value=build_context(request),
+            context_value=ctx_builder.build_context(request),
             debug=app.debug
         )
 
@@ -60,7 +61,14 @@ def graphql_server():
         return jsonify(build_error_result(
             "Bad Request", e,
             log_exception=False)), 400
+    except JWTParserInitialisationException as e:
+        return jsonify(build_error_result(
+            "Internal server error", e)), 500
 
 
 if __name__ == "__main__":
+    ctx_builder = ContextBuilder(
+        keys_file_path='../test_data/aws_keys.json',
+        audience_claim=None,
+        verify_token_expiration=False)
     app.run("0.0.0.0", port=8080, debug=True)
