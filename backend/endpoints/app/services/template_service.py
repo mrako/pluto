@@ -16,10 +16,13 @@ ACCESS_RIGHTS = 0o700
 
 @convert_kwargs_to_snake_case
 def run_template_service(*_, repo_url: str, template, branch: str = 'main'):
-    username = app.config["USERNAME"]
-    template_manager = TemplateManager(username)
-    execute_in_child_process(template_manager.push_repo_template, repo_url, template, branch)
-    return {'success': True, 'errors': []}
+    try:
+        username = app.config["USERNAME"]
+        template_manager = TemplateManager(username)
+        execute_in_child_process(template_manager.push_repo_template, repo_url, template, branch)
+        return {'success': True, 'errors': []}
+    except Exception as e:
+        return {'success': False, 'errors': [e]}
 
 
 def get_repo_name(url):
@@ -46,19 +49,22 @@ def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
                 repo.heads.master.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
                 repo.heads[branch].checkout()  # checkout local "master" to working tree
             else:
-                return {'success': False, 'errors': ["Unsupported branch selected! Choose main or master branch."]}
+                raise Exception("Unsupported branch selected! Choose main or master branch.")
         return repo
     else:
         return Repo(repo_dir)
 
 
 def pull(repo):
-    result = []
-    fetch = repo.remotes.origin.pull()
-    for info in fetch:
-        if info.flags != FetchInfo.HEAD_UPTODATE:
-            result.append(info)
-    return result
+    try:
+        result = []
+        fetch = repo.remotes.origin.pull()
+        for info in fetch:
+            if info.flags != FetchInfo.HEAD_UPTODATE:
+                result.append(info)
+        return result
+    except Exception as e:
+        raise Exception(f"Exception occurred while pulling the contents of the template repository: {e}")
 
 
 def get_branch_name(info):
@@ -105,18 +111,21 @@ class TemplateManager:
         return result
 
     def recursive_copy(self, src, dst):
-        if not os.path.exists(dst):
-            os.makedirs(dst)
+        try:
+            if not os.path.exists(dst):
+                os.makedirs(dst)
 
-        for item in os.listdir(src):
-            src_path = path.join(src, item)
-            if os.path.isfile(src_path):
-                shutil.copy(src_path, dst)
+            for item in os.listdir(src):
+                src_path = path.join(src, item)
+                if os.path.isfile(src_path):
+                    shutil.copy(src_path, dst)
 
-            elif os.path.isdir(src_path):
-                new_dst = os.path.join(dst, item)
-                os.mkdir(new_dst)
-                self.recursive_copy(os.path.abspath(src_path), new_dst)
+                elif os.path.isdir(src_path):
+                    new_dst = os.path.join(dst, item)
+                    os.mkdir(new_dst)
+                    self.recursive_copy(os.path.abspath(src_path), new_dst)
+        except Exception as e:
+            raise Exception(f"Exception occurred while copying the template files to the target repository: {e}")
 
     def copy_template_dir(self, workdir, template_dir_name, target_dir):
         repo_dir = self.refresh_templates(workdir)
@@ -129,7 +138,10 @@ class TemplateManager:
             repo_dir = get_repo_dir(workdir, repo_url)
             repo = get_repository(repo_dir, repo_url, checkout=False)
             self.copy_template_dir(workdir, template, repo_dir)
-            repo.git.checkout('-b', branch)
-            repo.git.add('--all')
-            repo.git.commit(m='initial commit of Pluto Template files')
-            repo.git.push('--set-upstream', 'origin', branch)
+            try:
+                repo.git.checkout('-b', branch)
+                repo.git.add('--all')
+                repo.git.commit(m='initial commit of Pluto Template files')
+                repo.git.push('--set-upstream', 'origin', branch)
+            except Exception as e:
+                raise Exception(f"Exception occurred while trying to push template files to target repository: {e}")
