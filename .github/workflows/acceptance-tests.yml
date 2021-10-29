@@ -1,4 +1,4 @@
-name: Acceptance tests for prod
+name: Acceptance tests
 on:
   workflow_run:
     workflows: ["Development workflow"]
