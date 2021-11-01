@@ -1,21 +1,20 @@
 FROM public.ecr.aws/lambda/python:3.9
 
+ENV GIT_PYTHON_GIT_EXECUTABLE=/usr/bin/git
+ENV GIT_PYTHON_REFRESH=quiet
+
+# Install the function's dependencies using file requirements.txt
+# from your project folder.
+RUN  yum -y install git
+COPY requirements_pluto_git.txt  .
+RUN  pip3 install --upgrade pip
+RUN  pip3 install -r requirements_pluto_git.txt --target "${LAMBDA_TASK_ROOT}"
+
 # Copy function code
 COPY app/ ${LAMBDA_TASK_ROOT}
 
 # Clean up the Python compilation cache
 RUN find ${LAMBDA_TASK_ROOT} -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
-
-# Install the function's dependencies using file requirements.txt
-# from your project folder.
-
-COPY requirements_pluto_git.txt  .
-RUN  pip3 install --upgrade pip
-RUN  pip3 install -r requirements_pluto_git.txt --target "${LAMBDA_TASK_ROOT}"
-RUN  yum -y install git
-
-ENV GIT_PYTHON_GIT_EXECUTABLE=/usr/bin/git
-ENV GIT_PYTHON_REFRESH=quiet
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
 CMD [ "pluto_git.handler" ]
