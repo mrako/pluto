@@ -29,6 +29,7 @@ jobs:
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
           bash deploy_lambda_from_ecr.sh
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -70,6 +71,7 @@ jobs:
             sleep 2
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
           bash deploy_lambda_from_ecr.sh
       - name: Invoke pluto-development-migrations lambda
         run: |
@@ -103,6 +105,7 @@ jobs:
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
           bash deploy_lambda_from_ecr.sh
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -137,6 +140,7 @@ jobs:
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
           bash deploy_lambda_from_ecr.sh
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -171,6 +175,7 @@ jobs:
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
           bash deploy_lambda_from_ecr.sh
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -205,6 +210,7 @@ jobs:
             sleep 1
           done
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:main
           bash deploy_lambda_from_ecr.sh
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
