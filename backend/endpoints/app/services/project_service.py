@@ -16,7 +16,6 @@ from dao import project_dao, organisation_dao
 
 @convert_kwargs_to_snake_case
 def get_all_projects(obj, info):
-    log.debug(f"Context: {info.context}")
     return query_db('projects', dao.find_all_projects)
 
 
