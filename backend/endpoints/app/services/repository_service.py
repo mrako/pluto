@@ -23,12 +23,12 @@ def get_repository(*_, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_repository_to_github(*_, user_uuid: UUID, url: str, name: str, description: str):
+def add_repository_to_github(*_, info, url: str, name: str, description: str):
     try:
         if repository_dao.find_repository_by_url(url):
             raise Exception("Repository with given url already exists")
 
-        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
+        user_link = info.context['pluto_user'].user_link
 
         repo = repository_dao.insert_repository(url, name, description, False)
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
@@ -63,13 +63,13 @@ def add_repository_to_github(*_, user_uuid: UUID, url: str, name: str, descripti
 
 
 @convert_kwargs_to_snake_case
-def delete_repository_from_github(*_, user_uuid: UUID, repository_uuid: UUID):
+def delete_repository_from_github(*_, info, repository_uuid: UUID):
     try:
         repo = repository_dao.find_repository(repository_uuid)
         if not repo:
             raise Exception("Repository not found")
 
-        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
+        user_link = info.context['pluto_user'].user_link
 
         resp = requests.delete(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
                                f"{repo.name}",
@@ -90,8 +90,9 @@ def delete_repository_from_github(*_, user_uuid: UUID, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def push_repository_template(*_, user_uuid: UUID, repo_url: str, template: str, branch: str = 'main'):
-    payload={'user_uuid': user_uuid,
+def push_repository_template(*_, info, repo_url: str, template: str, branch: str = 'main'):
+
+    payload={'user_uuid': info.context['pluto_user'].uuid,
              'repo_url': repo_url,
              'template': template,
              'branch': branch}
