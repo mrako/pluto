@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { API } from 'aws-amplify';
-import { createProjectMutation, bindUserToProjectMutation } from 'graphql/mutations';
+import { createProjectMutation, bindUserToProjectMutation, createRepositoryMutation } from 'graphql/mutations';
 import { getProjectByUUIDQuery, getProjectsQuery } from 'graphql/queries';
 import { IProject } from 'types/types';
 import history from 'customHistory';
@@ -31,7 +31,24 @@ function getErrorString(error: unknown): string {
   }
   return 'Error occured';
 }
-export const CreateProjectAction = (name: string, description: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+
+export const createRepositoryAction = (name: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+  const { user } = store.getState().auth;
+  if (user !== null) {
+    const request = {
+      headers: { ...headers, Authorization: `Bearer ${user.token}` },
+      body: { query: createRepositoryMutation(user.sub, name) },
+    };
+    const response = await API.post(apiName, path, request);
+    console.log(response);
+  }
+
+  dispatch({
+    type: ActionType.CREATE_PROJECT_SUCCESS,
+  });
+};
+
+export const CreateProjectAction = (name: string, description: string, repository: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.PROJECTS_LOADING });
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
@@ -44,6 +61,8 @@ export const CreateProjectAction = (name: string, description: string) => async 
     dispatch({
       type: ActionType.CREATE_PROJECT_SUCCESS,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dispatch<any>(createRepositoryAction(repository));
     history.push(`/project/${projectUUID}`);
   } catch (error) {
     const errorString = getErrorString(error);
@@ -104,10 +123,10 @@ export const ClearCurrentProject = () => async (dispatch: Dispatch<Action>): Pro
   dispatch({ type: ActionType.CLEAR_CURRENT_PROJECT });
 };
 
-export const bindPlutoUserToProject = (installationId: string, plutoUserId: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+export const bindPlutoUserToProject = (installationId: string, plutoUserId: string, code: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
-    body: { query: bindUserToProjectMutation(installationId, plutoUserId) },
+    body: { query: bindUserToProjectMutation(installationId, plutoUserId, code) },
   };
   try {
     const response = await API.post(apiName, path, request);

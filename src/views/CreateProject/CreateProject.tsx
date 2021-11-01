@@ -13,8 +13,8 @@ import './CreateProject.css';
 export default function Project(): ReactElement {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  /* const [repository, setRepository] = useState('');
-  const [template, setTemplate] = useState('Python Application'); */
+  const [repository, setRepository] = useState('');
+  /* const [template, setTemplate] = useState('Python Application'); */
   const dispatch = useDispatch();
   const loading = useAppSelector((state) => state.project.loading);
   const error = useAppSelector((state) => state.project.error);
@@ -27,10 +27,10 @@ export default function Project(): ReactElement {
       case 'description':
         setDescription(event.target.value);
         break;
-        /* case 'repository':
+      case 'repository':
         setRepository(event.target.value);
         break;
-      case 'template':
+        /* case 'template':
         setTemplate(event.target.value); */
         break;
       default:
@@ -39,7 +39,7 @@ export default function Project(): ReactElement {
   }, []);
 
   const onSubmit = async () => {
-    await dispatch(projectActions.CreateProjectAction(name, description));
+    await dispatch(projectActions.CreateProjectAction(name, description, repository));
   };
 
   return (
@@ -64,6 +64,15 @@ export default function Project(): ReactElement {
           id="description"
           placeholder="Project description"
           label="Project description"
+        />
+        <Input
+          className="project-form-input"
+          fluid
+          name="repository"
+          onChange={onChangeHandler}
+          placeholder="Repository name"
+          id="repository"
+          label="Repository name"
         />
         <Button loading={loading} onClick={onSubmit} id="create">CREATE</Button>
       </div>
