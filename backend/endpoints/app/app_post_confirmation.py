@@ -14,6 +14,7 @@ def handler(event, context):
 
 
 def receive_aws_post_confirmation_hook(event):
+    log.debug(f"Event: {event}")
     try:
         username = event.get('username', None)
         if not username:
