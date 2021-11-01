@@ -47,7 +47,7 @@ def add_repository_to_github(*_, user_uuid: UUID, url: str, name: str, descripti
         # Add project member
         project_dao.insert_project_member(user_link, proj)
 
-        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{app.config['GITHUB_ORG_NAME']}/"
+        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
                              f"{repo.name}/projects",
                              headers=github_auth_headers(user_link.project_user.personal_access_token),
                              json={'name': proj.name,
