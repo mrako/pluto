@@ -72,6 +72,8 @@ class TemplateManager:
     def __init__(self, user_uuid, github_access_token):
         user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
         self.username = user_link.user_account.username
+        self.user_realname = user_link.user_account.name
+        self.user_email = user_link.user_account.email
         self.access_token = github_access_token
         self.repository_url = TEMPLATE_REPO_URL
 
@@ -124,8 +126,8 @@ class TemplateManager:
         with tempfile.TemporaryDirectory() as workdir:
             repo_dir = get_repo_dir(workdir, repo_url)
             repo = get_repository(repo_dir, repo_url, checkout=False)
-            os.system("git config --global user.name \"Jean-Luc Picard\"")
-            os.system("git config --global user.email \"picard@enterprise.ufp\"")
+            os.system(f"git config --global user.name \"{self.user_realname}\"")
+            os.system(f"git config --global user.email \"{self.user_email}\"")
             self.copy_template_dir(workdir, template, repo_dir)
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
