@@ -1,4 +1,5 @@
 import os
+import logging as log
 import time
 import json
 import requests
@@ -29,6 +30,7 @@ class JWTParser:
         self.app_client_id = os.environ.get('APP_CLIENT_ID', None)
 
         if keys_file_path is not None:
+            log.info(f"Using local file for public keys {keys_file_path}")
             with open(keys_file_path, 'r') as json_file:
                 self.keys = json.load(json_file)['keys']
         else:
@@ -40,6 +42,8 @@ class JWTParser:
                     "AWS_REGION, USER_POOL_ID and APP_CLIENT_ID must be defined as environment variables")
 
             self.keys_url = f"https://cognito-idp.{self.region}.amazonaws.com/{self.userpool_id}/.well-known/jwks.json"
+
+            log.info(f"Loading public keys from AWS Cognito {self.keys_url}")
             self.keys = requests.get(self.keys_url).json()['keys']
 
     def parse_token(self, token: str, verify_expiration: bool = True, audience_claim: str = 'aud'):
@@ -87,11 +91,17 @@ class JWTParser:
         claims = jwt.get_unverified_claims(token)
 
         # Verify the token expiration
+        if not verify_expiration:
+            log.warning("Token expiration validation disabled")
+
         if verify_expiration and time.time() > claims['exp']:
             raise JWTVerificationException('Token has expired')
 
         # and the Audience  (use claims['client_id'] if verifying an access token)
         audience = claims.get(audience_claim, None)
+        if not audience:
+            log.warning("Token audience validation disabled")
+
         if audience and audience != self.app_client_id:
             raise JWTVerificationException(f"Incorrect audience. Audience claim used: {audience_claim}")
 
