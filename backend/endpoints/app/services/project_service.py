@@ -45,7 +45,7 @@ def get_project_by_user(*_, user_uuid: UUID, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_project_to_github(*_, info, name: str, description: str):
+def add_project_to_github(*_, info, name: str, description: str, github_auth_token: str):
     try:
         user_link = info.context['pluto_user'].user_link
         proj = dao.insert_project(name=name,
@@ -54,7 +54,7 @@ def add_project_to_github(*_, info, name: str, description: str):
         # Add project member
         project_dao.insert_project_member(user_link, proj)
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/projects",
-                             headers=github_auth_headers(user_link.project_user.personal_access_token),
+                             headers=github_auth_headers(github_auth_token),
                              json={'name': name, 'body': description})
         if resp.status_code != 201:
             raise Exception(f"Failed to create project with response code {resp.status_code}: {resp.text}")

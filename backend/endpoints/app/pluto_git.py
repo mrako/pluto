@@ -15,6 +15,7 @@ def handle_template_service_call(event):
     service.run_template_service(event.get('user_uuid'),
                                  event.get('repo_url'),
                                  event.get('template'),
+                                 event.get('github_auth_token'),
                                  event.get('branch', None))
 
 

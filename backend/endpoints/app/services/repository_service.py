@@ -23,12 +23,12 @@ def get_repository(*_, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_repository_to_github(*_, info, url: str, name: str, description: str):
+def add_repository_to_github(*_, info, url: str, name: str, description: str, github_auth_token: str):
     try:
         user_link = info.context['pluto_user'].user_link
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
-                             headers=github_auth_headers(user_link.project_user.personal_access_token),
+                             headers=github_auth_headers(github_auth_token),
                              json={'name': name, 'body': description})
         if resp.status_code == 422:
             raise Exception("Repository already exists")  # Probably
@@ -63,7 +63,7 @@ def add_repository_to_github(*_, info, url: str, name: str, description: str):
 
 
 @convert_kwargs_to_snake_case
-def delete_repository_from_github(*_, info, repository_uuid: UUID):
+def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_token: str):
     try:
         repo = repository_dao.find_repository(repository_uuid)
         if not repo:
@@ -73,7 +73,7 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID):
 
         resp = requests.delete(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
                                f"{repo.name}",
-                               headers=github_auth_headers(user_link.project_user.personal_access_token))
+                               headers=github_auth_headers(github_auth_token))
         if resp.status_code == 204:
             repository_dao.delete_repository(repo.uuid)
             return {'success': True, 'errors': []}
@@ -90,9 +90,9 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def push_repository_template(*_, info, repo_url: str, template: str, branch: str = 'main'):
-
+def push_repository_template(*_, info, repo_url: str, template: str, branch: str = 'main', github_auth_token: str):
     payload={'user_uuid': info.context['pluto_user'].uuid,
+             'github_auth_token': github_auth_token,
              'repo_url': repo_url,
              'template': template,
              'branch': branch}

@@ -2,9 +2,7 @@ import os
 import os.path as path
 import shutil
 import urllib.parse as parse
-from flask import current_app as app
 from git import Repo, FetchInfo
-import logging as log
 import tempfile
 from dao import user_dao
 from uuid import UUID
@@ -12,14 +10,12 @@ from uuid import UUID
 # u+rw,g+r
 ACCESS_RIGHTS = 0o700
 
-username = "CptPicard" # Hardcoded for development
 TEMPLATE_REPO_URL = "https://github.com/EficodeEntDemo/PythonTemplateTesting"
 
 
-def run_template_service(user_uuid: UUID, repo_url: str, template, branch: str = 'main'):
-    template_manager = TemplateManager(user_uuid)
+def run_template_service(user_uuid: UUID, repo_url: str, template, github_auth_token: str, branch: str = 'main'):
+    template_manager = TemplateManager(user_uuid, github_auth_token)
     template_manager.push_repo_template(repo_url, template, branch)
-    return {'success': True, 'errors': []}
 
 
 def get_repo_name(url):
@@ -73,10 +69,10 @@ def get_template_name(file_name):
 
 class TemplateManager:
 
-    def __init__(self, user_uuid):
+    def __init__(self, user_uuid, github_access_token):
         user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
         self.username = user_link.user_account.username
-        self.access_token = user_link.project_user.personal_access_token
+        self.access_token = github_access_token
         self.repository_url = TEMPLATE_REPO_URL
 
     def get_repository_url(self, url):
