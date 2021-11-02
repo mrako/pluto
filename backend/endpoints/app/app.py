@@ -1,3 +1,5 @@
+import os
+import logging as log
 import awsgi
 from ariadne.constants import PLAYGROUND_HTML
 from api import app, BASE_ROUTE
@@ -6,11 +8,30 @@ from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_execut
 from flask import request, jsonify
 from services import project_service, repository_service
 from services.flask_context_service import ContextBuilder, ContextCreationException
-from utils.common import build_error_result
+from utils.common import build_error_result, get_boolean
 from utils.jwt_common import JWTParserInitialisationException
 
 BASE_PATH = BASE_ROUTE + 'api'
-ctx_builder = ContextBuilder()
+KEYS_FILE_PATH = os.environ.get('KEYS_FILE_PATH', None)
+JWT_VALIDATE_EXPIRATION = get_boolean(os.environ.get('JWT_VALIDATE_EXPIRATION', True))
+JWT_VALIDATE_AUDIENCE = get_boolean(os.environ.get('JWT_VALIDATE_AUDIENCE', True))
+JWT_AUDIENCE_CLAIM = os.environ.get('JWT_AUDIENCE_CLAIM', 'sub')
+
+if not JWT_VALIDATE_AUDIENCE:
+    JWT_AUDIENCE_CLAIM = None
+
+if KEYS_FILE_PATH is not None:
+    log.warning(f"Using local file for public keys {KEYS_FILE_PATH}")
+
+if not JWT_VALIDATE_EXPIRATION:
+    log.warning("JWT expiration validation disabled!")
+
+if not JWT_VALIDATE_AUDIENCE or JWT_AUDIENCE_CLAIM is None:
+    log.warning("JWT audience validation disabled!")
+
+ctx_builder = ContextBuilder(keys_file_path=KEYS_FILE_PATH,
+                             verify_token_expiration=JWT_VALIDATE_EXPIRATION,
+                             audience_claim=JWT_AUDIENCE_CLAIM)
 
 query = ObjectType("Query")
 
