@@ -23,15 +23,15 @@ def get_repository(*_, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_repository_to_github(*_, info, url: str, name: str, description: str, github_auth_token: str):
+def add_repository_to_github(obj, info, name: str, description: str, github_auth_token: str):
     try:
-        user_link = info.context['pluto_user'].user_link
+        user_link = info.context['pluto_user'].user_link[0]
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
                              headers=github_auth_headers(github_auth_token),
                              json={'name': name, 'body': description})
         if resp.status_code == 422:
-            raise Exception("Repository already exists")  # Probably
+            raise Exception("Repository already exists")  # 422 gets returned at least for already existing repo
         elif resp.status_code != 201:
             log.warning(f"Failed to create repository with response code {resp.status_code}: {resp.text}")
             raise Exception("Github repository creation failed")
@@ -49,7 +49,7 @@ def add_repository_to_github(*_, info, url: str, name: str, description: str, gi
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
                              f"{repo.name}/projects",
-                             headers=github_auth_headers(user_link.project_user.personal_access_token),
+                             headers=github_auth_headers(github_auth_token),
                              json={'name': proj.name,
                                    'body': proj.description})
 
