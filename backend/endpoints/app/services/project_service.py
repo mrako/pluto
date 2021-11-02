@@ -45,9 +45,9 @@ def get_project_by_user(*_, user_uuid: UUID, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_project_to_github(*_, info, name: str, description: str, github_auth_token: str):
+def add_project_to_github(obj, info, name: str, description: str, github_auth_token: str):
     try:
-        user_link = info.context['pluto_user'].user_link
+        user_link = info.context['pluto_user'].user_link[0]  # Pretty ugly here because of db structure
         proj = dao.insert_project(name=name,
                                   description=description,
                                   commit_transaction=False)
