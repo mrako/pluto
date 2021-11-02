@@ -217,5 +217,5 @@ jobs:
           ECR_REPOSITORY: pluto-git
           IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}
           DESCRIPTION: ${{ steps.extract_branch.outputs.branch }}-1.0.${{ github.run_number }}
-          FUNCTION_NAME: pluto-git
+          FUNCTION_NAME: pluto-development-pluto-git
           ALIAS: development

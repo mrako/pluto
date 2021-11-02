@@ -15,7 +15,7 @@ def handler(event, context):
 
 def receive_aws_post_confirmation_hook(event):
     try:
-        username = event.get('username', None)
+        username = event.get('userName', None)
         if not username:
             raise Exception("Invalid post confirmation. Username was not defined")
 
