@@ -25,18 +25,18 @@ def get_repository(*_, repository_uuid: UUID):
 @convert_kwargs_to_snake_case
 def add_repository_to_github(*_, info, url: str, name: str, description: str):
     try:
-        if repository_dao.find_repository_by_url(url):
-            raise Exception("Repository with given url already exists")
-
         user_link = info.context['pluto_user'].user_link
 
-        repo = repository_dao.insert_repository(url, name, description, False)
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
                              headers=github_auth_headers(user_link.project_user.personal_access_token),
-                             json={'url': url, 'name': name, 'body': description})
-        if resp.status_code != 201:
+                             json={'name': name, 'body': description})
+        if resp.status_code == 422:
+            raise Exception("Repository already exists")  # Probably
+        elif resp.status_code != 201:
             log.warning(f"Failed to create repository with response code {resp.status_code}: {resp.text}")
             raise Exception("Github repository creation failed")
+
+        repo = repository_dao.insert_repository(resp.json()['html_url'], name, description, False)
 
         # Add repository project
         proj = project_dao.insert_project(name=f"Repository {repo.name}-project",
