@@ -25,3 +25,9 @@ def build_local_lambda_payload(data):
                 "content-type": "application/json"
                 },
             "body": json.dumps(data)}
+
+
+def get_boolean(value: str) -> bool:
+    if value is True or (value == 'true' or value == 'True'):
+        return True
+    return False

@@ -6,6 +6,9 @@ RUN  pip3 install --upgrade pip
 COPY requirements.txt  .
 RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
+# Copy test data
+COPY test_data/ /tmp/test_data
+
 # Copy function code
 COPY app/ ${LAMBDA_TASK_ROOT}
 
