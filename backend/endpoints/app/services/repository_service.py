@@ -90,8 +90,8 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_t
 
 
 @convert_kwargs_to_snake_case
-def push_repository_template(*_, info, repo_url: str, template: str, branch: str = 'main', github_auth_token: str):
-    payload={'user_uuid': info.context['pluto_user'].uuid,
+def push_repository_template(obj, info, repo_url: str, template: str, github_auth_token: str, branch: str = 'main'):
+    payload={'user_uuid': str(info.context['pluto_user'].uuid),
              'github_auth_token': github_auth_token,
              'repo_url': repo_url,
              'template': template,
@@ -102,9 +102,9 @@ def push_repository_template(*_, info, repo_url: str, template: str, branch: str
             raise Exception("HTTP call to local git lambda failed")
         else:
             log.info(f"Got response from local lambda call: {resp.text}")
-            return {'success': True, 'errors': []}
     else:
         client = boto3.client('lambda')
-        response = client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',
-                                 Payload=json.dumps(payload))
-        log.info(f"Response from other lambda: {response}")
+        client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',
+                      Payload=json.dumps(payload))
+
+    return {'success': True, 'errors': []}

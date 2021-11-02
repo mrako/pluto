@@ -71,9 +71,9 @@ class TemplateManager:
 
     def __init__(self, user_uuid, github_access_token):
         user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
-        self.username = user_link.user_account.username
-        self.user_realname = user_link.user_account.name
-        self.user_email = user_link.user_account.email
+        self.username = user_link.user.username
+        self.user_realname = user_link.user.name
+        self.user_email = user_link.user.email
         self.access_token = github_access_token
         self.repository_url = TEMPLATE_REPO_URL
 
