@@ -26,7 +26,8 @@ class ContextBuilder:
         try:
             context = request.environ.get('awsgi.context', None)
             event = request.environ.get('awsgi.event', None)
-            claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', None)
+            claims = event.get('requestContext', {}).get('authorizer', {}).get('claims',
+                                                                               None) if event is not None else None
 
             if claims is None:
                 # Try to parse the claims from a JWT in HTTP Authorization header
