@@ -35,7 +35,7 @@ def get_project(project_uuid: UUID):
         .filter(Project.uuid == project_uuid).one()
 
 
-def insert_project(name: str, description: str, repository: Repository = None, commit_transaction: bool = True):
+def insert_project(name: str, description: str, repository: Repository = None):
     uuid = uuid4()
     project = Project(uuid=uuid,
                       name=name,
@@ -43,29 +43,27 @@ def insert_project(name: str, description: str, repository: Repository = None, c
     db.session.add(project)
     if repository:
         project.repositories.append(repository)
-    if commit_transaction:
-        db.session.commit()
+    db.session.flush()
     return get_project(uuid)
 
 
-def insert_project_member(user_link: UserLink, project: Project, commit_transaction: bool = True):
+def insert_project_member(user_link: UserLink, project: Project):
     project_member = ProjectMember(user_link_uuid=user_link.uuid, project_uuid=project.uuid)
     db.session.add(project_member)
-    if commit_transaction:
-        db.session.commit()
+    db.session.flush()
     return project_member
 
 
 def update_project(project_uuid: UUID, **update_fields):
     db.session.query(Project).filter(Project.uuid == project_uuid).update(update_fields)
-    db.session.commit()
+    db.session.flush()
     return get_project(project_uuid)
 
 
 def delete_project(project_uuid: UUID):
     project = get_project(project_uuid)
     db.session.delete(project)
-    db.session.commit()
+    db.session.flush()
 
 
 def find_user_by_ext_id(data_origin: DataOrigin, ext_id):
@@ -90,5 +88,5 @@ def create_project_user(data_origin: DataOrigin, installation_id: int, ext_id, u
         username=username
     )
     db.session.add(user)
-    db.session.commit()
+    db.session.flush()
     return user

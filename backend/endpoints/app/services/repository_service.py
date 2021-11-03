@@ -4,7 +4,7 @@ import requests
 from flask import current_app as app
 from uuid import UUID
 from api import db
-from utils.common import build_result, build_error_result
+from utils.common import build_result, build_error_result, success_result
 from utils.db_common import query_db
 from utils.github_common import github_auth_headers
 
@@ -72,14 +72,17 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_t
                                headers=github_auth_headers(github_auth_token))
         if resp.status_code == 204:
             repository_dao.delete_repository(repo.uuid)
-            return {'success': True, 'errors': []}
+            db.session.commit()
+            return success_result()
         elif resp.status_code == 404:  # Is this case sane to handle like this?
             repository_dao.delete_repository(repo.uuid)
-            return {'success': True, 'errors': ['Repository was not found on GitHub but was deleted from db']}
+            db.session.commit()
+            return success_result('Repository was not found on GitHub but was deleted from db')
         elif resp.status_code == 403:
             raise Exception("Repository deletion not allowed on GitHub")
         else:
             raise Exception(f"Failed to delete repository with response code {resp.status_code}: {resp.text}")
+
     except Exception as e:
         db.session.rollback()
         return build_error_result(str(e), e)
@@ -103,4 +106,4 @@ def push_repository_template(obj, info, repo_url: str, template: str, github_aut
         client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',
                       Payload=json.dumps(payload))
 
-    return {'success': True, 'errors': []}
+    return success_result()

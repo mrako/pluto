@@ -1,14 +1,20 @@
 import logging as log
-import json
+
+
+def success_result(message: str = None):
+    result = {'success': True}
+    if message is not None:
+        result['message'] = message
+    return result
 
 
 def build_result(result_field_name: str, result):
     return {"success": True, result_field_name: result}
 
 
-def build_error_result(message: str, e: Exception, log_exception=True):
-    if log_exception:
-        log.error(message, exc_info=e)
+def build_error_result(message: str, exception: Exception = None):
+    if exception is not None:
+        log.error(message, exc_info=exception)
     return {"success": False, "errors": [message]}
 
 

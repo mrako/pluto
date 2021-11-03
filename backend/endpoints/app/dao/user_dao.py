@@ -31,7 +31,7 @@ def create_user(uuid: UUID, username: str, email: str, name: str):
         name=name
     )
     db.session.add(user)
-    db.session.commit()
+    db.session.flush()
     return user
 
 
@@ -48,5 +48,5 @@ def bind_users(pluto_user_uuid: UUID, project_user_uuid: UUID, code: str, organi
                     organisation_uuid=organisation_uuid,
                     code=code)
     db.session.add(link)
-    db.session.commit()
+    db.session.flush()
     return link

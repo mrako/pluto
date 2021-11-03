@@ -79,12 +79,9 @@ def graphql_server():
         status_code = 200 if success else 400
         return jsonify(result), status_code
     except ContextCreationException as e:
-        return jsonify(build_error_result(
-            "Bad Request", e,
-            log_exception=False)), 400
+        return jsonify(build_error_result("Bad Request")), 400
     except JWTParserInitialisationException as e:
-        return jsonify(build_error_result(
-            "Internal server error", e)), 500
+        return jsonify(build_error_result("Internal server error")), 500
 
 
 if __name__ == "__main__":
