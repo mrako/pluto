@@ -17,16 +17,6 @@ def build_result_from_dict(result_dict: dict):
     return result
 
 
-def build_local_lambda_payload(data):
-    return {"path": "/api",
-            "httpMethod": "POST",
-            "queryStringParameters": "",
-            "headers": {
-                "content-type": "application/json"
-                },
-            "body": json.dumps(data)}
-
-
 def get_boolean(value: str) -> bool:
     if value is True or (value == 'true' or value == 'True'):
         return True

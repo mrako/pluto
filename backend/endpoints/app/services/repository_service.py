@@ -4,7 +4,7 @@ import requests
 from flask import current_app as app
 from uuid import UUID
 from api import db
-from utils.common import build_result, build_error_result, build_local_lambda_payload
+from utils.common import build_result, build_error_result
 from utils.db_common import query_db
 from utils.github_common import github_auth_headers
 
