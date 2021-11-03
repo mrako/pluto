@@ -19,7 +19,7 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     name = Column(String)
-    
+
 
 class ProjectUser(Base):
     __tablename__ = "project_user"
