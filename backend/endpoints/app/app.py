@@ -42,7 +42,7 @@ query.set_field('project', project_service.get_project)
 query.set_field('repository', repository_service.get_repository)
 
 mutation = ObjectType("Mutation")
-mutation.set_field('createProject', project_service.add_project_to_github)
+mutation.set_field('createProject', project_service.add_project)
 mutation.set_field('updateDescription', project_service.update_project_data)
 mutation.set_field('deleteProject', project_service.delete_project_from_github)
 mutation.set_field('createRepository', repository_service.add_repository_to_github)

@@ -45,19 +45,13 @@ def get_project_by_user(*_, user_uuid: UUID, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_project_to_github(obj, info, name: str, description: str, github_auth_token: str):
+def add_project(obj, info, name: str, description: str, user_link_uuid: str):
     try:
-        user_link = info.context['pluto_user'].user_link[0]  # Pretty ugly here because of db structure
+        user_link = user_dao.get_user_link_by_uuid(user_link_uuid)
         proj = dao.insert_project(name=name,
                                   description=description,
                                   commit_transaction=False)
-        # Add project member
         project_dao.insert_project_member(user_link, proj)
-        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/projects",
-                             headers=github_auth_headers(github_auth_token),
-                             json={'name': name, 'body': description})
-        if resp.status_code != 201:
-            raise Exception(f"Failed to create project with response code {resp.status_code}: {resp.text}")
         return build_result("project", proj)
     except Exception as e:
         db.session.rollback()

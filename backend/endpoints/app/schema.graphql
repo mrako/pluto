@@ -90,7 +90,7 @@ type Query {
 }
 
 type Mutation {
-    createProject(name: String!, description: String, github_auth_token: String!): ProjectResult!
+    createProject(name: String!, description: String, user_link_uuid: String!): ProjectResult!
     updateDescription(projectUuid: ID!, description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
     createRepository(name: String!, description: String, github_auth_token: String!): RepositoryResult!
