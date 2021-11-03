@@ -15,8 +15,13 @@ ACCESS_RIGHTS = 0o700
 TEMPLATE_REPO_URL = "https://github.com/EficodeEntDemo/PythonTemplateTesting"
 
 
+<<<<<<< HEAD
 def push_repository_template(user_uuid: UUID, repo_url: str, template, github_auth_token: str, branch: str = 'main'):
     template_manager = TemplateManager(user_uuid, github_auth_token)
+=======
+def run_template_service(user_link_uuid: UUID, repo_url: str, template, github_auth_token: str, branch: str = 'main'):
+    template_manager = TemplateManager(user_dao.get_user_link_by_uuid(user_link_uuid), github_auth_token)
+>>>>>>> 028623cde8388da476bbb3e4f9853cadf24ab23d
     template_manager.push_repo_template(repo_url, template, branch)
 
 
@@ -71,8 +76,7 @@ def get_template_name(file_name):
 
 class TemplateManager:
 
-    def __init__(self, user_uuid, github_access_token):
-        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
+    def __init__(self, user_link, github_access_token):
         self.username = user_link.user.username
         self.user_realname = user_link.user.name
         self.user_email = user_link.user.email
@@ -82,7 +86,7 @@ class TemplateManager:
     def get_repository_url(self, url):
         parts = url.split('://')
         url = parts[0] + '://' + \
-              parse.quote(self.username) + ':' + parse.quote(self.access_token) + '@' + parts[1]
+            parse.quote(self.username) + ':' + parse.quote(self.access_token) + '@' + parts[1]
         return url
 
     def refresh_templates(self, workdir):

@@ -1,4 +1,4 @@
-{"user_uuid": "a46c62ce-a84e-4ec0-bb87-b496887e3acf",
+{"user_link_uuid": "a46c62ce-a84e-4ec0-bb87-b496887e3acf",
  "repo_url": "http://github.com/EfiPlutoTest/testrepo",
   "template": "python-app",
   "github_auth_token": "users-github-authentication-token",
