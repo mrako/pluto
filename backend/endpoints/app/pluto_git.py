@@ -13,7 +13,7 @@ def handler(event, context):
 
 def handle_template_service_call(event):
     try:
-        service.run_template_service(event.get('user_uuid'),
+        service.run_template_service(event.get('user_link_uuid'),
                                      event.get('repo_url'),
                                      event.get('template'),
                                      event.get('github_auth_token'),

@@ -86,8 +86,9 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_t
 
 
 @convert_kwargs_to_snake_case
-def push_repository_template(obj, info, repo_url: str, template: str, github_auth_token: str, branch: str = 'main'):
-    payload={'user_uuid': str(info.context['pluto_user'].uuid),
+def push_repository_template(obj, info, repo_url: str, template: str, user_link_uuid: UUID,
+                             github_auth_token: str, branch: str = 'main'):
+    payload={'user_link_uuid': user_link_uuid,
              'github_auth_token': github_auth_token,
              'repo_url': repo_url,
              'template': template,
