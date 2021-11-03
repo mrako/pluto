@@ -51,7 +51,7 @@ def add_project(obj, info, name: str, description: str, user_link_uuid: UUID):
         proj = dao.insert_project(name=name,
                                   description=description,
                                   commit_transaction=False)
-        project_dao.insert_project_member(user_link, proj)
+        project_dao.insert_project_member(user_link, proj, commit_transaction=False)
         return build_result("project", proj)
     except Exception as e:
         db.session.rollback()
