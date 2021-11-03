@@ -25,7 +25,7 @@ def get_repository(*_, repository_uuid: UUID):
 @convert_kwargs_to_snake_case
 def add_repository_to_github(obj, info, name: str, description: str, project_uuid: UUID, github_auth_token: str):
     try:
-        user_link = user_dao.get_user_link_by_user_and_project_uuids(info.context['pluto_user'], project_uuid)
+        user_link = user_dao.get_user_link_by_user_and_project_uuids(info.context['pluto_user'].uuid, project_uuid)
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
                              headers=github_auth_headers(github_auth_token),
