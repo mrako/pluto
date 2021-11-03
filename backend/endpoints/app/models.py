@@ -19,8 +19,7 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     name = Column(String)
-    user_link = relationship("UserLink", back_populates="user")
-
+    
 
 class ProjectUser(Base):
     __tablename__ = "project_user"

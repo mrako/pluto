@@ -23,9 +23,9 @@ def get_repository(*_, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_repository_to_github(obj, info, name: str, description: str, github_auth_token: str):
+def add_repository_to_github(obj, info, name: str, description: str, project_uuid: UUID, github_auth_token: str):
     try:
-        user_link = info.context['pluto_user'].user_link[0]
+        user_link = user_dao.get_user_link_by_user_and_project_uuids(info.context['pluto_user'], project_uuid)
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
                              headers=github_auth_headers(github_auth_token),
@@ -38,14 +38,10 @@ def add_repository_to_github(obj, info, name: str, description: str, github_auth
 
         repo = repository_dao.insert_repository(resp.json()['html_url'], name, description, False)
 
-        # Add repository project
-        proj = project_dao.insert_project(name=f"Repository {repo.name}-project",
-                                          description="Auto-generated project for repository",
-                                          repository=repo,
-                                          commit_transaction=False)
+        # Get the project that was created earlier
 
-        # Add project member
-        project_dao.insert_project_member(user_link, proj)
+        proj = project_dao.get_project(project_uuid)
+        proj.repositories.append(repo)
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
                              f"{repo.name}/projects",

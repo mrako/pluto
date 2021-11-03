@@ -45,7 +45,7 @@ def get_project_by_user(*_, user_uuid: UUID, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_project(obj, info, name: str, description: str, user_link_uuid: str):
+def add_project(obj, info, name: str, description: str, user_link_uuid: UUID):
     try:
         user_link = user_dao.get_user_link_by_uuid(user_link_uuid)
         proj = dao.insert_project(name=name,
