@@ -4,8 +4,7 @@ import shutil
 import urllib.parse as parse
 from git import Repo, FetchInfo
 import tempfile
-from dao import user_dao
-from uuid import UUID
+from models import UserLink
 
 # u+rw,g+r
 from utils.common import build_error_result
@@ -13,11 +12,15 @@ from utils.common import build_error_result
 ACCESS_RIGHTS = 0o700
 
 TEMPLATE_REPO_URL = "https://github.com/EficodeEntDemo/PythonTemplateTesting"
+MVP_TEMPLATE = "python_app"
 
 
-def push_repository_template(user_uuid: UUID, repo_url: str, template, github_auth_token: str, branch: str = 'main'):
-    template_manager = TemplateManager(user_uuid, github_auth_token)
-    template_manager.push_repo_template(repo_url, template, branch)
+def push_repository_templates(user_link: UserLink, repo_url: str, templates,
+                              github_auth_token: str, branch: str = 'main'):
+    if len(templates) > 1:
+        raise Exception("More than one template given. Not MVP.")
+    template_manager = TemplateManager(user_link, github_auth_token)
+    template_manager.push_repo_template(repo_url, MVP_TEMPLATE, branch)
 
 
 def get_repo_name(url):
@@ -36,12 +39,14 @@ def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
 
         if checkout:
             if branch == 'main':
-                repo.create_head(branch, origin.refs[branch])  # create local branch "master" from remote "master"
-                repo.heads.main.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
+                ref = origin.refs[branch]
+                repo.create_head(branch, ref)  # create local branch "master" from remote "master"
+                repo.heads.main.set_tracking_branch(ref)  # set local "master" to track remote "master
                 repo.heads[branch].checkout()  # checkout local "master" to working tree
             elif branch == 'master':
-                repo.create_head(branch, origin.refs[branch])  # create local branch "master" from remote "master"
-                repo.heads.master.set_tracking_branch(origin.refs[branch])  # set local "master" to track remote "master
+                ref = origin.refs[branch]
+                repo.create_head(branch, ref)  # create local branch "master" from remote "master"
+                repo.heads.master.set_tracking_branch(ref)  # set local "master" to track remote "master
                 repo.heads[branch].checkout()  # checkout local "master" to working tree
             else:
                 return build_error_result(message="Unsupported branch selected! Choose main or master branch.")
@@ -71,10 +76,11 @@ def get_template_name(file_name):
 
 class TemplateManager:
 
-    def __init__(self, user_link, github_access_token):
-        self.username = user_link.user.username
-        self.user_realname = user_link.user.name
-        self.user_email = user_link.user.email
+    def __init__(self, user_link: UserLink, github_access_token: str):
+        self.user = user_link.user
+        self.username = self.user.username
+        self.user_realname = self.user.name
+        self.user_email = self.user.email
         self.access_token = github_access_token
         self.repository_url = TEMPLATE_REPO_URL
 
@@ -90,18 +96,6 @@ class TemplateManager:
         repo = get_repository(repo_dir, repo_url)
         pull(repo)
         return repo_dir
-
-    def get_template_content(self, template_path):
-        self.refresh_templates()
-        with open(template_path, 'r') as file:
-            return file.read()
-
-    def process_template_file(self, template_path, values_to_replace=None):
-        result = self.get_template_content(template_path)
-        if values_to_replace:
-            for k in values_to_replace.keys():
-                result = result.replace(k, values_to_replace[k])
-        return result
 
     def recursive_copy(self, src, dst):
         if not os.path.exists(dst):

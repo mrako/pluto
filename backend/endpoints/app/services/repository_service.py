@@ -16,6 +16,8 @@ import dao.repository_dao as repository_dao
 import dao.project_dao as project_dao
 import dao.user_dao as user_dao
 
+from services import template_service
+
 
 @convert_kwargs_to_snake_case
 def get_repository(*_, repository_uuid: UUID):
@@ -23,8 +25,11 @@ def get_repository(*_, repository_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_repository_to_github(obj, info, name: str, description: str, project_uuid: UUID, github_auth_token: str):
+def add_repository_to_github(obj, info, name: str, description: str, project_uuid: UUID,
+                             github_auth_token: str, templates: []):
     try:
+        if len(templates) <= 0:
+            raise Exception("No templates given")
         user_link = user_dao.get_user_link_by_user_and_project_uuids(info.context['pluto_user'].uuid, project_uuid)
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
@@ -36,7 +41,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
             log.warning(f"Failed to create repository with response code {resp.status_code}: {resp.text}")
             raise Exception("Github repository creation failed")
 
-        repo = repository_dao.insert_repository(resp.json()['html_url'], name, description, False)
+        repo = repository_dao.insert_repository(resp.json()['html_url'], name, description)
 
         # Get the project that was created earlier
 
@@ -51,6 +56,11 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
 
         if resp.status_code != 201:
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
+
+        remote_response = push_repository_template(repo.url, templates, str(user_link.uuid), github_auth_token)
+        if remote_response.get('success', False):
+            return build_error_result("Remote call to push repository lambda failed")
+
         db.session.commit()
         return build_result("repository", repo)
     except Exception as e:
@@ -88,8 +98,7 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_t
         return build_error_result(str(e), e)
 
 
-@convert_kwargs_to_snake_case
-def push_repository_template(obj, info, repo_url: str, template: str, user_link_uuid: UUID,
+def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
                              github_auth_token: str, branch: str = 'main'):
     payload={'user_link_uuid': user_link_uuid,
              'github_auth_token': github_auth_token,
@@ -101,7 +110,7 @@ def push_repository_template(obj, info, repo_url: str, template: str, user_link_
         if resp.status_code != 200:
             raise Exception("HTTP call to local git lambda failed")
         else:
-            log.info(f"Got response from local lambda call: {resp.text}")
+            return resp.json()
     else:
         client = boto3.client('lambda')
         client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',

@@ -68,11 +68,6 @@ type DeleteRepositoryResult {
     errors: [String]
 }
 
-type RepositoryTemplateResult {
-    success: Boolean!
-    errors: [String]
-}
-
 type BindUserResult {
     success: Boolean!
     errors: [String]
@@ -93,8 +88,7 @@ type Mutation {
     createProject(name: String!, description: String, userLinkUuid: ID!): ProjectResult!
     updateDescription(projectUuid: ID!, description: String!): ProjectResult!
     deleteProject(projectUuid: ID!): DeleteProjectResult!
-    createRepository(name: String!, description: String, projectUuid: ID!, githubAuthToken: String!): RepositoryResult!
+    createRepository(name: String!, description: String, projectUuid: ID!, githubAuthToken: String!, templates: [String!]!): RepositoryResult!
     deleteRepository(repositoryUuid: ID!, githubAuthToken: String!): DeleteRepositoryResult!
-    pushRepositoryTemplate(repoUrl: String!, template: String!, userLinkUuid: ID!, githubAuthToken: String!, branch: String): RepositoryTemplateResult!
     bindPlutoUser(installationId: ID!, code: ID!, plutoUserUUID: ID!): BindUserResult
 }
