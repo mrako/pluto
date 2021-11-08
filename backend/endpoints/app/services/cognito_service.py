@@ -1,4 +1,5 @@
 import dao.user_dao as dao
+from api import db
 
 
 class InvalidUserException(Exception):
@@ -11,6 +12,8 @@ def create_user(username: str, user_attributes):
     name = user_attributes.get('name', None)
 
     if username and email:
-        return dao.create_user(uuid, username, email, name)
+        user = dao.create_user(uuid, username, email, name)
+        db.session.commit()
+        return user
     else:
         raise InvalidUserException("Username or email not defined")

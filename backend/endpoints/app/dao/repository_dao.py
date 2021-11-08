@@ -26,18 +26,17 @@ def get_repository(repository_uuid: UUID):
         .filter(Repository.uuid == repository_uuid).one()
 
 
-def insert_repository(url: str, name: str, description: str, commit_session: bool = True):
+def insert_repository(url: str, name: str, description: str):
     uuid = uuid4()
     db.session.add(Repository(uuid=uuid,
                               url=url,
                               name=name,
                               description=description))
-    if commit_session:
-        db.session.commit()
+    db.session.flush()
     return get_repository(uuid)
 
 
 def delete_repository(repository_uuid: UUID):
     repository = get_repository(repository_uuid)
     db.session.delete(repository)
-    db.session.commit()
+    db.session.flush()

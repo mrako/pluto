@@ -1,11 +1,7 @@
-import logging as log
-import requests
-from flask import current_app as app
 from uuid import UUID
 from api import db
 from utils.common import build_result, build_error_result, build_result_from_dict
 from utils.db_common import query_db, update_db, delete_from_db
-from utils.github_common import github_auth_headers
 
 from ariadne import convert_kwargs_to_snake_case
 
@@ -15,7 +11,7 @@ from dao import project_dao, organisation_dao
 
 
 @convert_kwargs_to_snake_case
-def get_all_projects(obj, info):
+def get_all_projects(*_):
     return query_db('projects', dao.find_all_projects)
 
 
@@ -45,19 +41,13 @@ def get_project_by_user(*_, user_uuid: UUID, project_uuid: UUID):
 
 
 @convert_kwargs_to_snake_case
-def add_project_to_github(*_, user_uuid: UUID, name: str, description: str):
+def add_project(obj, info, name: str, description: str, user_link_uuid: UUID):
     try:
-        user_link = user_dao.get_user_link_for_by_user_uuid(user_uuid)
+        user_link = user_dao.get_user_link_by_uuid(user_link_uuid)
         proj = dao.insert_project(name=name,
-                                  description=description,
-                                  commit_transaction=False)
-        # Add project member
+                                  description=description)
         project_dao.insert_project_member(user_link, proj)
-        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/projects",
-                             headers=github_auth_headers(user_link.project_user.personal_access_token),
-                             json={'name': name, 'body': description})
-        if resp.status_code != 201:
-            raise Exception(f"Failed to create project with response code {resp.status_code}: {resp.text}")
+        db.session.commit()
         return build_result("project", proj)
     except Exception as e:
         db.session.rollback()
@@ -66,12 +56,16 @@ def add_project_to_github(*_, user_uuid: UUID, name: str, description: str):
 
 @convert_kwargs_to_snake_case
 def update_project_data(*_, **request_fields):
-    return update_db('project', dao.update_project, **request_fields)
+    result = update_db('project', dao.update_project, **request_fields)
+    db.session.commit()
+    return result
 
 
 @convert_kwargs_to_snake_case
 def delete_project_from_github(*_, project_uuid: UUID):
-    return delete_from_db('project', dao.delete_project, project_uuid=project_uuid)
+    result = delete_from_db('project', dao.delete_project, project_uuid=project_uuid)
+    db.session.commit()
+    return result
 
 
 @convert_kwargs_to_snake_case
@@ -84,6 +78,7 @@ def bind_user_to_installation(*_, installation_id: str, code: str, pluto_user_uu
                             project_user_uuid=project_user.uuid,
                             code=code,
                             organisation_uuid=org.uuid)
+        db.session.commit()
         return build_result_from_dict({'user_account': user,
                                        'project_user': project_user,
                                        'organisation': org})

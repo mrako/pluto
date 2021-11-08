@@ -42,12 +42,13 @@ query.set_field('project', project_service.get_project)
 query.set_field('repository', repository_service.get_repository)
 
 mutation = ObjectType("Mutation")
-mutation.set_field('createProject', project_service.add_project_to_github)
+mutation.set_field('createProject', project_service.add_project)
 mutation.set_field('updateDescription', project_service.update_project_data)
 mutation.set_field('deleteProject', project_service.delete_project_from_github)
 mutation.set_field('createRepository', repository_service.add_repository_to_github)
 mutation.set_field('deleteRepository', repository_service.delete_repository_from_github)
 mutation.set_field('bindPlutoUser', project_service.bind_user_to_installation)
+
 
 type_defs = load_schema_from_path("schema.graphql")
 schema = make_executable_schema(
@@ -77,12 +78,9 @@ def graphql_server():
         status_code = 200 if success else 400
         return jsonify(result), status_code
     except ContextCreationException as e:
-        return jsonify(build_error_result(
-            "Bad Request", e,
-            log_exception=False)), 400
+        return jsonify(build_error_result("Bad Request")), 400
     except JWTParserInitialisationException as e:
-        return jsonify(build_error_result(
-            "Internal server error", e)), 500
+        return jsonify(build_error_result("Internal server error")), 500
 
 
 if __name__ == "__main__":
