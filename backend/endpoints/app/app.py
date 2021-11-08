@@ -6,7 +6,7 @@ from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
     snake_case_fallback_resolvers
 from flask import request, jsonify
-from services import project_service, repository_service
+from services import project_service, repository_service, user_service
 from services.flask_context_service import ContextBuilder, ContextCreationException
 from utils.common import build_error_result, get_boolean
 from utils.jwt_common import JWTParserInitialisationException
@@ -40,6 +40,8 @@ query.set_field('projectsByOrg', project_service.get_all_projects_by_org)
 query.set_field('projectsByUser', project_service.get_all_projects_by_user)
 query.set_field('project', project_service.get_project)
 query.set_field('repository', repository_service.get_repository)
+query.set_field('organisationalInfo', user_service.get_user_organisational_info)
+query.set_field('userLinks', user_service.get_user_links)
 
 mutation = ObjectType("Mutation")
 mutation.set_field('createProject', project_service.add_project)

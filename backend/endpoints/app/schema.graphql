@@ -41,6 +41,12 @@ type ProjectUser {
     email: String
 }
 
+type UserLink {
+    uuid: ID!
+    organisation: Organisation
+    projectUser: ProjectUser!
+}
+
 type ProjectResult {
     success: Boolean!
     errors: [String]
@@ -77,12 +83,27 @@ type BindUserResult {
     organisation: Organisation
 }
 
+type OrganisationalInfoResult {
+    success: Boolean!
+    errors: [String]
+    organisations: [Organisation!]!
+    personalProjectUsers: [ProjectUser!]!
+}
+
+type UserLinkResult {
+    success: Boolean!
+    errors: [String]
+    links: [UserLink!]!
+}
+
 type Query {
     projects: ProjectsResult!
     projectsByOrg(organisationUuid: ID!): ProjectsResult!
     projectsByUser(userUuid: ID!): ProjectsResult!
     project(projectUuid: ID!): ProjectResult!
     repository(repositoryUuid: ID!): RepositoryResult!
+    organisationalInfo: OrganisationalInfoResult!
+    userLinks: UserLinkResult!
 }
 
 type Mutation {
