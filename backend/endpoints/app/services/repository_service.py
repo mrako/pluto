@@ -16,8 +16,6 @@ import dao.repository_dao as repository_dao
 import dao.project_dao as project_dao
 import dao.user_dao as user_dao
 
-from services import template_service
-
 
 @convert_kwargs_to_snake_case
 def get_repository(*_, repository_uuid: UUID):
@@ -57,7 +55,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if resp.status_code != 201:
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
 
-        remote_response = push_repository_template(repo.url, templates, str(user_link.uuid), github_auth_token)
+        remote_response = push_repository_template(repo.url, templates, user_link.uuid, github_auth_token)
         if remote_response.get('success', False):
             return build_error_result("Remote call to push repository lambda failed")
 
@@ -101,11 +99,11 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_t
 
 def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
                              github_auth_token: str, branch: str = 'main'):
-    payload={'user_link_uuid': user_link_uuid,
-             'github_auth_token': github_auth_token,
-             'repo_url': repo_url,
-             'template': template,
-             'branch': branch}
+    payload = {'user_link_uuid': str(user_link_uuid),
+               'github_auth_token': github_auth_token,
+               'repo_url': repo_url,
+               'template': template,
+               'branch': branch}
     if app.config['GIT_LAMBDA_LOCAL_URL']:
         resp = requests.post(app.config['GIT_LAMBDA_LOCAL_URL'], json=payload)
         if resp.status_code != 200:

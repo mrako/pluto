@@ -77,12 +77,20 @@ type BindUserResult {
     organisation: Organisation
 }
 
+type OrganisationalInfoResult {
+    success: Boolean!
+    errors: [String]
+    organisations: [Organisation!]!
+    personalProjectUsers: [ProjectUser!]!
+}
+
 type Query {
     projects: ProjectsResult!
     projectsByOrg(organisationUuid: ID!): ProjectsResult!
     projectsByUser(userUuid: ID!): ProjectsResult!
     project(projectUuid: ID!): ProjectResult!
     repository(repositoryUuid: ID!): RepositoryResult!
+    getOrganisationalInfo: OrganisationalInfoResult!
 }
 
 type Mutation {
