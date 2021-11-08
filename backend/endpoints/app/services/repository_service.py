@@ -114,7 +114,9 @@ def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
             return resp.json()
     else:
         client = boto3.client('lambda')
-        client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',
-                      Payload=json.dumps(payload))
-
-    return success_result()
+        resp = client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',
+                             Payload=json.dumps(payload))
+        if resp.get('StatusCode', None) == 200:
+            return json.loads(resp['Payload'])
+        else:
+            raise Exception("Call to git lambda failed")
