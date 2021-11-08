@@ -38,8 +38,17 @@ def find_by_user_account(user_account_uuid: UUID):
 
 
 def find_organisational_users(user_account_uuid: UUID):
+    # SQLAlchemy needs to use == for None comparison
+    # as it uses operator overloading and does not understand 'uuid is None'
+
     return db.session.query(ProjectUser)\
         .join(UserLink, ProjectUser.uuid == UserLink.project_user_uuid)\
         .filter(UserLink.user_uuid == user_account_uuid)\
         .filter(UserLink.organisation_uuid == None)\
+        .all()
+
+
+def find_user_links(user_account_uuid: UUID):
+    return db.session.query(UserLink)\
+        .filter(UserLink.user_uuid == user_account_uuid)\
         .all()
