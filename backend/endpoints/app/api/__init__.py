@@ -22,7 +22,6 @@ app.config["GITHUB_ACCESS_TOKEN"] = os.environ.get("GITHUB_ACCESS_TOKEN")
 app.config["GITHUB_ORG_NAME"] = os.environ.get("GITHUB_ORG_NAME")
 app.config["USERNAME"] = os.environ.get("GITHUB_USERNAME")
 app.config["TEMPLATE_REPO_URL"] = "https://github.com/EficodeEntDemo/PythonTemplateTesting"
-app.config["USE_LOCAL_LAMBDA_CALLS"] = True if os.environ.get("USE_LOCAL_LAMBDA_CALLS") else False
 app.config["GIT_LAMBDA_LOCAL_URL"] = os.environ.get("GIT_LAMBDA_LOCAL_URL")
 
 root = log.getLogger()

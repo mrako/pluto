@@ -106,7 +106,7 @@ def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
              'repo_url': repo_url,
              'template': template,
              'branch': branch}
-    if app.config['USE_LOCAL_LAMBDA_CALLS']:
+    if app.config['GIT_LAMBDA_LOCAL_URL']:
         resp = requests.post(app.config['GIT_LAMBDA_LOCAL_URL'], json=payload)
         if resp.status_code != 200:
             raise Exception("HTTP call to local git lambda failed")
