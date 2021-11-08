@@ -26,5 +26,5 @@ def create_org(data_origin: DataOrigin, installation_id: int, ext_id, name: str)
         name=name
     )
     db.session.add(org)
-    db.session.commit()
+    db.session.flush()
     return org

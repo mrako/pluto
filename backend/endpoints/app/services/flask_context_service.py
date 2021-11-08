@@ -26,8 +26,11 @@ class ContextBuilder:
         try:
             context = request.environ.get('awsgi.context', None)
             event = request.environ.get('awsgi.event', None)
+            claims = event.get('requestContext', {}).get('authorizer', {}).get('claims',
+                                                                               None) if event is not None else None
 
-            if event is None:
+            if claims is None:
+                # Try to parse the claims from a JWT in HTTP Authorization header
                 auth_header = request.headers.get('Authorization')
                 if not auth_header:
                     raise ContextCreationException("No awsgi event or Authorization header. Unauthorized.")
@@ -42,8 +45,6 @@ class ContextBuilder:
                     token=token,
                     audience_claim=self.audience_claim,
                     verify_expiration=self.verify_token_expiration)
-            else:
-                claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', None)
 
             if claims is None:
                 raise Exception("No claims. Unauthorized.")

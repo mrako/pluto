@@ -14,6 +14,7 @@ from utils.response_utils import build_response
 
 app = Flask(__name__)
 
+POSTGRESQL_SUPER_USER = os.environ.get('POSTGRESQL_SUPER_USER', 'postgres')
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -111,6 +112,9 @@ def create_datatabase(db_name: str, owner: str):
 
     if "'" in owner:
         raise Exception("Bad db owner")
+
+    db.session.execute("GRANT " + owner + " to " + POSTGRESQL_SUPER_USER)
+    db.session.commit()
 
     db.session.execute("CREATE DATABASE " + db_name +
                        " WITH OWNER=" + owner +

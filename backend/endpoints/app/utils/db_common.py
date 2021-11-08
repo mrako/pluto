@@ -1,4 +1,4 @@
-from utils.common import build_result, build_error_result
+from utils.common import build_result, build_error_result, success_result
 
 
 def query_db(result_field_name: str, dao_function, **kwargs):
@@ -24,7 +24,7 @@ def delete_from_db(object_name: str, dao_function, **kwargs):
         dao_function(**kwargs)
 
         # Return result
-        return {"success": True}
+        return success_result()
     except Exception as e:
         msg = f"Deleting {object_name} with args {kwargs} failed"
         return build_error_result(msg, e)
