@@ -1,6 +1,6 @@
-export function createProjectMutation(name: string, description:string):string {
+export function createProjectMutation(name: string, description:string, userLinkUuid: string):string {
   return (`mutation {
-    createProject(name: "${name}", description: "${description}") 
+    createProject(name: "${name}", description: "${description}", userLinkUuid: "${userLinkUuid}") 
       {
         success 
         errors 
@@ -30,7 +30,7 @@ export function bindUserToProjectMutation(installationId: string, plutoUserUUID:
 
 export function createRepositoryMutation(name: string, projectUUID: string, githubToken: string): string {
   return (`mutation {
-    createRepository(name: "${name}", description: "", projectUuid: "${projectUUID}" github_auth_token: "${githubToken}")
+    createRepository(name: "${name}", description: null, projectUuid: "${projectUUID}" github_auth_token: "${githubToken}")
     {
       success
       errors

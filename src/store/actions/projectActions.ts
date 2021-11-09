@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { API } from 'aws-amplify';
 import { createProjectMutation, bindUserToProjectMutation, createRepositoryMutation } from 'graphql/mutations';
-import { getProjectByUUIDQuery, getProjectsQuery } from 'graphql/queries';
+import { getProjectByUUIDQuery, getProjectsQuery, getUserLinksQuery } from 'graphql/queries';
 import { IProject } from 'types/types';
 import history from 'customHistory';
 import store from 'store/configureStore';
@@ -25,6 +25,11 @@ function getErrorString(error: unknown): string {
   if (typeof error === 'string') {
     return error;
   } else if (error instanceof Error) {
+    console.log(error.message);
+    if (error.message === 'Request failed with status code 401') {
+      console.log(history.location);
+      history.push('/login', { from: history.location });
+    }
     return error.message;
   } else if (error instanceof Array) {
     return error.toString();
@@ -47,11 +52,21 @@ export const createRepositoryAction = (name: string, token: string, projectUUID:
 
 export const CreateProjectAction = (name: string, description: string, repository: string, token: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.PROJECTS_LOADING });
-  const request = {
+
+  const userLinksRequest = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
-    body: { query: createProjectMutation(name, description) },
+    body: { query: getUserLinksQuery() },
   };
   try {
+    const userLinks = await API.post(apiName, path, userLinksRequest);
+    console.log(userLinks);
+    checkErrors(userLinks, 'userLinks');
+    const userLink: string = userLinks.data?.userLink.links[0].uuid;
+    const request = {
+      headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
+      body: { query: createProjectMutation(name, description, userLink) },
+    };
+
     const response = await API.post(apiName, path, request);
     checkErrors(response, 'createProject');
     const projectUUID: string = response.data?.createProject?.project?.uuid;
