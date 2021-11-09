@@ -3,6 +3,11 @@ schema {
     mutation: Mutation
 }
 
+type DataOrigin {
+    uuid: ID!
+    name: String!
+}
+
 type Project {
     uuid: ID!
     name: String!
@@ -19,7 +24,7 @@ type Repository {
 
 type Organisation {
     uuid: ID!
-    dataOrigin: String!
+    dataOrigin: DataOrigin!
     externalId: String!
     name: String!
     installationId: String!
@@ -34,7 +39,7 @@ type User {
 
 type ProjectUser {
     uuid: ID!
-    dataOrigin: String!
+    dataOrigin: DataOrigin!
     externalId: String!
     username: String!
     installationId: String!
