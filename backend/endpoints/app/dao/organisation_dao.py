@@ -46,9 +46,3 @@ def find_organisational_users(user_account_uuid: UUID):
         .filter(UserLink.user_uuid == user_account_uuid)\
         .filter(UserLink.organisation_uuid == None)\
         .all()
-
-
-def find_user_links(user_account_uuid: UUID):
-    return db.session.query(UserLink)\
-        .filter(UserLink.user_uuid == user_account_uuid)\
-        .all()

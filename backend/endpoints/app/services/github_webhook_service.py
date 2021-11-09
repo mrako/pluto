@@ -4,7 +4,7 @@ import hmac
 from api import db
 import dao.data_origin_dao as origin_dao
 import dao.organisation_dao as org_dao
-from dao import project_dao
+from dao import project_dao, user_link_dao
 from models import DataOrigin
 
 
@@ -26,17 +26,17 @@ def validate_github_request_sha256(github_signature, webhook_secret, message) ->
     return result
 
 
-def find_or_create_org(data_origin: DataOrigin, installation_id: int, account: dict):
+def find_org(data_origin: DataOrigin, installation_id: int, account: dict, create: bool = False):
     org = org_dao.find_by_ext_id(data_origin, account['id'])
-    if org is None:
+    if org is None and create is True:
         org = org_dao.create_org(data_origin, installation_id, account['id'], account['login'])
         db.session.commit()
     return org
 
 
-def find_or_create_project_user(data_origin: DataOrigin, installation_id: int, sender: dict):
+def find_project_user(data_origin: DataOrigin, installation_id: int, sender: dict, create: bool = False):
     user = project_dao.find_user_by_ext_id(data_origin, sender['id'])
-    if user is None:
+    if user is None and create is True:
         user = project_dao.create_project_user(data_origin, installation_id, sender['id'], sender['login'])
         db.session.commit()
     return user
@@ -47,17 +47,27 @@ def register_app_installation(payload: dict):
     installation_id = payload['installation']['id']
     account = payload['installation']['account']
     if account['type'] == 'Organization':
-        find_or_create_org(data_origin, installation_id, account)
-    find_or_create_project_user(data_origin, installation_id, payload['sender'])
+        find_org(data_origin, installation_id, account, create=True)
+    find_project_user(data_origin, installation_id, payload['sender'], create=True)
 
 
 def deactivate_app_installation(payload):
-    return None
+    raise Exception("Not Implemented!")
 
 
 def activate_app_installation(payload):
-    return None
+    raise Exception("Not Implemented!")
 
 
 def remove_app_installation(payload):
-    return None
+    data_origin = origin_dao.get_data_origin_by_name('GitHub')
+    installation_id = payload['installation']['id']
+    account = payload['installation']['account']
+    if account['type'] == 'Organization':
+        org = find_org(data_origin, installation_id, account)
+        user_link_dao.delete_organisation_links(org.uuid)
+        db.session.delete(org)
+    user = find_project_user(data_origin, installation_id, payload['sender'])
+    user_link_dao.delete_user_links(user.uuid)
+    db.session.delete(user)
+    db.session.commit()
