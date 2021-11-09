@@ -32,23 +32,20 @@ function getErrorString(error: unknown): string {
   return 'Error occured';
 }
 
-export const createRepositoryAction = (name: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
-  const { user } = store.getState().auth;
-  if (user !== null) {
-    const request = {
-      headers: { ...headers, Authorization: `Bearer ${user.token}` },
-      body: { query: createRepositoryMutation(user.sub, name) },
-    };
-    const response = await API.post(apiName, path, request);
-    console.log(response);
-  }
+export const createRepositoryAction = (name: string, token: string, projectUUID: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+  const request = {
+    headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
+    body: { query: createRepositoryMutation(name, token, projectUUID) },
+  };
+  const response = await API.post(apiName, path, request);
+  console.log(response);
 
   dispatch({
     type: ActionType.CREATE_PROJECT_SUCCESS,
   });
 };
 
-export const CreateProjectAction = (name: string, description: string, repository: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+export const CreateProjectAction = (name: string, description: string, repository: string, token: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.PROJECTS_LOADING });
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
@@ -62,7 +59,7 @@ export const CreateProjectAction = (name: string, description: string, repositor
       type: ActionType.CREATE_PROJECT_SUCCESS,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dispatch<any>(createRepositoryAction(repository));
+    dispatch<any>(createRepositoryAction(repository, token, projectUUID));
     history.push(`/project/${projectUUID}`);
   } catch (error) {
     const errorString = getErrorString(error);

@@ -14,6 +14,7 @@ export default function Project(): ReactElement {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [repository, setRepository] = useState('');
+  const [githubToken, setGithubToken] = useState('');
   /* const [template, setTemplate] = useState('Python Application'); */
   const dispatch = useDispatch();
   const loading = useAppSelector((state) => state.project.loading);
@@ -30,6 +31,9 @@ export default function Project(): ReactElement {
       case 'repository':
         setRepository(event.target.value);
         break;
+      case 'githubToken':
+        setGithubToken(event.target.value);
+        break;
         /* case 'template':
         setTemplate(event.target.value); */
         break;
@@ -39,7 +43,7 @@ export default function Project(): ReactElement {
   }, []);
 
   const onSubmit = async () => {
-    await dispatch(projectActions.CreateProjectAction(name, description, repository));
+    await dispatch(projectActions.CreateProjectAction(name, description, repository, githubToken));
   };
 
   return (
@@ -73,6 +77,16 @@ export default function Project(): ReactElement {
           placeholder="Repository name"
           id="repository"
           label="Repository name"
+        />
+        <TextArea
+          className="project-form-input"
+          rows={2}
+          name="githubToken"
+          onChange={onChangeHandler}
+          id="github-token"
+          placeholder="Github Personal Access Token"
+          label="Github Personal Access Token"
+          info="This will only be used to create the repositories and push the templates to them. It will not be stored in any way"
         />
         <Button loading={loading} onClick={onSubmit} id="create">CREATE</Button>
       </div>

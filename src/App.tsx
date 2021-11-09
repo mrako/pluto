@@ -8,7 +8,6 @@ import history from 'customHistory';
 import Install from './views/Install/Install';
 import PrivateRoute from './views/PrivateRoute/PrivateRoute';
 import store from './store/configureStore';
-import config from './aws-exports';
 import Login from './views/Login/Login';
 import Home from './views/Home/Home';
 import CreateProject from './views/CreateProject/CreateProject';
@@ -17,10 +16,10 @@ import Project from './views/Project/Project';
 const amplifyConfig = {
   Auth: {
     mandatorySignIn: true,
-    region: config.aws_project_region,
-    userPoolId: config.aws_user_pools_id,
-    identityPoolId: config.aws_cognito_identity_pool_id,
-    userPoolWebClientId: config.aws_user_pools_web_client_id,
+    region: process.env.REACT_APP_REGION,
+    userPoolId: process.env.REACT_APP_USER_POOL_ID,
+    // identityPoolId: 'eu-west-1:52604d4d-3157-4dfb-ac3b-2a68703d3ca1',
+    userPoolWebClientId: process.env.REACT_APP_USER_POOL_CLIENT_ID,
   },
   API: {
     endpoints: [
@@ -34,7 +33,6 @@ const amplifyConfig = {
 };
 
 Amplify.configure(amplifyConfig);
-
 function App(): ReactElement {
   return (
     <Provider store={store}>

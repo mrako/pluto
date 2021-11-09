@@ -28,9 +28,9 @@ export function bindUserToProjectMutation(installationId: string, plutoUserUUID:
   }`);
 }
 
-export function createRepositoryMutation(userUUID: string, name: string): string {
+export function createRepositoryMutation(name: string, projectUUID: string, githubToken: string): string {
   return (`mutation {
-    createRepository(userUuid: ${userUUID}, name: ${name})
+    createRepository(name: "${name}", description: "", projectUuid: "${projectUUID}" github_auth_token: "${githubToken}")
     {
       success
       errors
