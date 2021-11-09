@@ -64,10 +64,10 @@ def remove_app_installation(payload):
     installation_id = payload['installation']['id']
     account = payload['installation']['account']
     if account['type'] == 'Organization':
-        org = find_org(data_origin, installation_id, account, create=True)
+        org = find_org(data_origin, installation_id, account)
         user_link_dao.delete_organisation_links(org.uuid)
         db.session.delete(org)
-    user = find_project_user(data_origin, installation_id, payload['sender'], create=True)
+    user = find_project_user(data_origin, installation_id, payload['sender'])
     user_link_dao.delete_user_links(user.uuid)
     db.session.delete(user)
     db.session.commit()
