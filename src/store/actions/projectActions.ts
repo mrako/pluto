@@ -40,7 +40,7 @@ function getErrorString(error: unknown): string {
 export const createRepositoryAction = (name: string, token: string, projectUUID: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
-    body: { query: createRepositoryMutation(name, token, projectUUID) },
+    body: { query: createRepositoryMutation(name, projectUUID, token) },
   };
   const response = await API.post(apiName, path, request);
   console.log(response);
