@@ -30,7 +30,7 @@ export function bindUserToProjectMutation(installationId: string, plutoUserUUID:
 
 export function createRepositoryMutation(name: string, projectUUID: string, githubToken: string): string {
   return (`mutation {
-    createRepository(name: "${name}", description: null, projectUuid: "${projectUUID}" githubAuthToken: "${githubToken}")
+    createRepository(name: "${name}", description: null, projectUuid: "${projectUUID}" githubAuthToken: "${githubToken}" templates: ["Python Template"])
     {
       success
       errors
