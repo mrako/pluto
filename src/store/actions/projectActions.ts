@@ -61,7 +61,7 @@ export const CreateProjectAction = (name: string, description: string, repositor
     const userLinks = await API.post(apiName, path, userLinksRequest);
     console.log(userLinks);
     checkErrors(userLinks, 'userLinks');
-    const userLink: string = userLinks.data?.userLink.links[0].uuid;
+    const userLink: string = userLinks.data?.userLinks.links[0].uuid;
     const request = {
       headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
       body: { query: createProjectMutation(name, description, userLink) },
