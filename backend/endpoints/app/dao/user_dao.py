@@ -9,6 +9,11 @@ def get_user(user_uuid: UUID):
         .filter(User.uuid == user_uuid).one()
 
 
+def find_user(user_uuid: UUID):
+    return db.session.query(User)\
+        .filter(User.uuid == user_uuid).one_or_none()
+
+
 def get_user_link_by_uuid(user_link_uuid: UUID):
     return db.session.query(UserLink) \
         .filter(UserLink.uuid == user_link_uuid).one()
