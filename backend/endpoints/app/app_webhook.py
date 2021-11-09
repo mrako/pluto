@@ -24,6 +24,7 @@ def receive_github_app_webhook():
                 request.headers.get('x-hub-signature-256', None),
                 WEBHOOK_SECRET,
                 request.data):
+            log.error("Invalid webhook payload signature")
             return "Unauthorized", 401
 
     payload = request.get_json()
