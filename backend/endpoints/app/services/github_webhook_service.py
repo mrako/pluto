@@ -28,7 +28,7 @@ def validate_github_request_sha256(github_signature, webhook_secret, message) ->
 
 def find_or_create_org(data_origin: DataOrigin, installation_id: int, account: dict):
     org = org_dao.find_by_ext_id(data_origin, account['id'])
-    if not org:
+    if org is None:
         org = org_dao.create_org(data_origin, installation_id, account['id'], account['login'])
         db.session.commit()
     return org
@@ -36,7 +36,7 @@ def find_or_create_org(data_origin: DataOrigin, installation_id: int, account: d
 
 def find_or_create_project_user(data_origin: DataOrigin, installation_id: int, sender: dict):
     user = project_dao.find_user_by_ext_id(data_origin, sender['id'])
-    if not user:
+    if user is None:
         user = project_dao.create_project_user(data_origin, installation_id, sender['id'], sender['login'])
         db.session.commit()
     return user

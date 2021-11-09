@@ -46,6 +46,7 @@ services:
       DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'app_webhook.py'
+      FLASK_ENV: 'development'
 
   post_confirmation:
     build:
