@@ -1,11 +1,11 @@
 FROM public.ecr.aws/lambda/python:3.9
 
-ENV GIT_PYTHON_GIT_EXECUTABLE=/usr/bin/git
-ENV GIT_PYTHON_REFRESH=quiet
 
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
 RUN  yum -y install git
+RUN mkdir /opt/extensions
+RUN cp /usr/bin/git /opt/extensions
 COPY requirements_pluto_git.txt  .
 RUN  pip3 install --upgrade pip
 RUN  pip3 install -r requirements_pluto_git.txt --target "${LAMBDA_TASK_ROOT}"

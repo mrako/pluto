@@ -86,6 +86,8 @@ services:
       DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'pluto_git.py'
+      GIT_PYTHON_GIT_EXECUTABLE: '/opt/extensions/git'
+      GIT_PYTHON_REFRESH: 'quiet'
     depends_on:
       - db
     links:
