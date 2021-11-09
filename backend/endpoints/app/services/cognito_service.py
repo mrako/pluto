@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import dao.user_dao as dao
 from api import db
 
@@ -7,7 +9,11 @@ class InvalidUserException(Exception):
 
 
 def create_user(username: str, user_attributes):
-    uuid = user_attributes.get('sub', None)
+    uuid = UUID(user_attributes.get('sub', None))
+    existing_user = dao.find_user(uuid)
+    if existing_user is not None:
+        return existing_user
+
     email = user_attributes.get('email', None)
     name = user_attributes.get('name', None)
 
