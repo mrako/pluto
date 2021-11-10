@@ -3,7 +3,7 @@ import json
 import requests
 from flask import current_app as app
 from uuid import UUID
-from api import db
+from api import db, FUNCTION_NAME_PREFIX
 from utils.common import build_result, build_error_result, success_result
 from utils.db_common import query_db
 from utils.github_common import github_auth_headers
@@ -112,7 +112,7 @@ def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
             return resp.json()
     else:
         client = boto3.client('lambda')
-        resp = client.invoke(FunctionName='pluto_git', InvocationType='RequestResponse',
+        resp = client.invoke(FunctionName=f"{FUNCTION_NAME_PREFIX}pluto-git", InvocationType='RequestResponse',
                              Payload=json.dumps(payload))
         if resp.get('StatusCode', None) == 200:
             return json.loads(resp['Payload'])
