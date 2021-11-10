@@ -22,7 +22,7 @@ def handle_template_service_call(event):
                                           event.get('branch', None))
     except Exception as e:
         return build_error_result("Pushing repository template failed", e)
-    return success_result
+    return success_result()
 
 
 @app.route(BASE_PATH, methods=["POST"])
