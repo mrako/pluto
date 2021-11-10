@@ -6,6 +6,8 @@ import subprocess
 import urllib.parse as parse
 from git import Repo, FetchInfo
 import tempfile
+
+from api import ENVIRONMENT_NAME
 from models import UserLink
 
 # u+rw,g+r
@@ -21,7 +23,9 @@ def push_repository_templates(user_link: UserLink, repo_url: str, templates,
                               github_auth_token: str, branch: str = 'main'):
     if len(templates) > 1:
         raise Exception("More than one template given. Not MVP.")
-    template_manager = TemplateManager(user_link, github_auth_token)
+
+    debug = True if ENVIRONMENT_NAME == 'development' else False
+    template_manager = TemplateManager(user_link, github_auth_token, debug=debug)
     template_manager.push_repo_template(repo_url, MVP_TEMPLATE, branch)
 
 
@@ -82,13 +86,17 @@ class GitException(Exception):
 
 class TemplateManager:
 
-    def __init__(self, user_link: UserLink, github_access_token: str):
+    def __init__(self, user_link: UserLink, github_access_token: str, debug=False):
         self.user = user_link.user
         self.username = self.user.username
         self.user_realname = self.username
         self.user_email = self.user.email
         self.access_token = github_access_token
         self.repository_url = TEMPLATE_REPO_URL
+
+        if debug is True:
+            os.environ['GIT_PYTHON_TRACE'] = 'full'
+            log.debug(f"GIT_PYTHON_GIT_EXECUTABLE: {os.environ.get('GIT_PYTHON_GIT_EXECUTABLE', None)}")
 
     def get_repository_url(self, url):
         parts = url.split('://')
