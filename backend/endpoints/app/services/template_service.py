@@ -85,7 +85,7 @@ class TemplateManager:
     def __init__(self, user_link: UserLink, github_access_token: str):
         self.user = user_link.user
         self.username = self.user.username
-        self.user_realname = self.user.name
+        self.user_realname = self.username
         self.user_email = self.user.email
         self.access_token = github_access_token
         self.repository_url = TEMPLATE_REPO_URL
@@ -123,14 +123,14 @@ class TemplateManager:
         self.recursive_copy(template_dir, target_dir)
 
     def set_git_credentials(self):
-        result = subprocess.run(f"/usr/bin/git config --global user.name \"{self.user_realname}\"",
+        result = subprocess.run(f"git config --global user.name \"{self.user_realname}\"",
                                 capture_output=True)
         if result.returncode > 0:
             log.error(f"git stdout: {result.stdout}")
             log.error(f"git stdout: {result.stderr}")
             raise GitException("Unable to set git user.name")
 
-        result = subprocess.run(f"/usr/bin/git config --global user.email \"{self.user_email}\"",
+        result = subprocess.run(f"git config --global user.email \"{self.user_email}\"",
                                 capture_output=True)
         if result.returncode > 0:
             log.error(f"git stdout: {result.stdout}")
