@@ -133,14 +133,14 @@ class TemplateManager:
         self.recursive_copy(template_dir, target_dir)
 
     def set_git_credentials(self, target_repo_dir):
-        result = subprocess.run(f"/usr/bin/git config user.name \"{self.username}\"", shell=True,
+        result = subprocess.run(f"git config user.name \"{self.username}\"", shell=True,
                                 capture_output=True, cwd=target_repo_dir)
         if result.returncode > 0:
             log.error(f"git stdout: {result.stdout}")
             log.error(f"git stdout: {result.stderr}")
             raise GitException("Unable to set git user.name")
 
-        result = subprocess.run(f"/usr/bin/git config user.email \"{self.user_email}\"", shell=True,
+        result = subprocess.run(f"git config user.email \"{self.user_email}\"", shell=True,
                                 capture_output=True, cwd=target_repo_dir)
         if result.returncode > 0:
             log.error(f"git stdout: {result.stdout}")
