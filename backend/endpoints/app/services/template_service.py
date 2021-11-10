@@ -1,6 +1,8 @@
 import os
 import os.path as path
+import logging as log
 import shutil
+import subprocess
 import urllib.parse as parse
 from git import Repo, FetchInfo
 import tempfile
@@ -121,12 +123,18 @@ class TemplateManager:
         self.recursive_copy(template_dir, target_dir)
 
     def set_git_credentials(self):
-        return_code = os.system(f"/usr/bin/git config --global user.name \"{self.user_realname}\"")
-        if return_code > 0:
+        result = subprocess.run(f"/usr/bin/git config --global user.name \"{self.user_realname}\"",
+                                capture_output=True)
+        if result.returncode > 0:
+            log.error(f"git stdout: {result.stdout}")
+            log.error(f"git stdout: {result.stderr}")
             raise GitException("Unable to set git user.name")
 
-        return_code = os.system(f"/usr/bin/git config --global user.email \"{self.user_email}\"")
-        if return_code > 0:
+        result = subprocess.run(f"/usr/bin/git config --global user.email \"{self.user_email}\"",
+                                capture_output=True)
+        if result.returncode > 0:
+            log.error(f"git stdout: {result.stdout}")
+            log.error(f"git stdout: {result.stderr}")
             raise GitException("Unable to set git user.email")
 
     def push_repo_template(self, target_repo_url, template_dir_path, branch):
