@@ -1,4 +1,5 @@
 import logging as log
+import os
 
 
 def success_result(message: str = None):
@@ -27,3 +28,12 @@ def get_boolean(value: str) -> bool:
     if value is True or (value == 'true' or value == 'True'):
         return True
     return False
+
+
+def find_file(root_path, filename):
+    for root, dirs, files in os.walk(root_path):
+        for file in files:
+            if file == filename:
+                log.info(f"!!! ---> Found {filename} at path {root}")
+                return True
+    log.warning("File not found")

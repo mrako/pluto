@@ -10,6 +10,8 @@ import tempfile
 from api import ENVIRONMENT_NAME
 from models import UserLink
 
+from utils.common import find_file
+
 # u+rw,g+r
 from utils.common import build_error_result
 
@@ -146,6 +148,8 @@ class TemplateManager:
             raise GitException("Unable to set git user.email")
 
     def push_repo_template(self, target_repo_url, template_dir_path, branch):
+        log.info("Trying to find git executable in the filesystem...")
+        find_file("/", "git")
         target_repo_url = self.get_repository_url(target_repo_url)
         with tempfile.TemporaryDirectory() as workdir:
             target_repo_dir = get_repo_dir(workdir, target_repo_url)
