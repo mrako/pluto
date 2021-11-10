@@ -35,5 +35,4 @@ def find_file(root_path, filename):
         for file in files:
             if file == filename:
                 log.info(f"!!! ---> Found {filename} at path {root}")
-                return True
-    log.warning("File not found")
+    log.info("Done searching for file")
