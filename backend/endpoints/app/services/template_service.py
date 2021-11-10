@@ -1,9 +1,13 @@
 import os
 import os.path as path
+import logging as log
 import shutil
+import subprocess
 import urllib.parse as parse
 from git import Repo, FetchInfo
 import tempfile
+
+from api import ENVIRONMENT_NAME
 from models import UserLink
 
 # u+rw,g+r
@@ -19,7 +23,9 @@ def push_repository_templates(user_link: UserLink, repo_url: str, templates,
                               github_auth_token: str, branch: str = 'main'):
     if len(templates) > 1:
         raise Exception("More than one template given. Not MVP.")
-    template_manager = TemplateManager(user_link, github_auth_token)
+
+    debug = True if ENVIRONMENT_NAME == 'development' else False
+    template_manager = TemplateManager(user_link, github_auth_token, debug=debug)
     template_manager.push_repo_template(repo_url, MVP_TEMPLATE, branch)
 
 
@@ -74,15 +80,23 @@ def get_template_name(file_name):
     return ' '.join(parts)
 
 
+class GitException(Exception):
+    pass
+
+
 class TemplateManager:
 
-    def __init__(self, user_link: UserLink, github_access_token: str):
+    def __init__(self, user_link: UserLink, github_access_token: str, debug=False):
         self.user = user_link.user
         self.username = self.user.username
-        self.user_realname = self.user.name
+        self.user_realname = self.username
         self.user_email = self.user.email
         self.access_token = github_access_token
         self.repository_url = TEMPLATE_REPO_URL
+
+        if debug is True:
+            os.environ['GIT_PYTHON_TRACE'] = 'full'
+            log.debug(f"GIT_PYTHON_GIT_EXECUTABLE: {os.environ.get('GIT_PYTHON_GIT_EXECUTABLE', None)}")
 
     def get_repository_url(self, url):
         parts = url.split('://')
@@ -116,13 +130,27 @@ class TemplateManager:
         template_dir = path.join(repo_dir + "/" + template_dir_name)
         self.recursive_copy(template_dir, target_dir)
 
+    def set_git_credentials(self):
+        result = subprocess.run(f"git config user.name \"{self.user_realname}\"",
+                                capture_output=True)
+        if result.returncode > 0:
+            log.error(f"git stdout: {result.stdout}")
+            log.error(f"git stdout: {result.stderr}")
+            raise GitException("Unable to set git user.name")
+
+        result = subprocess.run(f"git config user.email \"{self.user_email}\"",
+                                capture_output=True)
+        if result.returncode > 0:
+            log.error(f"git stdout: {result.stdout}")
+            log.error(f"git stdout: {result.stderr}")
+            raise GitException("Unable to set git user.email")
+
     def push_repo_template(self, target_repo_url, template_dir_path, branch):
         target_repo_url = self.get_repository_url(target_repo_url)
         with tempfile.TemporaryDirectory() as workdir:
             target_repo_dir = get_repo_dir(workdir, target_repo_url)
             repo = get_repository(target_repo_dir, target_repo_url, checkout=False)
-            os.system(f"git config --global user.name \"{self.user_realname}\"")
-            os.system(f"git config --global user.email \"{self.user_email}\"")
+            self.set_git_credentials()
             self.copy_template_dir(workdir, template_dir_path, target_repo_dir)
             repo.git.checkout('-b', branch)
             repo.git.add('--all')

@@ -9,8 +9,7 @@ BASE_PATH = BASE_ROUTE + 'pluto-git'
 
 
 def handler(event, context):
-    handle_template_service_call(event)
-    return event
+    return handle_template_service_call(event)
 
 
 def handle_template_service_call(event):

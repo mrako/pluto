@@ -19,6 +19,7 @@ def handler(event, context):
 
 @app.route(BASE_PATH, methods=["POST"])
 def receive_github_app_webhook():
+    log.debug("Received Github App webhook call")
     if not app.debug:
         if not service.validate_github_request_sha256(
                 request.headers.get('x-hub-signature-256', None),
@@ -26,10 +27,15 @@ def receive_github_app_webhook():
                 request.data):
             log.error("Invalid webhook payload signature")
             return "Unauthorized", 401
+        else:
+            log.debug("Webhook signature verified")
+    else:
+        log.warning("Flask App Debug enabled !!! Not validating webhook secrets")
 
     payload = request.get_json()
     action = payload.get('action', None)
     try:
+        log.debug(f"Executing action {action}")
         if action == "created":
             service.register_app_installation(payload)
         elif action == "suspend":

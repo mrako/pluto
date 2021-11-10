@@ -9,6 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 CORS(app)
 
+ENVIRONMENT_NAME = os.environ.get('ENVIRONMENT_NAME', None)
+FUNCTION_NAME_PREFIX = f"pluto-{ENVIRONMENT_NAME}-" if ENVIRONMENT_NAME is not None else ''
 BASE_ROUTE = os.environ.get('BASE_ROUTE', '/')
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL',
