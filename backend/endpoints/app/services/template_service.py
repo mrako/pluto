@@ -130,16 +130,16 @@ class TemplateManager:
         template_dir = path.join(repo_dir + "/" + template_dir_name)
         self.recursive_copy(template_dir, target_dir)
 
-    def set_git_credentials(self):
+    def set_git_credentials(self, target_repo_dir):
         result = subprocess.run(f"git config user.name \"{self.user_realname}\"",
-                                capture_output=True)
+                                capture_output=True, cwd=target_repo_dir)
         if result.returncode > 0:
             log.error(f"git stdout: {result.stdout}")
             log.error(f"git stdout: {result.stderr}")
             raise GitException("Unable to set git user.name")
 
         result = subprocess.run(f"git config user.email \"{self.user_email}\"",
-                                capture_output=True)
+                                capture_output=True, cwd=target_repo_dir)
         if result.returncode > 0:
             log.error(f"git stdout: {result.stdout}")
             log.error(f"git stdout: {result.stderr}")
@@ -150,7 +150,7 @@ class TemplateManager:
         with tempfile.TemporaryDirectory() as workdir:
             target_repo_dir = get_repo_dir(workdir, target_repo_url)
             repo = get_repository(target_repo_dir, target_repo_url, checkout=False)
-            self.set_git_credentials()
+            self.set_git_credentials(target_repo_dir)
             self.copy_template_dir(workdir, template_dir_path, target_repo_dir)
             repo.git.checkout('-b', branch)
             repo.git.add('--all')
