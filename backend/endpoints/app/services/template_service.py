@@ -10,7 +10,6 @@ import tempfile
 from api import ENVIRONMENT_NAME
 from models import UserLink
 
-from utils.common import find_file
 
 # u+rw,g+r
 from utils.common import build_error_result
