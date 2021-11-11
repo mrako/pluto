@@ -1,23 +1,25 @@
 import React, {
   ReactElement, useState, useCallback, ChangeEvent,
 } from 'react';
-import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
 import Button from 'stories/atoms/Button/Button';
 import Input from 'stories/atoms/Input/Input';
 import TextArea from 'stories/atoms/TextArea/TextArea';
 import * as projectActions from 'store/actions/projectActions';
-import { useAppSelector } from 'utils';
+import { useAppSelector, useAppDispatch } from 'utils';
 
 import './CreateProject.css';
 
 export default function Project(): ReactElement {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  /* const [repository, setRepository] = useState('');
-  const [template, setTemplate] = useState('Python Application'); */
-  const dispatch = useDispatch();
+  const [repository, setRepository] = useState('');
+  const [githubToken, setGithubToken] = useState('');
+  /* const [template, setTemplate] = useState('Python Application'); */
+  const dispatch = useAppDispatch();
   const loading = useAppSelector((state) => state.project.loading);
   const error = useAppSelector((state) => state.project.error);
+  const history = useHistory();
 
   const onChangeHandler = useCallback((event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
     switch (event.target.name) {
@@ -27,10 +29,13 @@ export default function Project(): ReactElement {
       case 'description':
         setDescription(event.target.value);
         break;
-        /* case 'repository':
+      case 'repository':
         setRepository(event.target.value);
         break;
-      case 'template':
+      case 'githubToken':
+        setGithubToken(event.target.value);
+        break;
+        /* case 'template':
         setTemplate(event.target.value); */
         break;
       default:
@@ -39,7 +44,13 @@ export default function Project(): ReactElement {
   }, []);
 
   const onSubmit = async () => {
-    await dispatch(projectActions.CreateProjectAction(name, description));
+    dispatch(projectActions.CreateProjectAction(name, description))
+      .then((projectUuid) => {
+        dispatch(projectActions.createRepositoryAction(repository, githubToken, projectUuid))
+          .finally(() => {
+            history.push(`/project/${projectUuid}`);
+          });
+      });
   };
 
   return (
@@ -64,6 +75,25 @@ export default function Project(): ReactElement {
           id="description"
           placeholder="Project description"
           label="Project description"
+        />
+        <Input
+          className="project-form-input"
+          fluid
+          name="repository"
+          onChange={onChangeHandler}
+          placeholder="Repository name"
+          id="repository"
+          label="Repository name"
+        />
+        <TextArea
+          className="project-form-input"
+          rows={2}
+          name="githubToken"
+          onChange={onChangeHandler}
+          id="github-token"
+          placeholder="Github Personal Access Token"
+          label="Github Personal Access Token"
+          info="This will only be used to create the repositories and push the templates to them. It will not be stored in any way"
         />
         <Button loading={loading} onClick={onSubmit} id="create">CREATE</Button>
       </div>

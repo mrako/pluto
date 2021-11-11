@@ -13,6 +13,8 @@ export enum ActionType {
   CLEAR_CURRENT_PROJECT = 'CLEAR_CURRENT_PROJECT',
   BIND_PROJECT_USER_SUCCESS = 'BIND_PROJECT_USER_SUCCESS',
   BIND_PROJECT_USER_FAILED = 'BIND_PROJECT_USER_FAILED',
+  CREATE_REPOSITORY_SUCCESS = 'CREATE_REPOSITORY_SUCCESS',
+  CREATE_REPOSITORY_FAILED = 'CREATE_REPOSITORY_SUCCESS',
 }
 
 interface actionSignin {
@@ -63,7 +65,15 @@ interface actionBindProjectUserFailed {
   type: ActionType.BIND_PROJECT_USER_FAILED
   payload: string,
 }
+interface actionCreateRepositorySuccess {
+  type: ActionType.CREATE_REPOSITORY_SUCCESS
+}
+interface actionCreateRepositoryFailed {
+  type: ActionType.CREATE_REPOSITORY_FAILED
+  payload: string,
+}
 
 export type Action = actionSignin | actionSignout | actionGetProjectsSuccess | actionProjectsLoading | actionGetProjectsFailed |
   actionCreateProjectSuccess | actionCreateProjectFailed | actionGetCurrentProjectSuccess | actionGetCurrentProjectFailed |
-  actionClearCurrentProject | actionBindProjectUserSuccess | actionBindProjectUserFailed;
+  actionClearCurrentProject | actionBindProjectUserSuccess | actionBindProjectUserFailed | actionCreateRepositorySuccess |
+  actionCreateRepositoryFailed;
