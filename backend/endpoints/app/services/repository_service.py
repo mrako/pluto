@@ -56,7 +56,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
 
         remote_response = push_repository_template(repo.url, templates, user_link.uuid, github_auth_token)
-        if remote_response.get('success', False) is False:
+        if remote_response.get('success', False) is not True:
             raise Exception("Remote call to push repository lambda failed")
 
         update_branch_protection(user_link.organisation.name, repo.name, "main", github_auth_token)
