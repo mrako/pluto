@@ -78,7 +78,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
 
         db.session.commit()
 
-        return build_result("repository", repo.url, status_code=201)
+        return build_result("repository", repo.url)
     except RepositoryExistsException as e:
         db.session.rollback()
         return build_error_result("Bad Request", 400, e)

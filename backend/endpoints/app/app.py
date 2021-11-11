@@ -1,6 +1,7 @@
 import os
 import logging as log
 import awsgi
+import json
 from ariadne.constants import PLAYGROUND_HTML
 from api import app, BASE_ROUTE
 from ariadne import graphql_sync, ObjectType, load_schema_from_path, make_executable_schema, \
@@ -9,7 +10,6 @@ from flask import request, jsonify
 from services import project_service, repository_service, user_service
 from services.flask_context_service import ContextBuilder, ContextCreationException
 from utils.common import build_error_result, get_boolean
-from utils.jwt_common import JWTParserInitialisationException
 
 BASE_PATH = BASE_ROUTE + 'api'
 KEYS_FILE_PATH = os.environ.get('KEYS_FILE_PATH', None)
@@ -70,12 +70,23 @@ def graphql_playground():
 @app.route(BASE_PATH, methods=["POST"])
 def graphql_server():
     try:
-        success, status_code, result = graphql_sync(
+        success, result = graphql_sync(
             schema,
             request.get_json(),
             context_value=ctx_builder.build_context(request),
             debug=app.debug
         )
+
+        status_code = 200
+        data = result.get('data', None)
+        if data is not None:
+            operation = next(iter(data))
+            payload = data[operation]
+            errors_list = payload.get('errors', None)
+            if errors_list is not None and len(errors_list) > 0:
+                error_json = errors_list[0]
+                errors = json.loads(error_json)
+                status_code = errors.get('status_code', 400)
 
         return jsonify(result), status_code
     except ContextCreationException as e:

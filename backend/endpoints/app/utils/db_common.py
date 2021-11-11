@@ -12,11 +12,7 @@ def update_db(result_field_name: str, dao_function, **kwargs):
 def execute_db(result_field_name: str, dao_function, operation: str = 'Querying', **kwargs):
     try:
         # Execute the dao method and return result
-        status_code = 201
-        if operation == 'Querying':
-            status_code = 200
-
-        return build_result(result_field_name, dao_function(**kwargs), status_code=status_code)
+        return build_result(result_field_name, dao_function(**kwargs))
     except Exception as e:
         msg = f"{operation} {result_field_name} failed"
         return build_error_result(msg, 500, e)
