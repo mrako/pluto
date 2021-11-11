@@ -25,9 +25,7 @@ function getErrorString(error: unknown): string {
   if (typeof error === 'string') {
     return error;
   } else if (error instanceof Error) {
-    console.log(error.message);
     if (error.message === 'Request failed with status code 401') {
-      console.log(history.location);
       history.push('/login', { from: history.location });
     }
     return error.message;
@@ -42,15 +40,24 @@ export const createRepositoryAction = (name: string, token: string, projectUUID:
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
     body: { query: createRepositoryMutation(name, projectUUID, token) },
   };
-  const response = await API.post(apiName, path, request);
-  console.log(response);
-
-  dispatch({
-    type: ActionType.CREATE_PROJECT_SUCCESS,
-  });
+  try {
+    const response = await API.post(apiName, path, request);
+    checkErrors(response, 'createRepository');
+    dispatch({
+      type: ActionType.CREATE_REPOSITORY_SUCCESS,
+    });
+  } catch (error) {
+    const errorString = getErrorString(error);
+    dispatch({
+      type: ActionType.CREATE_REPOSITORY_FAILED,
+      payload: errorString,
+    });
+    return Promise.reject();
+  }
+  return Promise.resolve();
 };
 
-export const CreateProjectAction = (name: string, description: string, repository: string, token: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+export const CreateProjectAction = (name: string, description: string) => async (dispatch: Dispatch<Action>): Promise<string> => {
   dispatch({ type: ActionType.PROJECTS_LOADING });
 
   const userLinksRequest = {
@@ -59,7 +66,6 @@ export const CreateProjectAction = (name: string, description: string, repositor
   };
   try {
     const userLinks = await API.post(apiName, path, userLinksRequest);
-    console.log(userLinks);
     checkErrors(userLinks, 'userLinks');
     const userLink: string = userLinks.data?.userLinks.links[0].uuid;
     const request = {
@@ -73,15 +79,14 @@ export const CreateProjectAction = (name: string, description: string, repositor
     dispatch({
       type: ActionType.CREATE_PROJECT_SUCCESS,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dispatch<any>(createRepositoryAction(repository, token, projectUUID));
-    history.push(`/project/${projectUUID}`);
+    return Promise.resolve(projectUUID);
   } catch (error) {
     const errorString = getErrorString(error);
     dispatch({
       type: ActionType.CREATE_PROJECT_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
 };
 
@@ -105,7 +110,9 @@ export const GetProjectsAction = () => async (dispatch: Dispatch<Action>): Promi
       type: ActionType.GET_PROJECTS_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
+  return Promise.resolve();
 };
 
 export const GetProjectByUUID = (uuid:string) => async (dispatch: Dispatch<Action>): Promise<void> => {
@@ -128,7 +135,9 @@ export const GetProjectByUUID = (uuid:string) => async (dispatch: Dispatch<Actio
       type: ActionType.GET_CURRENT_PROJECT_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
+  return Promise.resolve();
 };
 
 export const ClearCurrentProject = () => async (dispatch: Dispatch<Action>): Promise<void> => {
@@ -152,5 +161,7 @@ export const bindPlutoUserToProject = (installationId: string, plutoUserId: stri
       type: ActionType.BIND_PROJECT_USER_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
+  return Promise.resolve();
 };
