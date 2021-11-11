@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { API } from 'aws-amplify';
-import { createProjectMutation, bindUserToProjectMutation } from 'graphql/mutations';
-import { getProjectByUUIDQuery, getProjectsQuery } from 'graphql/queries';
+import { createProjectMutation, bindUserToProjectMutation, createRepositoryMutation } from 'graphql/mutations';
+import { getProjectByUUIDQuery, getProjectsQuery, getUserLinksQuery } from 'graphql/queries';
 import { IProject } from 'types/types';
 import history from 'customHistory';
 import store from 'store/configureStore';
@@ -25,32 +25,68 @@ function getErrorString(error: unknown): string {
   if (typeof error === 'string') {
     return error;
   } else if (error instanceof Error) {
+    if (error.message === 'Request failed with status code 401') {
+      history.push('/login', { from: history.location });
+    }
     return error.message;
   } else if (error instanceof Array) {
     return error.toString();
   }
   return 'Error occured';
 }
-export const CreateProjectAction = (name: string, description: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
-  dispatch({ type: ActionType.PROJECTS_LOADING });
+
+export const createRepositoryAction = (name: string, token: string, projectUUID: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
-    body: { query: createProjectMutation(name, description) },
+    body: { query: createRepositoryMutation(name, projectUUID, token) },
   };
   try {
+    const response = await API.post(apiName, path, request);
+    checkErrors(response, 'createRepository');
+    dispatch({
+      type: ActionType.CREATE_REPOSITORY_SUCCESS,
+    });
+  } catch (error) {
+    const errorString = getErrorString(error);
+    dispatch({
+      type: ActionType.CREATE_REPOSITORY_FAILED,
+      payload: errorString,
+    });
+    return Promise.reject();
+  }
+  return Promise.resolve();
+};
+
+export const CreateProjectAction = (name: string, description: string) => async (dispatch: Dispatch<Action>): Promise<string> => {
+  dispatch({ type: ActionType.PROJECTS_LOADING });
+
+  const userLinksRequest = {
+    headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
+    body: { query: getUserLinksQuery() },
+  };
+  try {
+    const userLinks = await API.post(apiName, path, userLinksRequest);
+    checkErrors(userLinks, 'userLinks');
+    const userLink: string = userLinks.data?.userLinks.links[0].uuid;
+    const request = {
+      headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
+      body: { query: createProjectMutation(name, description, userLink) },
+    };
+
     const response = await API.post(apiName, path, request);
     checkErrors(response, 'createProject');
     const projectUUID: string = response.data?.createProject?.project?.uuid;
     dispatch({
       type: ActionType.CREATE_PROJECT_SUCCESS,
     });
-    history.push(`/project/${projectUUID}`);
+    return Promise.resolve(projectUUID);
   } catch (error) {
     const errorString = getErrorString(error);
     dispatch({
       type: ActionType.CREATE_PROJECT_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
 };
 
@@ -74,7 +110,9 @@ export const GetProjectsAction = () => async (dispatch: Dispatch<Action>): Promi
       type: ActionType.GET_PROJECTS_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
+  return Promise.resolve();
 };
 
 export const GetProjectByUUID = (uuid:string) => async (dispatch: Dispatch<Action>): Promise<void> => {
@@ -97,17 +135,19 @@ export const GetProjectByUUID = (uuid:string) => async (dispatch: Dispatch<Actio
       type: ActionType.GET_CURRENT_PROJECT_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
+  return Promise.resolve();
 };
 
 export const ClearCurrentProject = () => async (dispatch: Dispatch<Action>): Promise<void> => {
   dispatch({ type: ActionType.CLEAR_CURRENT_PROJECT });
 };
 
-export const bindPlutoUserToProject = (installationId: string, plutoUserId: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+export const bindPlutoUserToProject = (installationId: string, plutoUserId: string, code: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
-    body: { query: bindUserToProjectMutation(installationId, plutoUserId) },
+    body: { query: bindUserToProjectMutation(installationId, plutoUserId, code) },
   };
   try {
     const response = await API.post(apiName, path, request);
@@ -121,5 +161,7 @@ export const bindPlutoUserToProject = (installationId: string, plutoUserId: stri
       type: ActionType.BIND_PROJECT_USER_FAILED,
       payload: errorString,
     });
+    return Promise.reject();
   }
+  return Promise.resolve();
 };
