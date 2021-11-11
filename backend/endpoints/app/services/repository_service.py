@@ -56,15 +56,15 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
 
         remote_response = push_repository_template(repo.url, templates, user_link.uuid, github_auth_token)
+        log.debug(f"Remote response in api side is {remote_response}")
         if remote_response.get('success', False):
-            return build_error_result("Remote call to push repository lambda failed")
+            raise Exception("Remote call to push repository lambda failed")
 
+        db.session.commit()
         return build_result("repository", repo)
     except Exception as e:
         db.session.rollback()
         return build_error_result(str(e), e)
-    finally:
-        db.session.commit()
 
 
 @convert_kwargs_to_snake_case
@@ -116,6 +116,7 @@ def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
                              Payload=json.dumps(payload))
         if resp.get('StatusCode', None) == 200:
             json_response = json.loads(resp['Payload'].read().decode("utf-8"))
+            # This should be '{"success": true}' on success, '{"success": false, errors: []}' on failure
             log.debug(f"Gitlambda returned {json_response}")
             return json_response
         else:
