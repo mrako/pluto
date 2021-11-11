@@ -20,9 +20,17 @@ export default function Project(): ReactElement {
     <div>
       {loading ? 'Loading...'
         : (
-          <div>
-            {project?.name}
-          </div>
+          <>
+            <h1>{project?.name}</h1>
+            <h3>Repositories</h3>
+            {project?.repositories?.map((repo) => (
+              <div key={repo.uuid}>
+                <div>{repo.name}</div>
+                <div>{repo.description} </div>
+                <a target="_blank" rel="noreferrer" href={repo.url}>{repo.url}</a>
+              </div>
+            ))}
+          </>
         )}
 
     </div>
