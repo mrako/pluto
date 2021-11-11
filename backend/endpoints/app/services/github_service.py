@@ -18,7 +18,7 @@ def update_branch_protection(owner: str, repo_name: str, branch: str, github_aut
     payload = {
         'required_status_checks': {
             'strict': True,
-            'contexts': []  # What to put here?
+            'contexts': []
         },
         'enforce_admins': True,
         'required_pull_request_reviews': {
@@ -30,8 +30,10 @@ def update_branch_protection(owner: str, repo_name: str, branch: str, github_aut
             'require_code_owner_reviews': True,
             'required_approving_review_count': 1
         },
-        'restrictions': None,
-        'required_conversation_resolution': True
+        'restrictions': {'users': [], 'teams': [], 'apps': []},
+        'required_conversation_resolution': True,
+        'allow_force_pushes': False,
+        'allow_deletions:':  False
     }
 
     resp = requests.put(f"{app.config['GITHUB_BASE_URL']}repos/{owner}/"
