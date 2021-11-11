@@ -18,7 +18,6 @@ const amplifyConfig = {
     mandatorySignIn: true,
     region: process.env.REACT_APP_REGION,
     userPoolId: process.env.REACT_APP_USER_POOL_ID,
-    // identityPoolId: 'eu-west-1:52604d4d-3157-4dfb-ac3b-2a68703d3ca1',
     userPoolWebClientId: process.env.REACT_APP_USER_POOL_CLIENT_ID,
   },
   API: {
