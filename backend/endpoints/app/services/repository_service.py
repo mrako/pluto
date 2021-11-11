@@ -60,8 +60,8 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if remote_response.get('success', False):
             raise Exception("Remote call to push repository lambda failed")
 
-        return build_result("repository", repo)
         db.session.commit()
+        return build_result("repository", repo)
     except Exception as e:
         db.session.rollback()
         return build_error_result(str(e), e)
@@ -116,6 +116,7 @@ def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
                              Payload=json.dumps(payload))
         if resp.get('StatusCode', None) == 200:
             json_response = json.loads(resp['Payload'].read().decode("utf-8"))
+            # This should be '{"success": true}' on success, '{"success": false, errors: []}' on failure
             log.debug(f"Gitlambda returned {json_response}")
             return json_response
         else:
