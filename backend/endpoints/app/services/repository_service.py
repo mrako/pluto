@@ -59,12 +59,11 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if remote_response.get('success', False):
             return build_error_result("Remote call to push repository lambda failed")
 
+        db.session.commit()
         return build_result("repository", repo)
     except Exception as e:
         db.session.rollback()
         return build_error_result(str(e), e)
-    finally:
-        db.session.commit()
 
 
 @convert_kwargs_to_snake_case
