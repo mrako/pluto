@@ -35,9 +35,15 @@ export default function Login(): ReactElement {
         slot="sign-up"
         formFields={[
           {
-            type: 'username',
+            type: 'email',
             label: 'Email',
             placeholder: 'Email',
+            inputProps: { required: true, autocomplete: 'email' },
+          },
+          {
+            type: 'username',
+            label: 'Username',
+            placeholder: 'Username',
             inputProps: { required: true, autocomplete: 'username' },
           },
           {

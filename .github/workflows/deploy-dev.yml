@@ -35,3 +35,9 @@ jobs:
       - name: Push Project
         run: |
           bash push.sh
+        env:
+          REACT_APP_USER_POOL_ID: ${{ secrets.DEV_USER_POOL_ID }}
+          REACT_APP_USER_POOL_CLIENT_ID: ${{ secrets.DEV_USER_POOL_CLIENT_ID }}
+          REACT_APP_REGION: eu-west-1
+          REACT_APP_PROJECT_API_URL: https://api.pluto-dev.rnd.eficode.io/development
+          REACT_APP_GITHUB_APP_INSTALLATION_URL: https://github.com/apps/plutodevapp/installations/new

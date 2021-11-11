@@ -22,8 +22,9 @@ class RepositoryExistsException(Exception):
     pass
 
 
-class RepositoryCreationException(Exception):
+class RepositoryException(Exception):
     pass
+
 
 @convert_kwargs_to_snake_case
 def get_repository(*_, repository_uuid: UUID):
@@ -51,7 +52,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
             raise RepositoryExistsException("Repository already exists in GitHub")
         elif resp.status_code != 201:
             log.error(f"Failed to create repository with response code {resp.status_code}: {resp.text}")
-            raise RepositoryCreationException("Github repository creation failed")
+            raise RepositoryException("Github repository creation failed")
 
         repo = repository_dao.insert_repository(resp.json()['html_url'], name, description)
 
@@ -70,22 +71,23 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
 
         remote_response = push_repository_template(repo.url, templates, user_link.uuid, github_auth_token)
-        if remote_response.get('success', False):
+
+        if remote_response.get('success', False) is False:
             log.error(f"Git Lambda failed: {remote_response}")
-            return build_error_result("Remote call to git lambda failed", 500)
+            raise RepositoryException("Pushing repository template failed")
+
+        db.session.commit()
 
         return build_result("repository", repo.url, status_code=201)
     except RepositoryExistsException as e:
         db.session.rollback()
         return build_error_result("Bad Request", 400, e)
-    except RepositoryCreationException as e:
+    except RepositoryException as e:
         db.session.rollback()
         return build_error_result("Repository creation failed", 500, e)
     except Exception as e:
         db.session.rollback()
         return build_error_result("Bad request", 400, e)
-    finally:
-        db.session.commit()
 
 
 @convert_kwargs_to_snake_case
@@ -139,7 +141,6 @@ def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
                              Payload=json.dumps(payload))
         if resp.get('StatusCode', None) == 200:
             json_response = json.loads(resp['Payload'].read().decode("utf-8"))
-            log.debug(f"Gitlambda returned {json_response}")
             return json_response
         else:
             raise Exception("Call to git lambda failed")

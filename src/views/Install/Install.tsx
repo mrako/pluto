@@ -11,8 +11,9 @@ export default function Install(): ReactElement {
   useEffect(() => {
     const installationId = queryParams.get('installation_id');
     const setupAction = queryParams.get('setup_action');
-    if (installationId && setupAction === 'install' && user) {
-      dispatch(bindPlutoUserToProject(installationId, user.sub));
+    const code = queryParams.get('code');
+    if (installationId && setupAction === 'install' && code && user) {
+      dispatch(bindPlutoUserToProject(installationId, user.sub, code));
     }
   }, [queryParams, dispatch, user]);
   return (
