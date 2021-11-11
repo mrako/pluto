@@ -1,7 +1,6 @@
 import React, { ReactElement, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from 'utils';
+import { useAppSelector, useAppDispatch } from 'utils';
 
 import Card from 'stories/composite/Card/Card';
 import * as projectActions from 'store/actions/projectActions';
@@ -12,7 +11,7 @@ export default function Home(): ReactElement {
   const projects = useAppSelector((state) => state.project.projects);
   const loading = useAppSelector((state) => state.project.loading);
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const newProject = useCallback(() => {
     history.push('/project/create');
