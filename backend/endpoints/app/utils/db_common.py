@@ -12,10 +12,14 @@ def update_db(result_field_name: str, dao_function, **kwargs):
 def execute_db(result_field_name: str, dao_function, operation: str = 'Querying', **kwargs):
     try:
         # Execute the dao method and return result
-        return build_result(result_field_name, dao_function(**kwargs))
+        status_code = 201
+        if operation == 'Querying':
+            status_code = 200
+
+        return build_result(result_field_name, dao_function(**kwargs), status_code=status_code)
     except Exception as e:
         msg = f"{operation} {result_field_name} failed"
-        return build_error_result(msg, e)
+        return build_error_result(msg, 500, e)
 
 
 def delete_from_db(object_name: str, dao_function, **kwargs):
@@ -27,5 +31,5 @@ def delete_from_db(object_name: str, dao_function, **kwargs):
         return success_result()
     except Exception as e:
         msg = f"Deleting {object_name} with args {kwargs} failed"
-        return build_error_result(msg, e)
+        return build_error_result(msg, 500, e)
 

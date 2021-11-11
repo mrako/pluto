@@ -21,8 +21,8 @@ def handle_template_service_call(event):
                                           event.get('github_auth_token'),
                                           event.get('branch', None))
     except Exception as e:
-        return build_error_result("Pushing repository template failed", e)
-    return success_result()
+        return build_error_result("Pushing repository template failed", 500, e)
+    return success_result(status_code=201)
 
 
 @app.route(BASE_PATH, methods=["POST"])

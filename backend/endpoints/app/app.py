@@ -70,19 +70,18 @@ def graphql_playground():
 @app.route(BASE_PATH, methods=["POST"])
 def graphql_server():
     try:
-        success, result = graphql_sync(
+        success, status_code, result = graphql_sync(
             schema,
             request.get_json(),
             context_value=ctx_builder.build_context(request),
             debug=app.debug
         )
 
-        status_code = 200 if success else 400
         return jsonify(result), status_code
     except ContextCreationException as e:
-        return jsonify(build_error_result("Bad Request")), 400
-    except JWTParserInitialisationException as e:
-        return jsonify(build_error_result("Internal server error")), 500
+        return jsonify(build_error_result("Bad Request", 400, e)), 400
+    except Exception as e:
+        return jsonify(build_error_result("Internal server error", 500, e)), 500
 
 
 if __name__ == "__main__":

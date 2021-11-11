@@ -1,3 +1,4 @@
+import logging as log
 from uuid import UUID
 from api import db
 from utils.common import build_result, build_error_result, build_result_from_dict
@@ -44,14 +45,18 @@ def get_project_by_user(*_, user_uuid: UUID, project_uuid: UUID):
 def add_project(obj, info, name: str, description: str, user_link_uuid: UUID):
     try:
         user_link = user_dao.get_user_link_by_uuid(user_link_uuid)
+        if project_dao.project_exists(user_link, name):
+            log.error(f"Project named {name} already exists for user link {user_link.uuid}")
+            return build_error_result("Bad request", 400)
+
         proj = dao.insert_project(name=name,
                                   description=description)
         project_dao.insert_project_member(user_link, proj)
         db.session.commit()
-        return build_result("project", proj)
+        return build_result("project", proj, status_code=201)
     except Exception as e:
         db.session.rollback()
-        return build_error_result(str(e), e)
+        return build_error_result("Adding project failed", 500, e)
 
 
 @convert_kwargs_to_snake_case
@@ -81,7 +86,7 @@ def bind_user_to_installation(*_, installation_id: str, code: str, pluto_user_uu
         db.session.commit()
         return build_result_from_dict({'user_account': user,
                                        'project_user': project_user,
-                                       'organisation': org})
+                                       'organisation': org}, status_code=201)
     except Exception as e:
         msg = f"Binding pluto user {pluto_user_uuid} to installation {installation_id} failed"
         return build_error_result(msg, e)
