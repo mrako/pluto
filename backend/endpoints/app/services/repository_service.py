@@ -115,6 +115,8 @@ def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
         resp = client.invoke(FunctionName=f"{FUNCTION_NAME_PREFIX}pluto-git", InvocationType='RequestResponse',
                              Payload=json.dumps(payload))
         if resp.get('StatusCode', None) == 200:
-            return json.loads(resp['Payload'].read().decode("utf-8"))
+            json_response = json.loads(resp['Payload'].read().decode("utf-8"))
+            log.debug(f"Gitlambda returned {json_response}")
+            return json_response
         else:
             raise Exception("Call to git lambda failed")
