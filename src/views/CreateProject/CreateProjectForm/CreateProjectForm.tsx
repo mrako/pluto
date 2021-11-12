@@ -63,8 +63,9 @@ export default function CreateProjectForm({
           id="github-token"
           placeholder="Github Personal Access Token"
           label="Github Personal Access Token"
-          info={`This will only be used to create the repositories and push the templates to them.
-          This will not be stored in any way`}
+          info={`The access token will only be used to create the repositories and push the templates.
+          The token will not be stored by us in any way.
+          In your Github account go to Settings -> Developer Settings -> Personal access tokens -> Generate new token. Name the token and select everything in "repo" scope.`}
         />
         <Button loading={loading} onClick={onSubmit} id="create">CREATE</Button>
       </div>
