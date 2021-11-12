@@ -196,14 +196,6 @@ curl -X POST \
 "http://localhost:9000/2015-03-31/functions/function/invocations"
 ```
 
-### Call Pluto app (Github) webhook endpoint
-```
-curl -X POST \
--H "Content-Type: application/json" \
--d "@./test_events/lambda_invocations/github_app_webhook.json" \
-"http://localhost:9002/2015-03-31/functions/function/invocations"
-```
-
 ## Example GraphQL query payloads
 
 ### Get all projects by organisation
