@@ -35,6 +35,18 @@ def get_project(project_uuid: UUID):
         .filter(Project.uuid == project_uuid).one()
 
 
+def get_projects_by_user_link_query(user_link: UserLink):
+    return db.session.query(Project)\
+        .join(Project, Project.uuid == ProjectMember.project_uuid) \
+        .filter(ProjectMember.user_link_uuid == user_link.uuid)
+
+
+def project_exists(user_link: UserLink, name: str):
+    query = get_projects_by_user_link_query(user_link) \
+        .filter(Project.name == name)
+    return db.session.query(query.exists()).scalar()
+
+
 def insert_project(name: str, description: str, repository: Repository = None):
     uuid = uuid4()
     project = Project(uuid=uuid,

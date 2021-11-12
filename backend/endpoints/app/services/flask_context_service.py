@@ -63,9 +63,6 @@ class ContextBuilder:
         except JWTParserInitialisationException as e:
             raise e
         except NoResultFound as e:
-            log.exception(f"User '{sub}' not found")
             raise ContextCreationException("Creating context failed")
         except Exception:
-            msg = "Creating context failed"
-            log.exception(msg)
-            raise ContextCreationException(msg)
+            raise ContextCreationException("Creating context failed")
