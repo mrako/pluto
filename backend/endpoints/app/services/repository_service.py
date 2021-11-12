@@ -6,7 +6,7 @@ from uuid import UUID
 from api import db, FUNCTION_NAME_PREFIX
 from utils.common import build_result, build_error_result, success_result
 from utils.db_common import query_db
-from utils.github_common import github_auth_headers
+from services.github_service import github_auth_headers, update_branch_protection
 
 from ariadne import convert_kwargs_to_snake_case
 
@@ -56,8 +56,10 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
 
         remote_response = push_repository_template(repo.url, templates, user_link.uuid, github_auth_token)
-        if remote_response.get('success', False) is False:
+        if remote_response.get('success', False) is not True:
             raise Exception("Remote call to push repository lambda failed")
+
+        update_branch_protection(user_link.organisation.name, repo.name, "main", github_auth_token)
 
         db.session.commit()
         return build_result("repository", repo)
