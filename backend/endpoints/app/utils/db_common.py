@@ -15,7 +15,7 @@ def execute_db(result_field_name: str, dao_function, operation: str = 'Querying'
         return build_result(result_field_name, dao_function(**kwargs))
     except Exception as e:
         msg = f"{operation} {result_field_name} failed"
-        return build_error_result(msg, e)
+        return build_error_result(msg, 500, e)
 
 
 def delete_from_db(object_name: str, dao_function, **kwargs):
@@ -27,5 +27,5 @@ def delete_from_db(object_name: str, dao_function, **kwargs):
         return success_result()
     except Exception as e:
         msg = f"Deleting {object_name} with args {kwargs} failed"
-        return build_error_result(msg, e)
+        return build_error_result(msg, 500, e)
 

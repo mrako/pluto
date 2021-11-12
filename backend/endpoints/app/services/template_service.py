@@ -10,8 +10,6 @@ import tempfile
 from api import ENVIRONMENT_NAME
 from models import UserLink
 
-from utils.common import find_file
-
 # u+rw,g+r
 from utils.common import build_error_result
 
@@ -57,7 +55,9 @@ def get_repository(repo_dir, repo_url, checkout=True, branch='main'):
                 repo.heads.master.set_tracking_branch(ref)  # set local "master" to track remote "master
                 repo.heads[branch].checkout()  # checkout local "master" to working tree
             else:
-                return build_error_result(message="Unsupported branch selected! Choose main or master branch.")
+                return build_error_result(
+                    "Unsupported branch selected! Choose main or master branch.",
+                    400)
         return repo
     else:
         return Repo(repo_dir)
