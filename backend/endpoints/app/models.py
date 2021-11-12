@@ -109,8 +109,7 @@ class Board(Base):
 class UserLink(Base):
     __tablename__ = "user_link"
     __table_args__ = (
-        UniqueConstraint('user_uuid', 'project_user_uuid'),
-        UniqueConstraint('project_user_uuid', 'organisation_uuid')
+        UniqueConstraint('user_uuid', 'project_user_uuid', 'organisation_uuid'),
     )
     uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_uuid = Column(UUID(as_uuid=True), ForeignKey('user_account.uuid'), nullable=False, onupdate="CASCADE")
