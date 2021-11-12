@@ -38,7 +38,8 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if len(templates) <= 0:
             return build_error_result("No Template given", 400)
 
-        project = project_dao.get_project(project_uuid)
+        pluto_user_uuid = info.context['pluto_user'].uuid
+        project = project_dao.get_project(pluto_user_uuid, project_uuid)
         user_link = user_dao.get_user_link_by_user_and_project_uuids(info.context['pluto_user'].uuid, project.uuid)
 
         if repository_dao.repository_exists(project, name):
@@ -56,10 +57,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
 
         repo = repository_dao.insert_repository(resp.json()['html_url'], name, description)
 
-        # Get the project that was created earlier
-
-        proj = project_dao.get_project(project_uuid)
-        proj.repositories.append(repo)
+        project.repositories.append(repo)
 
         resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
                              f"{repo.name}/projects",
@@ -70,7 +68,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if resp.status_code != 201:
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
 
-        remote_response = push_repository_template(repo.url, templates, user_link.uuid, github_auth_token)
+        remote_response = push_repository_template(repo.url, templates, pluto_user_uuid, user_link.uuid, github_auth_token)
 
         if remote_response.get('success', False) is False:
             log.error(f"Git Lambda failed: {remote_response}")
@@ -124,9 +122,10 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_t
         return build_error_result("Repository deletion failed", 500, e)
 
 
-def push_repository_template(repo_url: str, template: str, user_link_uuid: UUID,
+def push_repository_template(repo_url: str, template: str, user_uuid: UUID, user_link_uuid: UUID,
                              github_auth_token: str, branch: str = 'main'):
-    payload = {'user_link_uuid': str(user_link_uuid),
+    payload = {'user_uuid': user_uuid,
+               'user_link_uuid': str(user_link_uuid),
                'github_auth_token': github_auth_token,
                'repo_url': repo_url,
                'template': template,
