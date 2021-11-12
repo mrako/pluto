@@ -1,7 +1,7 @@
 import logging as log
 from uuid import UUID
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from api import db
 from utils.common import build_result, build_error_result, build_result_from_dict
@@ -57,6 +57,9 @@ def add_project(obj, info, name: str, description: str, user_link_uuid: UUID):
         project_dao.insert_project_member(user_link, proj)
         db.session.commit()
         return build_result("project", proj)
+    except NoResultFound as e:
+        db.session.rollback()
+        return build_error_result("Adding project failed", 400, e)
     except Exception as e:
         db.session.rollback()
         return build_error_result("Adding project failed", 500, e)

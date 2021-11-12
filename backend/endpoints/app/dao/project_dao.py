@@ -37,7 +37,7 @@ def get_project(project_uuid: UUID):
 
 def get_projects_by_user_link_query(user_link: UserLink):
     return db.session.query(Project)\
-        .join(Project, Project.uuid == ProjectMember.project_uuid) \
+        .join(ProjectMember, ProjectMember.project_uuid == Project.uuid) \
         .filter(ProjectMember.user_link_uuid == user_link.uuid)
 
 
