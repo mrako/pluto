@@ -7,7 +7,7 @@ from uuid import UUID
 from api import db, FUNCTION_NAME_PREFIX
 from utils.common import build_result, build_error_result, success_result
 from utils.db_common import query_db
-from utils.github_common import github_auth_headers
+from services.github_service import github_auth_headers, update_branch_protection
 
 from ariadne import convert_kwargs_to_snake_case
 
@@ -75,6 +75,8 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if remote_response.get('success', False) is False:
             log.error(f"Git Lambda failed: {remote_response}")
             raise RepositoryException("Pushing repository template failed")
+
+        update_branch_protection(user_link.organisation.name, repo.name, "main", github_auth_token)
 
         db.session.commit()
 
