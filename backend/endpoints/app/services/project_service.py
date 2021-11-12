@@ -49,7 +49,7 @@ def add_project(obj, info, name: str, description: str, user_link_uuid: UUID):
     try:
         user_link = user_dao.get_user_link_by_uuid(user_link_uuid)
         if project_dao.project_exists(user_link, name):
-            log.error(f"Project named {name} already exists for user link {user_link.uuid}")
+            log.error(f"Project named {name} already exists for this user link")
             return build_error_result("Bad request", 400)
 
         proj = dao.insert_project(name=name,
