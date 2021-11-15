@@ -45,9 +45,14 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if repository_dao.repository_exists(project, name):
             raise RepositoryExistsException(f"Repository {name} already exists for project {project.name} in Pluto")
 
-        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
-                             headers=github_auth_headers(github_auth_token),
-                             json={'name': name, 'body': description})
+        if user_link.organisation:
+            resp = requests.post(f"{app.config['GITHUB_BASE_URL']}orgs/{user_link.organisation.name}/repos",
+                                 headers=github_auth_headers(github_auth_token),
+                                 json={'name': name, 'body': description})
+        else:
+            resp = requests.post(f"{app.config['GITHUB_BASE_URL']}user/repos",
+                                 headers=github_auth_headers(github_auth_token),
+                                 json={'name': name, 'body': description})
         if resp.status_code == 422:
             # 422 gets returned at least for already existing repo
             raise RepositoryExistsException("Repository already exists in GitHub")
@@ -56,19 +61,26 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
             raise RepositoryException("Github repository creation failed")
 
         repo = repository_dao.insert_repository(resp.json()['html_url'], name, description)
-
         project.repositories.append(repo)
 
-        resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
-                             f"{repo.name}/projects",
-                             headers=github_auth_headers(github_auth_token),
-                             json={'name': proj.name,
-                                   'body': proj.description})
+        if user_link.organisation:
+            resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.organisation.name}/"
+                                 f"{repo.name}/projects",
+                                 headers=github_auth_headers(github_auth_token),
+                                 json={'name': project.name,
+                                       'body': project.description})
+        else:
+            resp = requests.post(f"{app.config['GITHUB_BASE_URL']}repos/{user_link.project_user.username}/"
+                                 f"{repo.name}/projects",
+                                 headers=github_auth_headers(github_auth_token),
+                                 json={'name': project.name,
+                                       'body': project.description})
 
         if resp.status_code != 201:
             raise Exception(f"Failed to create repository project with response code {resp.status_code}: {resp.text}")
 
-        remote_response = push_repository_template(repo.url, templates, pluto_user_uuid, user_link.uuid, github_auth_token)
+        remote_response = push_repository_template(repo.url, templates, pluto_user_uuid,
+                                                   user_link.uuid, github_auth_token)
 
         if remote_response.get('success', False) is False:
             log.error(f"Git Lambda failed: {remote_response}")
@@ -124,7 +136,7 @@ def delete_repository_from_github(*_, info, repository_uuid: UUID, github_auth_t
 
 def push_repository_template(repo_url: str, template: str, user_uuid: UUID, user_link_uuid: UUID,
                              github_auth_token: str, branch: str = 'main'):
-    payload = {'user_uuid': user_uuid,
+    payload = {'user_uuid': str(user_uuid),
                'user_link_uuid': str(user_link_uuid),
                'github_auth_token': github_auth_token,
                'repo_url': repo_url,
