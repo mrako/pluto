@@ -112,11 +112,12 @@ def bind_user_to_installation(obj, info, installation_id: str, code: str):
         user = info.context['pluto_user']
         user_uuid = user.uuid
         project_user = project_dao.get_user_by_installation_id(installation_id)
-        org = organisation_dao.get_by_installation_id(installation_id)
+        org = organisation_dao.find_by_installation_id(installation_id)
+        org_uuid = org.uuid if org is not None else None
         user_dao.bind_users(pluto_user_uuid=user_uuid,
                             project_user_uuid=project_user.uuid,
                             code=code,
-                            organisation_uuid=org.uuid)
+                            organisation_uuid=org_uuid)
         db.session.commit()
         return build_result_from_dict({'user_account': user,
                                        'project_user': project_user,
