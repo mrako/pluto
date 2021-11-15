@@ -45,7 +45,7 @@ def project_exists(user_link: UserLink, name: str):
     return db.session.query(query.exists()).scalar()
 
 
-def insert_project(name: str, description: str, repository: Repository = None):
+def insert_project(user_uuid: UUID, name: str, description: str, repository: Repository = None):
     uuid = uuid4()
     project = Project(uuid=uuid,
                       name=name,
@@ -54,7 +54,7 @@ def insert_project(name: str, description: str, repository: Repository = None):
     if repository:
         project.repositories.append(repository)
     db.session.flush()
-    return get_project(uuid)
+    return get_project(user_uuid=user_uuid, project_uuid=uuid)
 
 
 def insert_project_member(user_link: UserLink, project: Project):
@@ -64,14 +64,14 @@ def insert_project_member(user_link: UserLink, project: Project):
     return project_member
 
 
-def update_project(project_uuid: UUID, **update_fields):
+def update_project(user_uuid: UUID, project_uuid: UUID, **update_fields):
     db.session.query(Project).filter(Project.uuid == project_uuid).update(update_fields)
     db.session.flush()
-    return get_project(project_uuid)
+    return get_project(user_uuid=user_uuid, project_uuid=project_uuid)
 
 
-def delete_project(project_uuid: UUID):
-    project = get_project(project_uuid)
+def delete_project(user_uuid: UUID, project_uuid: UUID):
+    project = get_project(user_uuid=user_uuid, project_uuid=project_uuid)
     db.session.delete(project)
     db.session.flush()
 

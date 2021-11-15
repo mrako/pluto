@@ -51,7 +51,8 @@ def add_project(obj, info, name: str, description: str, user_link_uuid: UUID):
             log.error(f"Project named {name} already exists for this user link")
             return build_error_result("Bad request", 400)
 
-        proj = dao.insert_project(name=name,
+        proj = dao.insert_project(user_uuid=pluto_user_uuid,
+                                  name=name,
                                   description=description)
         project_dao.insert_project_member(user_link, proj)
         db.session.commit()
@@ -69,7 +70,12 @@ def update_project_data(obj, info, project_uuid: UUID, **update_fields):
     try:
         pluto_user_uuid = info.context['pluto_user'].uuid
         project_dao.get_project(user_uuid=pluto_user_uuid, project_uuid=project_uuid)
-        result = update_db('project', dao.update_project, project_uuid=project_uuid, **update_fields)
+        result = update_db(
+            'project',
+            dao.update_project,
+            user_uuid=pluto_user_uuid,
+            project_uuid=project_uuid,
+            **update_fields)
         db.session.commit()
         return result
     except NoResultFound as e:
@@ -85,7 +91,11 @@ def delete_project_from_github(obj, info, project_uuid: UUID):
     try:
         pluto_user_uuid = info.context['pluto_user'].uuid
         project_dao.get_project(user_uuid=pluto_user_uuid, project_uuid=project_uuid)
-        result = delete_from_db('project', dao.delete_project, project_uuid=project_uuid)
+        result = delete_from_db(
+            'project',
+            dao.delete_project,
+            user_uuid=pluto_user_uuid,
+            project_uuid=project_uuid)
         db.session.commit()
         return result
     except NoResultFound as e:
