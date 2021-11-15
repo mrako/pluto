@@ -1,0 +1,75 @@
+{
+  "action": "deleted",
+  "installation": {
+    "id": 23456789,
+    "account": {
+      "login": "testuser",
+      "id": 1262728,
+      "node_id": "fuFTYftIUgUYGYGYUO=",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1262728?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/testuser",
+      "html_url": "https://github.com/testuser",
+      "followers_url": "https://api.github.com/users/testuser/followers",
+      "following_url": "https://api.github.com/users/testuser/following{/other_user}",
+      "gists_url": "https://api.github.com/users/testuser/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/testuser/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/testuser/subscriptions",
+      "organizations_url": "https://api.github.com/users/testuser/orgs",
+      "repos_url": "https://api.github.com/users/testuser/repos",
+      "events_url": "https://api.github.com/users/testuser/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/testuser/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "repository_selection": "selected",
+    "access_tokens_url": "https://api.github.com/app/installations/23456789/access_tokens",
+    "repositories_url": "https://api.github.com/installation/repositories",
+    "html_url": "https://github.com/organizations/SomeTestOrganisation/settings/installations/23456789",
+    "app_id": 345678,
+    "app_slug": "pluto-application",
+    "target_id": 12345678,
+    "target_type": "Organization",
+    "permissions": {
+      "metadata": "read",
+      "administration": "write"
+    },
+    "events": [],
+    "created_at": "2021-10-12T07:50:17.000Z",
+    "updated_at": "2021-10-12T08:59:00.000Z",
+    "single_file_name": null,
+    "has_multiple_single_files": false,
+    "single_file_paths": [],
+    "suspended_by": null,
+    "suspended_at": null
+  },
+  "repositories": [
+    {
+      "id": 402349004,
+      "node_id": "aveyuytvFTUYVDfwguivfUIVFgvuiUYgVg=",
+      "name": "Testing",
+      "full_name": "SomeTestOrganisation/Testing",
+      "private": true
+    }
+  ],
+  "sender": {
+    "login": "testuser",
+    "id": 1262728,
+    "node_id": "fuFTYftIUgUYGYGYUO=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/1262728?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/testuser",
+    "html_url": "https://github.com/testuser",
+    "followers_url": "https://api.github.com/users/testuser/followers",
+    "following_url": "https://api.github.com/users/testuser/following{/other_user}",
+    "gists_url": "https://api.github.com/users/testuser/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/testuser/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/testuser/subscriptions",
+    "organizations_url": "https://api.github.com/users/testuser/orgs",
+    "repos_url": "https://api.github.com/users/testuser/repos",
+    "events_url": "https://api.github.com/users/testuser/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/testuser/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+}
