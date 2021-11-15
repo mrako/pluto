@@ -8,7 +8,14 @@
 # testing
 /coverage
 /reports
-/robot_tests/venv
+/robot/venv
+/robot/results
+robot/log.html
+robot/output.xml
+robot/report.html
+robot/selenium-*.png
+robot/.pabot*
+robot/pabot*
 
 # production
 /build

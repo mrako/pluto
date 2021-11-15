@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  robot:
+    build: .
+    command: robot --outputdir /results /robot
+    environment:
+      BROWSER: HeadlessChrome
+      SERVER: https://pluto-dev.rnd.eficode.io
+    volumes:
+      - .:/robot:ro
+      - ./results:/results:rw
