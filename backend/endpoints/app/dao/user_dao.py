@@ -1,7 +1,7 @@
 from uuid import uuid4, UUID
 
 from api import db
-from models import User, UserLink, Project, ProjectMember
+from models import User, UserLink, Project, ProjectMember, ProjectUserAttribute
 
 
 def get_user(user_uuid: UUID):
@@ -57,3 +57,9 @@ def bind_users(pluto_user_uuid: UUID, project_user_uuid: UUID, code: str, organi
     db.session.add(link)
     db.session.flush()
     return link
+
+
+def delete_project_user_attributes(project_user_uuid: UUID):
+    db.session.query(ProjectUserAttribute) \
+        .filter(ProjectUserAttribute.project_user_uuid == project_user_uuid) \
+        .delete()
