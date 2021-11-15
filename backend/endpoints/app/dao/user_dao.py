@@ -14,9 +14,11 @@ def find_user(user_uuid: UUID):
         .filter(User.uuid == user_uuid).one_or_none()
 
 
-def get_user_link_by_uuid(user_link_uuid: UUID):
+def get_user_link(user_uuid: UUID, user_link_uuid: UUID):
     return db.session.query(UserLink) \
-        .filter(UserLink.uuid == user_link_uuid).one()
+        .filter(UserLink.uuid == user_link_uuid)\
+        .filter(UserLink.user_uuid == user_uuid)\
+        .one()
 
 
 def get_user_link_by_user_and_project_uuids(user_uuid: UUID, project_uuid: UUID):
