@@ -33,7 +33,7 @@ jobs:
       - name: Download reports
         uses: actions/download-artifact@v1
         with:
-          name: report
+          name: reports
       - name: Send reports to commit
         uses: joonvena/robotframework-reporter-action@v1.0
         with:
