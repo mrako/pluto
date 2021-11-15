@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy import Column, String, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, String, ForeignKey, UniqueConstraint, Index
 
 Base = declarative_base()
 
@@ -31,11 +31,23 @@ class ProjectUser(Base):
     data_origin_uuid = Column(UUID(as_uuid=True), ForeignKey('data_origin.uuid'), nullable=False)
     data_origin = relationship("DataOrigin")
     external_id = Column(String, nullable=False)
-    installation_id = Column(String, nullable=False)
-    personal_access_token = Column(String)
-    refresh_token = Column(String)
     username = Column(String, nullable=False)
     email = Column(String)
+
+
+class ProjectUserAttribute(Base):
+    __tablename__ = "project_user_attribute"
+    __table_args__ = (
+        UniqueConstraint('project_user_uuid', 'name', 'value'),
+    )
+    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    project_user_uuid = Column(UUID(as_uuid=True), ForeignKey('project_user.uuid'), nullable=False, onupdate="CASCADE")
+    name = Column(String, nullable=False)
+    value = Column(String, nullable=False)
+
+
+Index('user_attribute_index_name_value', ProjectUserAttribute.name, ProjectUserAttribute.value)
+Index('user_attribute_index_user_uuid_name', ProjectUserAttribute.project_user_uuid, ProjectUserAttribute.name)
 
 
 class Organisation(Base):
