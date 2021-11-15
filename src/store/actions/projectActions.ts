@@ -144,10 +144,10 @@ export const ClearCurrentProject = () => async (dispatch: Dispatch<Action>): Pro
   dispatch({ type: ActionType.CLEAR_CURRENT_PROJECT });
 };
 
-export const bindPlutoUserToProject = (installationId: string, plutoUserId: string, code: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+export const bindPlutoUserToProject = (installationId: string, code: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
-    body: { query: bindUserToProjectMutation(installationId, plutoUserId, code) },
+    body: { query: bindUserToProjectMutation(installationId, code) },
   };
   try {
     const response = await API.post(apiName, path, request);

@@ -15,9 +15,9 @@ export function createProjectMutation(name: string, description:string, userLink
   );
 }
 
-export function bindUserToProjectMutation(installationId: string, plutoUserUUID: string, code: string): string {
+export function bindUserToProjectMutation(installationId: string, code: string): string {
   return (`mutation {
-    bindPlutoUser(installationId: "${installationId}", plutoUserUUID: "${plutoUserUUID}", code: "${code}")
+    bindPlutoUser(installationId: "${installationId}", code: "${code}")
     {
       success
       errors
