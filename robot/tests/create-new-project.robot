@@ -24,7 +24,6 @@ Create project with random name
   Click Button    Create New Project
   Input Text      name         robot-test-project-${PROJECT SUFFIX}
   Input Text      repository   robot-test-project-${PROJECT SUFFIX}
-  Input Text      githubToken   ${GITHUB_TOKEN}
+  Input Text      githubToken  ${GITHUB_TOKEN}
   Click Button    id=create
-
-
+  Wait Until Page Contains     Creating Project
