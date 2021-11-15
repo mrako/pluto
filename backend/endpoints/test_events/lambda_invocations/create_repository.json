@@ -1,0 +1,10 @@
+{
+  "path": "/api",
+  "httpMethod": "POST",
+  "queryStringParameters": "",
+  "headers": {
+    "content-type": "application/json",
+    "Authorization": "eyJraWQiOiJqaDlvSm5neEJaS3loNkZkMHZvTjVWMnhsYXlrc2ZGS0g2UGxmOWJCa0FJPSIsImFsZyI6IlJTMjU2In0.eyJvcmlnaW5fanRpIjoiOTA0MzFiMDEtOTM2NC00MTliLTg0MzYtM2ZkNjZlNWMxOThmIiwic3ViIjoiYTQ2YzYyY2UtYTg0ZS00ZWMwLWJiODctYjQ5Njg4N2UzYWNmIiwiZXZlbnRfaWQiOiI2Y2I1NGJmMi02YTYxLTQ5YjQtYjM1ZC1hMjQ3YjQ4Yjg3YTEiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNjM1MTUyMzk0LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV9LQXlOaFMyaVEiLCJleHAiOjE2MzUxNTU5OTQsImlhdCI6MTYzNTE1MjM5NCwianRpIjoiN2NlZTJmNzEtMDRmNi00MDFiLWFhNDctYjgxZWZmMGIxMDBlIiwiY2xpZW50X2lkIjoiNTZ0NGRuaDhuNXY4amtkNDFmOXNzdjAybXQiLCJ1c2VybmFtZSI6ImE0NmM2MmNlLWE4NGUtNGVjMC1iYjg3LWI0OTY4ODdlM2FjZiJ9.ZRUoIdoDdYqxS07iYLdjjPqbv9Kcyd9w0k095NAUt4V1MdibJUERiLCH3PmtkCHVSCqC5diUHmuVktfsnVcXe-KTeEATqrwJKgyCApQMYPeCLfkJAagyfH4Jzpf_8O6nDndmG3SBXJOcCVXlfu3qhMhoCSSP6v1gkOGxC_Kh55rn8FywWedNHiT9JJ1f76Rv1GXJjmnYmM67ja0e7IGnEpw-6h9znOHV0zV_INCBL6cPkfEiSiD3R_OxcWxpkxjSoI4JNL0XNKo2s7urQn85nR0ZfK25Kpc402FVja65iPu79gZT9LLw2gn4AtANOj-L6MJl1F6Z3PDjxh1iq1MpFg"
+  },
+  "body": "{\"query\": \"mutation { createRepository(name: \\\"test-repo-name\\\", description: \\\"Test repository\\\", projectUuid: \\\"c0cf1733-a082-4afc-90cb-2cf4da9fef1e\\\", githubAuthToken: \\\"YOUR_TOKEN_HERE\\\", templates: [\\\"python_app\\\"]) { success errors }} \"}"
+}
