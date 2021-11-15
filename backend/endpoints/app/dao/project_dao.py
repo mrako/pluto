@@ -112,3 +112,4 @@ def add_installation_id(user: ProjectUser, installation_id: int):
         value=installation_id
     )
     db.session.add(attribute)
+    db.session.flush()
