@@ -14,7 +14,7 @@ def handler(event, context):
 
 def handle_template_service_call(event):
     try:
-        user_link = user_dao.get_user_link_by_uuid(event.get('user_link_uuid'))
+        user_link = user_dao.get_user_link(event.get('user_uuid'), event.get('user_link_uuid'))
         service.push_repository_templates(user_link,
                                           event.get('repo_url'),
                                           event.get('template'),

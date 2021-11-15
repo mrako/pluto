@@ -104,7 +104,6 @@ type UserLinkResult {
 type Query {
     projects: ProjectsResult!
     projectsByOrg(organisationUuid: ID!): ProjectsResult!
-    projectsByUser(userUuid: ID!): ProjectsResult!
     project(projectUuid: ID!): ProjectResult!
     repository(repositoryUuid: ID!): RepositoryResult!
     organisationalInfo: OrganisationalInfoResult!
@@ -117,5 +116,5 @@ type Mutation {
     deleteProject(projectUuid: ID!): DeleteProjectResult!
     createRepository(name: String!, description: String, projectUuid: ID!, githubAuthToken: String!, templates: [String!]!): RepositoryResult!
     deleteRepository(repositoryUuid: ID!, githubAuthToken: String!): DeleteRepositoryResult!
-    bindPlutoUser(installationId: ID!, code: ID!, plutoUserUUID: ID!): BindUserResult
+    bindPlutoUser(installationId: ID!, code: ID!): BindUserResult
 }
