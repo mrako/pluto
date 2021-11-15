@@ -10,9 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run Robot tests
-        run: |
-          bash run_robot_tests.sh
+      - name: Run robot tests
+        run: docker-compose --project-directory robot run robot
         env:
           TEST_ACCOUNT_USERNAME: pluto.tester@eficode.invalid
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
@@ -22,7 +21,7 @@ jobs:
         if: always()
         with:
           name: reports
-          path: reports
+          path: robot/reports
 
   generate_report:
     if: always()
