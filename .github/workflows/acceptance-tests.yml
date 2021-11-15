@@ -6,7 +6,7 @@ on:
   push:
 
 jobs:
-  acceptance_tests:
+  robot:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,9 +25,8 @@ jobs:
           name: reports
           path: robot/reports
 
-  generate_report:
-    if: always()
-    needs: [ acceptance_tests ]
+  report:
+    needs: [ robot ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
