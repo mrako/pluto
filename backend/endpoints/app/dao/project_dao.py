@@ -4,35 +4,33 @@ from api import db
 from models import Project, Repository, ProjectMember, DataOrigin, ProjectUser, UserLink
 
 
-def find_all_projects():
-    return db.session.query(Project).all()
+def find_projects_query():
+    return db.session.query(Project) \
+        .join(ProjectMember, ProjectMember.project_uuid == Project.uuid) \
+        .join(UserLink, UserLink.uuid == ProjectMember.user_link_uuid)
 
 
-def find_all_projects_by_org(organisation_uuid: UUID):
-    return db.session.query(Project)\
-        .join(ProjectMember)\
-        .join(UserLink)\
-        .filter(UserLink.organisation_uuid == organisation_uuid)\
-        .all()
-
-
-def find_all_projects_by_user(user_uuid: UUID):
-    return db.session.query(Project)\
-        .join(ProjectMember) \
-        .join(UserLink) \
+def find_all_projects(user_uuid: UUID):
+    return find_projects_query()\
         .filter(UserLink.user_uuid == user_uuid)\
         .all()
 
 
-def find_project(project_uuid: UUID):
-    return db.session.query(Project)\
-        .filter(Project.uuid == project_uuid)\
-        .one_or_none()
+def find_all_projects_by_org(user_uuid: UUID, organisation_uuid: UUID):
+    return find_projects_query() \
+        .filter(UserLink.user_uuid == user_uuid) \
+        .filter(UserLink.organisation_uuid == organisation_uuid)\
+        .all()
 
 
-def get_project(project_uuid: UUID):
-    return db.session.query(Project)\
-        .filter(Project.uuid == project_uuid).one()
+def get_project_query(user_uuid: UUID, project_uuid: UUID):
+    return find_projects_query() \
+        .filter(UserLink.user_uuid == user_uuid) \
+        .filter(Project.uuid == project_uuid)
+
+
+def get_project(user_uuid: UUID, project_uuid: UUID):
+    return get_project_query(user_uuid, project_uuid).one()
 
 
 def get_projects_by_user_link_query(user_link: UserLink):

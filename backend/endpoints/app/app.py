@@ -37,7 +37,6 @@ query = ObjectType("Query")
 
 query.set_field('projects', project_service.get_all_projects)
 query.set_field('projectsByOrg', project_service.get_all_projects_by_org)
-query.set_field('projectsByUser', project_service.get_all_projects_by_user)
 query.set_field('project', project_service.get_project)
 query.set_field('repository', repository_service.get_repository)
 query.set_field('organisationalInfo', user_service.get_user_organisational_info)
