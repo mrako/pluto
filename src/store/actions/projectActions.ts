@@ -35,7 +35,7 @@ function getErrorString(error: unknown): string {
   return 'Error occured';
 }
 
-export const createRepositoryAction = (name: string, token: string, projectUUID: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+export const createRepositoryAction = (name: string, token: string, projectUUID: string) => async (dispatch: Dispatch<Action>): Promise<void | string> => {
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
     body: { query: createRepositoryMutation(name, projectUUID, token) },
@@ -52,7 +52,7 @@ export const createRepositoryAction = (name: string, token: string, projectUUID:
       type: ActionType.CREATE_REPOSITORY_FAILED,
       payload: errorString,
     });
-    return Promise.reject();
+    return Promise.reject(errorString);
   }
   return Promise.resolve();
 };
@@ -67,6 +67,7 @@ export const CreateProjectAction = (name: string, description: string) => async 
   try {
     const userLinks = await API.post(apiName, path, userLinksRequest);
     checkErrors(userLinks, 'userLinks');
+    // TODO: Give the userlink UUID as function parameter (ask the user which org/user to create the repos)
     const userLink: string = userLinks.data?.userLinks.links[0].uuid;
     const request = {
       headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
@@ -86,7 +87,7 @@ export const CreateProjectAction = (name: string, description: string) => async 
       type: ActionType.CREATE_PROJECT_FAILED,
       payload: errorString,
     });
-    return Promise.reject();
+    return Promise.reject(errorString);
   }
 };
 
@@ -144,10 +145,10 @@ export const ClearCurrentProject = () => async (dispatch: Dispatch<Action>): Pro
   dispatch({ type: ActionType.CLEAR_CURRENT_PROJECT });
 };
 
-export const bindPlutoUserToProject = (installationId: string, plutoUserId: string, code: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
+export const bindPlutoUserToProject = (installationId: string, code: string) => async (dispatch: Dispatch<Action>): Promise<void> => {
   const request = {
     headers: { ...headers, Authorization: `Bearer ${store.getState().auth.user?.token}` },
-    body: { query: bindUserToProjectMutation(installationId, plutoUserId, code) },
+    body: { query: bindUserToProjectMutation(installationId, code) },
   };
   try {
     const response = await API.post(apiName, path, request);

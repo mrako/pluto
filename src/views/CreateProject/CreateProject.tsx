@@ -2,13 +2,17 @@ import React, {
   ReactElement, useState, useCallback, ChangeEvent,
 } from 'react';
 import { useHistory } from 'react-router';
-import Button from 'stories/atoms/Button/Button';
-import Input from 'stories/atoms/Input/Input';
-import TextArea from 'stories/atoms/TextArea/TextArea';
 import * as projectActions from 'store/actions/projectActions';
 import { useAppSelector, useAppDispatch } from 'utils';
+import CreateProjectForm from './CreateProjectForm/CreateProjectForm';
+import CreateProjectStatus, { LoadingStateStatus } from './CreateProjectStatus/CreateProjectStatus';
 
 import './CreateProject.css';
+
+const initialLoadingState: LoadingStateStatus = {
+  name: '',
+  status: 'loading',
+};
 
 export default function Project(): ReactElement {
   const [name, setName] = useState('');
@@ -16,6 +20,11 @@ export default function Project(): ReactElement {
   const [repository, setRepository] = useState('');
   const [githubToken, setGithubToken] = useState('');
   /* const [template, setTemplate] = useState('Python Application'); */
+
+  const [submitting, setSubmitting] = useState(false);
+  const [projectLoadingState, setProjectLoadingState] = useState(initialLoadingState);
+  const [repositoryLoadingState, setRepositoryLoadingState] = useState(initialLoadingState);
+  const [createdProject, setCreatedProject] = useState('');
   const dispatch = useAppDispatch();
   const loading = useAppSelector((state) => state.project.loading);
   const error = useAppSelector((state) => state.project.error);
@@ -43,68 +52,46 @@ export default function Project(): ReactElement {
     }
   }, []);
 
-  const onSubmit = async () => {
+  const onSubmit = async (): Promise<void> => {
+    setProjectLoadingState({ name, status: 'loading' });
+    setRepositoryLoadingState({ name: repository, status: 'loading' });
+    setSubmitting(true);
     dispatch(projectActions.CreateProjectAction(name, description))
       .then((projectUuid) => {
+        setCreatedProject(projectUuid);
+        setProjectLoadingState({ name, status: 'success' });
         dispatch(projectActions.createRepositoryAction(repository, githubToken, projectUuid))
-          .finally(() => {
-            history.push(`/project/${projectUuid}`);
+          .then(() => {
+            setRepositoryLoadingState({ name: repository, status: 'success' });
+          })
+          .catch((error) => {
+            setRepositoryLoadingState({ name: repository, status: 'failure', error });
           });
+      })
+      .catch((error) => {
+        setProjectLoadingState({ name, status: 'failure', error });
       });
   };
 
+  const goToProject = useCallback(() => {
+    history.push(`/project/${createdProject}`);
+  }, [history, createdProject]);
+
   return (
-    <div className="project-container">
-      <div className="project-form">
-        <div className="project-error">{error}</div>
-        <h2 className="project-form-title">Create new project</h2>
-        <Input
-          className="project-form-input"
-          fluid
-          name="name"
-          onChange={onChangeHandler}
-          id="name"
-          placeholder="Project name"
-          label="Project name"
-        />
-        <TextArea
-          className="project-form-input"
-          rows={2}
-          name="description"
-          onChange={onChangeHandler}
-          id="description"
-          placeholder="Project description"
-          label="Project description"
-        />
-        <Input
-          className="project-form-input"
-          fluid
-          name="repository"
-          onChange={onChangeHandler}
-          placeholder="Repository name"
-          id="repository"
-          label="Repository name"
-        />
-        <TextArea
-          className="project-form-input"
-          rows={2}
-          name="githubToken"
-          onChange={onChangeHandler}
-          id="github-token"
-          placeholder="Github Personal Access Token"
-          label="Github Personal Access Token"
-          info="This will only be used to create the repositories and push the templates to them. It will not be stored in any way"
-        />
-        <Button loading={loading} onClick={onSubmit} id="create">CREATE</Button>
-      </div>
-    </div>
+    submitting ? <CreateProjectStatus goBack={() => setSubmitting(false)} goToProject={goToProject} project={projectLoadingState} repository={repositoryLoadingState} /> : (
+      <CreateProjectForm
+        fieldDefaultValues={{
+          name,
+          description,
+          repository,
+          githubToken,
+        }}
+        onSubmit={onSubmit}
+        error={error}
+        onChangeHandler={onChangeHandler}
+        loading={loading}
+      />
+    )
+
   );
 }
-/* <div>
-          <Label text="Repository name" htmlFor="repository" />
-          <Input name="repository" onChange={onChangeHandler} id="repository" />
-        </div>
-        <div>
-          <Label text="Repository template" htmlFor="template" />
-          <Input name="template" onChange={onChangeHandler} id="template" disabled value="Python application" />
-        </div> */

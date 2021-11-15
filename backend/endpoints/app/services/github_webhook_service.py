@@ -4,7 +4,7 @@ import hmac
 from api import db
 import dao.data_origin_dao as origin_dao
 import dao.organisation_dao as org_dao
-from dao import project_dao, user_link_dao
+from dao import project_dao, user_link_dao, user_dao
 from models import DataOrigin
 
 
@@ -37,7 +37,9 @@ def find_org(data_origin: DataOrigin, installation_id: int, account: dict, creat
 def find_project_user(data_origin: DataOrigin, installation_id: int, sender: dict, create: bool = False):
     user = project_dao.find_user_by_ext_id(data_origin, sender['id'])
     if user is None and create is True:
-        user = project_dao.create_project_user(data_origin, installation_id, sender['id'], sender['login'])
+        user = project_dao.create_project_user(data_origin, sender['id'], sender['login'])
+    if create is True:
+        project_dao.add_installation_id(user,  installation_id)
         db.session.commit()
     return user
 
@@ -69,5 +71,6 @@ def remove_app_installation(payload):
         db.session.delete(org)
     user = find_project_user(data_origin, installation_id, payload['sender'])
     user_link_dao.delete_user_links(user.uuid)
+    user_dao.delete_project_user_attributes(user.uuid)
     db.session.delete(user)
     db.session.commit()
