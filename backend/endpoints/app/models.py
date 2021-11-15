@@ -137,4 +137,3 @@ class ProjectMember(Base):
     __tablename__ = "project_member"
     user_link_uuid = Column(UUID(as_uuid=True), ForeignKey('user_link.uuid'), primary_key=True, onupdate="CASCADE")
     project_uuid = Column(UUID(as_uuid=True), ForeignKey('project.uuid'), primary_key=True, onupdate="CASCADE")
-    projects = relationship("Project", order_by=Project.name)
