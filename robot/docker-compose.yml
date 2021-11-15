@@ -6,7 +6,10 @@ services:
     command: robot --outputdir /results /robot
     environment:
       BROWSER: HeadlessChrome
-      SERVER: https://pluto-dev.rnd.eficode.io
+      SERVER: ${SERVER}
+      ROBOT_USERNAME: ${ROBOT_USERNAME}
+      ROBOT_PASSWORD: ${ROBOT_PASSWORD}
+      ROBOT_GITHUB_TOKEN: ${ROBOT_GITHUB_TOKEN}
     volumes:
       - .:/robot:ro
       - ./results:/results:rw
