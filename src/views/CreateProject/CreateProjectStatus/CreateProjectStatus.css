@@ -1,0 +1,36 @@
+.create-project-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.create-project-status-container {
+  border: 1px solid var(--color-black);
+  padding: 48px;
+}
+
+.create-project-status-container h2 {
+  margin-top: 0px;
+  margin-bottom: 30px;
+}
+
+.result-spinner {
+  transform: scale(0.25);
+  transform-origin: top left;
+}
+
+.loading-status-container {
+  display: flex;
+  height: 20px;
+  margin-bottom: 10px;
+  min-width: 500px;
+}
+
+.loading-status-string {
+  margin-left: 48px;
+}
+
+.loading-status-button {
+  margin-top: 30px;
+  display: flex;
+}

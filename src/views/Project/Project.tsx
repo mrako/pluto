@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from 'utils';
 import * as projectActions from 'store/actions/projectActions';
 import { useRouteMatch } from 'react-router-dom';
+import Card from 'stories/composite/Card/Card';
+import Spinner from 'stories/atoms/Spinner/Spinner';
 
 export default function Project(): ReactElement {
   const dispatch = useDispatch();
@@ -16,19 +18,20 @@ export default function Project(): ReactElement {
   const loading = useAppSelector((state) => state.project.loading);
   const project = useAppSelector((state) => state.project.currentProject);
 
+  function goToRepo(repoUrl:string) {
+    window.location = repoUrl as unknown as Location;
+  }
   return (
     <div>
-      {loading ? 'Loading...'
+      {loading ? <Spinner />
         : (
           <>
             <h1>{project?.name}</h1>
+            <h3>Project Description</h3>
+            <p>{project?.description}</p>
             <h3>Repositories</h3>
             {project?.repositories?.map((repo) => (
-              <div key={repo.uuid}>
-                <div>{repo.name}</div>
-                <div>{repo.description} </div>
-                <a target="_blank" rel="noreferrer" href={repo.url}>{repo.url}</a>
-              </div>
+              <Card key={repo.uuid} title={repo.name} subtitle={repo.description} action={() => goToRepo(repo.url)} actionTitle="View Repository" />
             ))}
           </>
         )}
