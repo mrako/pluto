@@ -54,7 +54,7 @@ def insert_project(user_uuid: UUID, name: str, description: str, repository: Rep
     if repository:
         project.repositories.append(repository)
     db.session.flush()
-    return get_project(user_uuid=user_uuid, project_uuid=uuid)
+    return project
 
 
 def insert_project_member(user_link: UserLink, project: Project):
