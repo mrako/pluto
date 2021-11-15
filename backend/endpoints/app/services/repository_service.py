@@ -38,8 +38,7 @@ def add_repository_to_github(obj, info, name: str, description: str, project_uui
         if len(templates) <= 0:
             return build_error_result("No Template given", 400)
 
-        pluto_user = info.context['pluto_user']
-        pluto_user_uuid = pluto_user.uuid
+        pluto_user_uuid = info.context['pluto_user'].uuid
         project = project_dao.get_project(pluto_user_uuid, project_uuid)
         user_link = user_dao.get_user_link_by_user_and_project_uuids(info.context['pluto_user'].uuid, project.uuid)
 
