@@ -4,6 +4,10 @@ import { Redirect } from 'react-router-dom';
 import { useQuery, useAppDispatch } from 'utils';
 import Spinner from 'stories/atoms/Spinner/Spinner';
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export default function Install(): ReactElement {
   const queryParams = useQuery();
   const dispatch = useAppDispatch();
@@ -16,10 +20,14 @@ export default function Install(): ReactElement {
     if (installationId && setupAction === 'install' && code) {
       dispatch(bindPlutoUserToProject(installationId, code))
         .catch(() => {
-          dispatch(bindPlutoUserToProject(installationId, code))
-            .catch(() => {
-              dispatch(bindPlutoUserToProject(installationId, code));
-            });
+          sleep(1000).then(() => {
+            dispatch(bindPlutoUserToProject(installationId, code))
+              .catch(() => {
+                sleep(1000).then(() => {
+                  dispatch(bindPlutoUserToProject(installationId, code));
+                });
+              });
+          });
         }).finally(() => {
           setLoading(false);
         });
