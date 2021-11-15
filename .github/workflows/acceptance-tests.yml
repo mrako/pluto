@@ -13,9 +13,10 @@ jobs:
       - name: Run robot tests
         run: docker-compose --project-directory robot run robot
         env:
-          TEST_ACCOUNT_USERNAME: pluto.tester@eficode.invalid
-          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
-          URL: https://pluto-dev.rnd.eficode.io/
+          SERVER: https://pluto-dev.rnd.eficode.io/
+          ROBOT_USERNAME: pluto.tester@eficode.invalid
+          ROBOT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TEST_TOKEN }}
       - name: upload reports
         uses: actions/upload-artifact@v2
         if: always()
