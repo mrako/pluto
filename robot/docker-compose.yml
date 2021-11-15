@@ -3,7 +3,7 @@ version: '3'
 services:
   robot:
     build: .
-    command: robot --outputdir /results /robot
+    command: robot --outputdir /reports /robot
     environment:
       BROWSER: HeadlessChrome
       SERVER: ${SERVER}
@@ -12,4 +12,4 @@ services:
       ROBOT_GITHUB_TOKEN: ${ROBOT_GITHUB_TOKEN}
     volumes:
       - .:/robot:ro
-      - ./results:/results:rw
+      - ./reports:/reports:rw

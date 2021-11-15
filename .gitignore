@@ -9,7 +9,7 @@
 /coverage
 /reports
 /robot/venv
-/robot/results
+/robot/reports
 robot/log.html
 robot/output.xml
 robot/report.html
