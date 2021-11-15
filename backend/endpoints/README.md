@@ -126,6 +126,22 @@ curl -X POST \
 "http://localhost:8081/pluto-app"
 ```
 
+Pluto Github App uninstalled from an Organisation 
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/direct_payloads/app_webhook_uninstall.json" \
+"http://localhost:8081/pluto-app"
+```
+
+Pluto Github App uninstalled from a User 
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/direct_payloads/app_webhook_uninstall_from_user_only.json" \
+"http://localhost:8081/pluto-app"
+```
+
 ### Test Cognito post confirmation event test endpoint
 ```
 curl -X POST \
