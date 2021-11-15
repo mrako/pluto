@@ -35,7 +35,7 @@ def get_project(obj, info, project_uuid: UUID):
     try:
         return query_db(
             'project',
-            dao.find_project,
+            dao.get_project,
             user_uuid=pluto_user_uuid,
             project_uuid=project_uuid)
     except NoResultFound as e:
