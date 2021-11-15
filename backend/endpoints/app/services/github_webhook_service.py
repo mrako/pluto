@@ -4,7 +4,7 @@ import hmac
 from api import db
 import dao.data_origin_dao as origin_dao
 import dao.organisation_dao as org_dao
-from dao import project_dao, user_link_dao
+from dao import project_dao, user_link_dao, user_dao
 from models import DataOrigin
 
 
@@ -71,5 +71,6 @@ def remove_app_installation(payload):
         db.session.delete(org)
     user = find_project_user(data_origin, installation_id, payload['sender'])
     user_link_dao.delete_user_links(user.uuid)
+    user_dao.delete_project_user_attributes(user.uuid)
     db.session.delete(user)
     db.session.commit()
