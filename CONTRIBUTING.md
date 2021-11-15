@@ -61,44 +61,59 @@ This will close issue number 2 when the PR is merged. More info on https://docs.
 
 ## Robot Framework tests
 
-These instructions explain how to run the Robot Frameworks tests in the robot_tests directory against a local frontend.
+These instructions explain how to run the Robot Frameworks tests in the robot directory.
+
+### Running in docker
+
+Set SERVER into 
+
+```bash
+cd robot
+docker-compose run robot
+```
+
+### Running in local environment
 
 Prerequisites: Python 3.5 or newer, local frontend.
 
 Start by creating a Python virtual environment (venv) inside the robot_tests directory.
 
 Inside venv, install dependencies:
-```
+
+```bash
 pip install -r requirements.txt
 ```
 
 Install webdrivermanager:
-```
+
+```bash
 pip install webdrivermanager
 ```
+
 Use webdrivermanager to get Chrome webdriver:
-```
+
+```bash
 webdrivermanager chrome
 ```
 
-Set your local web address:
-```
-URL=http://localhost:3000
-export URL
+Set environment:
+
+```bash
+export BROWSER=Chrome
+export SERVER=http://localhost:3000
+export ROBOT_USERNAME=
+export ROBOT_PASSWORD=
+export ROBOT_GITHUB_TOKEN=
 ```
 
-Set your test credentials:
+Tip: you can also use your `.env` -file:
 
+```bash
+export $(cat .env | xargs)
 ```
-TEST_ACCOUNT_USERNAME=myusername
-export TEST_ACCOUNT_USERNAME
-TEST_ACCOUNT_PASSWORD=mypassword
-export TEST_ACCOUNT_PASSWORD
-```
-
 
 Run Robot tests:
-```
-robot -d reports .	
-	
+
+```bash
+robot .
 ```
