@@ -14,7 +14,7 @@ jobs:
       - name: Run robot tests
         run: docker-compose --project-directory robot run robot
         env:
-          SERVER: https://pluto-dev.rnd.eficode.io/
+          SERVER: https://pluto-dev.rnd.eficode.io
           ROBOT_USERNAME: ${{ secrets.ROBOT_USERNAME }}
           ROBOT_PASSWORD: ${{ secrets.ROBOT_PASSWORD }}
           ROBOT_GITHUB_TOKEN: ${{ secrets.ROBOT_GITHUB_TOKEN }}
