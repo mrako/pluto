@@ -1,9 +1,0 @@
-{
-  "path": "/api",
-  "httpMethod": "POST",
-  "queryStringParameters": "",
-  "headers": {
-    "content-type": "application/json"
-  },
-  "body": "{\"mutation\": \"mutation { pushRepositoryTemplate(template: \"python-app\" repo_url: \"https://github.com/EfiPlutoTest/templatetest15\") { success errors }} \"}"
-}

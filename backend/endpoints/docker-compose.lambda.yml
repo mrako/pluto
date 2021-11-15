@@ -17,6 +17,7 @@ services:
       dev.env
     environment:
       DATABASE_URL: 'postgresql://pluto:pluto@db:5432/pluto'
+      GIT_LAMBDA_LOCAL_URL: 'http://pluto_git:8080/2015-03-31/functions/function/invocations'
       PYTHONUNBUFFERED: 'TRUE'
       FLASK_APP: 'app.py'
 

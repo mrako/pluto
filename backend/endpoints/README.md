@@ -196,6 +196,17 @@ curl -X POST \
 "http://localhost:9000/2015-03-31/functions/function/invocations"
 ```
 
+### Create a repository under a project and push a template
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/create_repository.json" \
+"http://localhost:9000/2015-03-31/functions/function/invocations"
+```
+
+Edit the paylaod file to contain your Github personal access token and
+existing project UUID.
+
 ## Example GraphQL query payloads
 
 ### Get all projects by organisation
