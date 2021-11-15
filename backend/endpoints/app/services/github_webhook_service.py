@@ -67,10 +67,16 @@ def remove_app_installation(payload):
     account = payload['installation']['account']
     if account['type'] == 'Organization':
         org = find_org(data_origin, installation_id, account)
-        user_link_dao.delete_organisation_links(org.uuid)
-        db.session.delete(org)
-    user = find_project_user(data_origin, installation_id, payload['sender'])
-    user_link_dao.delete_user_links(user.uuid)
-    user_dao.delete_project_user_attributes(user.uuid)
-    db.session.delete(user)
-    db.session.commit()
+        if org is not None:
+            org_uuid = org.uuid
+            project_dao.delete_org_project_memberships(org_uuid)
+            user_link_dao.delete_organisation_links(org_uuid)
+            db.session.delete(org)
+    project_user = find_project_user(data_origin, installation_id, payload['sender'])
+    if project_user is not None:
+        project_user_uuid = project_user.uuid
+        project_dao.delete_project_user_project_memberships(project_user_uuid)
+        user_link_dao.delete_project_user_links(project_user_uuid)
+        user_dao.delete_project_user_attributes(project_user_uuid)
+        db.session.delete(project_user)
+        db.session.commit()

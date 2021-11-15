@@ -1,5 +1,7 @@
 from uuid import UUID, uuid4
 
+from sqlalchemy import select
+
 from api import db
 from models import Project, Repository, ProjectMember, DataOrigin, ProjectUser, UserLink, ProjectUserAttribute
 
@@ -54,7 +56,7 @@ def insert_project(user_uuid: UUID, name: str, description: str, repository: Rep
     if repository:
         project.repositories.append(repository)
     db.session.flush()
-    return get_project(user_uuid=user_uuid, project_uuid=uuid)
+    return project
 
 
 def insert_project_member(user_link: UserLink, project: Project):
@@ -68,6 +70,24 @@ def update_project(user_uuid: UUID, project_uuid: UUID, **update_fields):
     db.session.query(Project).filter(Project.uuid == project_uuid).update(update_fields)
     db.session.flush()
     return get_project(user_uuid=user_uuid, project_uuid=project_uuid)
+
+
+def delete_org_project_memberships(org_uuid: UUID):
+    link_uuids = db.session.query(UserLink.uuid)\
+        .filter(UserLink.organisation_uuid == org_uuid)
+
+    db.session.query(ProjectMember) \
+        .filter(ProjectMember.user_link_uuid.in_(select(link_uuids.subquery()))) \
+        .delete(synchronize_session=False)
+
+
+def delete_project_user_project_memberships(project_user_uuid: UUID):
+    link_uuids = db.session.query(UserLink.uuid) \
+        .filter(UserLink.project_user_uuid == project_user_uuid)
+
+    db.session.query(ProjectMember) \
+        .filter(ProjectMember.user_link_uuid.in_(select(link_uuids.subquery()))) \
+        .delete(synchronize_session=False)
 
 
 def delete_project(user_uuid: UUID, project_uuid: UUID):

@@ -110,10 +110,35 @@ http://localhost:8080 for sending GraphQL queries to the backend. Please see 'Ex
 Test payloads against available APIs can be found from test_events/direct_payloads directory
 
 ### Test Github App webhook receiving endpoint
+Pluto Github App installed on a Organisation 
 ```
 curl -X POST \
 -H "Content-Type: application/json" \
 -d "@./test_events/direct_payloads/app_webhook_install.json" \
+"http://localhost:8081/pluto-app"
+```
+
+Pluto Github App installed on a User account 
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/direct_payloads/app_webhook_install_on_user_only.json" \
+"http://localhost:8081/pluto-app"
+```
+
+Pluto Github App uninstalled from an Organisation 
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/direct_payloads/app_webhook_uninstall.json" \
+"http://localhost:8081/pluto-app"
+```
+
+Pluto Github App uninstalled from a User 
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/direct_payloads/app_webhook_uninstall_from_user_only.json" \
 "http://localhost:8081/pluto-app"
 ```
 
@@ -188,19 +213,19 @@ curl -X POST \
 "http://localhost:9000/2015-03-31/functions/function/invocations"
 ```
 
-### Get all projects
-```
-curl -X POST \
--H "Content-Type: application/json" \
--d "@./test_events/lambda_invocations/list_projects.json" \
-"http://localhost:9000/2015-03-31/functions/function/invocations"
-```
-
 ### Create a repository under a project and push a template
 ```
 curl -X POST \
 -H "Content-Type: application/json" \
 -d "@./test_events/lambda_invocations/create_repository.json" \
+"http://localhost:9000/2015-03-31/functions/function/invocations"
+```
+
+### Get all projects
+```
+curl -X POST \
+-H "Content-Type: application/json" \
+-d "@./test_events/lambda_invocations/list_projects.json" \
 "http://localhost:9000/2015-03-31/functions/function/invocations"
 ```
 
