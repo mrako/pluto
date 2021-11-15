@@ -16,9 +16,9 @@ def find_organisation_links(org_uuid: UUID):
         .all()
 
 
-def delete_user_links(user_account_uuid: UUID):
+def delete_project_user_links(project_user_uuid: UUID):
     db.session.query(UserLink)\
-        .filter(UserLink.user_uuid == user_account_uuid)\
+        .filter(UserLink.project_user_uuid == project_user_uuid)\
         .delete()
 
 
